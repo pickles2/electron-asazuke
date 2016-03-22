@@ -1,0 +1,102 @@
+doctype html
+head
+    meta(charset="utf-8")
+    link(rel='stylesheet', href='./resources/css/index.css')
+    script(src='./resources/js/main.js')
+    link(rel="stylesheet" href="./resources/libs/jqueryfiletree/jQueryFileTree.min.css")
+    title 機能名 | アプリタイトル
+    style.
+        .collapsed * {display:none;} 
+        .main{display:table; width: 100%;}
+        .fileTree, .contents{display:table-cell; vertical-align: top;}
+        .fileTree{width:20%;}
+body
+    .main
+        #content-header
+            ul.header-menu.nav.nav-tabs
+                // 一番最初に表示したいページに.is-current
+                li.item.active(role="presentation")
+                    a(href="#" onclick="Load.layerPanel(0);") 設定
+                li.item(role="presentation")
+                    a(href="#" onclick="Load.layerPanel(1);") 処理/実行
+                li.item(role="presentation")
+                    a(href="#" onclick="Load.layerPanel(2);") HTMLダウンロード
+                li.item(role="presentation")
+                    a(href="#" onclick="Load.layerPanel(3);") WEBスクレイピング
+                li.item(role="presentation")
+                    a(href="#" onclick="Load.layerPanel(4);") データベース
+                li.item(role="presentation")
+                    a(href="#" onclick="Load.layerPanel(5);") その他
+        #content
+            fieldset#LeftPanel
+                #div_A.window.top
+                    .layer-panel
+                        .fileTree0
+                        //設定
+                    .layer-panel
+                        .fileTree1
+                        //バッチ処理
+                    .layer-panel
+                        .fileTree2
+                        //HTMLダウンロード
+                    .layer-panel
+                        .fileTree3
+                        //WEBスクレイピング
+                    .layer-panel
+                        .fileTree4
+                        //データベース
+                    .layer-panel
+                        .fileTree5
+                        // その他
+                    .layer-panel none
+                #div_left.handler_horizontal
+            #div_vertical.handler_vertical
+            fieldset#RightPanel
+                #div_C.window.top
+                    .layer-panel
+                        // h3 設定
+                    .layer-panel
+                        // h3 バッチ処理
+                    .layer-panel 
+                        // h3 HTMLダウンロード
+                    .layer-panel 
+                        // h3 WEBスクレイピング
+                    .layer-panel 
+                        // h3 データベース
+                    .layer-panel 
+                        // h3 その他
+                #div_right.handler_horizontal
+        #content-footer
+            .consolePanelMenu
+                .btn-group-sm(role='group', aria-label='...')
+                    a.btn.btn-default.u-mr10(onclick="Console.clear();") バッファクリア
+                    a.btn.btn-default.u-mr10(onclick="App.toggleDevTools();") Developer Tools
+            #consolePanel
+                .layer-wrap
+                    .layer-panel
+                        // 設定
+                        textarea(readonly)
+                    .layer-panel
+                        // バッチ処理
+                        textarea(readonly)
+                    .layer-panel
+                        // HTMLダウンロード
+                        textarea(readonly)
+                    .layer-panel
+                        // WEBスクレイピング
+                        textarea(readonly)
+                    .layer-panel
+                        // データベース
+                        textarea(readonly)
+                    .layer-panel
+                        // その他
+                        textarea(readonly)
+        p.copyright $copy
+script(src="./resources/js/main.js")
+script(src='./resources/js/window/layout.js')
+script.
+    SCRIPT.onload();
+
+
+// #fileTree.fileTree
+// script(src="./resources/js/node/main.js")

@@ -1,0 +1,122 @@
+/*! common */
+body{
+background-color:#272822;
+}
+#LeftPanel {
+  width: 20%;
+  float: left;
+}
+
+#RightPanel {
+  width: 80%;
+  float: right;
+}
+
+.handler_vertical {
+  cursor: col-resize;
+  width: 8px;
+  float: left;
+}
+
+.handler_horizontal {
+  cursor: row-resize;
+  height: 8px;
+  width: 100%;
+  float: left;
+}
+
+.window {
+  border: 1px solid #ADADAD;
+  width: 100%;
+  float: left;
+  box-sizing: border-box;
+  overflow: auto;
+}
+
+.top {
+  height: 100%;
+  position: relative;
+  background-color: #fff;
+}
+
+.bottom {
+  height: 0%;
+}
+.main {
+  height: 100%;
+}
+
+#content-header {
+//   overflow-x: scroll;
+    overflow-x: auto;
+}
+
+#content {
+  height: 80%;
+}
+
+#content-footer {
+    height: 100px;
+    border: 1px solid #adadad;
+    padding-bottom: 50px;
+}
+.consolePanelMenu{
+    .btn-group-sm{
+        margin:2px 2px 0;
+    }
+}
+#div_C{
+    position: relative;
+}
+
+#consolePanel {
+  width: 100%;
+  height: 100%;
+  padding-bottom: 50px;
+}
+
+.consolePanelMenu {
+  height: 35px;
+  width: 100%;
+  display: table;
+}
+
+// Cパネル
+.layer-panel{
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 4px;
+    background-color: #fff;
+    // z-index: 0;
+    display:none;
+    &.is-current{
+        // z-index: 1;
+        display:block;
+    }
+}
+.layer-wrap{
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+#consolePanel textarea{
+  width: 100%;
+  height: 100%;
+  /* 等幅フォント */
+  font-family: "Courier New";
+  padding: 0 8px;
+  background-color: #333;
+  color: #ccc;
+}
+.copyright{
+  color: #999999;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  position: fixed;
+  bottom: 0;
+  text-align: center;
+}

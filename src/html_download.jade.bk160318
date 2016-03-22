@@ -1,0 +1,54 @@
+h3 HTMLダウンロード
+p
+  | HTMLダウンロードはPHPの拡張機能のcURLとtidyを使っています。
+  br
+  | HTMLダウンロードが正しく動作しない場合は次のようになっているか確認してください。
+p 「php.ini」ファイルを確認します。
+p 「c:\xampp\php\php.ini」を確認してください。
+h4 Windowsの場合(Xamppの場合)
+div
+  strong cURL
+  div
+    p
+      pre.
+        \n;extension=php_curl.dll        
+    p
+      span(style='margin-left: 2em;') ↓
+    p
+      pre.
+        \nextension=php_curl.dll        
+  p cURL が有効になっていること。
+div
+  strong tidy
+  div
+    p
+      pre.
+        \n;extension=php_tidy.dll        
+    p
+      span(style='margin-left: 2em;') ↓
+    p
+      pre.
+        \nextension=php_tidy.dll        
+  p tidy が有効になっていること。
+h4 Macの場合(Homebrewの場合)
+pre.
+  \n$ brew tap homebrew/dupes
+  $ brew tap josegonzalez/homebrew-php
+  
+  # php54のオプションを確認するコマンド
+  $ brew options php54
+  
+  $ brew install php54 --with-tidy --with-homebrew-curl
+  $ brew install tidy-html5
+  $ brew install php54-tidy
+    
+| To install this version, first `brew unlink php54`
+| が出た場合は
+pre.
+  \nbrew unlink php54
+    
+| したのち
+pre.
+  \n$ brew install php54 --with-tidy --with-homebrew-curl
+    
+| そする。

@@ -1,0 +1,35 @@
+// トグルボタン
+.toggle-button {
+    display: inline-block;
+}
+.toggle-button input[type="checkbox"]{
+  display: none;
+}
+.toggle-button input[type="checkbox"]:checked + label {
+    color: #fff;
+    background: #C3C3C3;
+    background-image: linear-gradient(top, #C3C3C3, #DBDBDB);
+    background-image: -ms-linear-gradient(top, #C3C3C3, #DBDBDB);
+    background-image: -moz-linear-gradient(top, #C3C3C3, #DBDBDB);
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#C3C3C3), to(#DBDBDB));
+    text-shadow: 0px 0px 0px #fff;
+}
+// プロジェクト選択
+// 選択中
+.js-projectList .isCurrent:after {
+    display: inline-block;
+    content: "\2190選択中";
+    margin-left: 0.5em;
+}
+
+.batch-html{
+    .btn{
+        margin-bottom:5px;
+    }
+    .btn-group {
+        margin-top:5px;
+    }
+    .detail-text {
+        display: inline-block;
+    }
+}

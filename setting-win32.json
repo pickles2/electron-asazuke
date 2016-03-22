@@ -1,0 +1,11 @@
+{
+    "git": "c:\\Program Files\\Git\\cmd\\git.exe",
+    "php": "c:\\xampp\\php\\php.exe",
+    "composer": "composer.bat",
+    "asazuke": "c:\\asazuke",
+    "asazuke_repos": "https://github.com/pickles2/asazuke.git",
+    "projects": [
+        "sample.jp"
+    ],
+    "select_project": "sample.jp"
+}

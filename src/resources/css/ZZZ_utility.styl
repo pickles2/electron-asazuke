@@ -1,0 +1,122 @@
+if isOutputUImportant
+  // font-weight
+  {dot_u}bold
+    font-weight: bold !important;
+  {dot_u}normal
+    font-weight: normal !important;
+
+  // text-decoration
+  {dot_u}underline
+    text-decoration: underline !important;
+  {dot_u}decoration-none
+    text-decoration: none !important;
+
+  // text-align
+  {dot_u}center
+    text-align: center !important;
+  {dot_u}left
+    text-align: left !important;
+  {dot_u}right
+    text-align: right !important;
+
+  // vertical-align
+  {dot_u}baseline
+    vertical-align: baseline !important;
+  {dot_u}top
+    vertical-align: top !important;
+  {dot_u}middle
+    vertical-align: middle !important;
+  {dot_u}bottom
+    vertical-align: bottom !important;
+
+  // float
+  {dot_u}fl
+    float: left !important;
+  {dot_u}fr
+    float: right !important;
+  {dot_u}fc
+    float: none !important;
+    clear: both !important;
+
+  // display
+  {dot_u}inline
+    display: inline !important;
+  {dot_u}block
+    display: block !important;
+  {dot_u}inline_block
+    display: inline-block !important;
+    *display: inline !important;
+    *zoom: 1;
+
+
+  // margin-(top|bottom)(em)
+  arySt = "0p5","0p7","1p0","1p5","2p0","2p5","3p0","3p5","4p0","4p5","5p0"
+  aryEm =  0.5 , 0.7 , 1.0 , 1.5 , 2.0 , 2.5 , 3.0 , 3.5 , 4.0 , 4.5 , 5.0
+  for i in (0..(length(arySt) - 1))
+    em=(0em + aryEm[i])
+    {dot_u}mt{arySt[i]}em
+      margin-top: em !important;
+    {dot_u}mb{arySt[i]}em
+      margin-bottom: em !important;
+
+
+  // margin
+  for i in (0..10)
+    px=(0px + i)
+    {dot_u}mt{i}
+      margin-top: px !important;
+    {dot_u}mr{i}
+      margin-right: px !important;
+    {dot_u}mb{i}
+      margin-bottom: px !important;
+    {dot_u}ml{i}
+      margin-left: px !important;
+    {dot_u}m{i}
+      margin: px !important;
+
+  for i in (1..10)
+    st=(10 + (i * 5))
+    px=0px + st
+    {dot_u}mt{st}
+      margin-top: px !important;
+    {dot_u}mr{st}
+      margin-right: px !important;
+    {dot_u}mb{st}
+      margin-bottom: px !important;
+    {dot_u}ml{st}
+      margin-left: px !important;
+    {dot_u}m{st}
+      margin: px !important;
+
+  // padding
+  for i in (0..10)
+    px=(0px + i)
+    {dot_u}pt{i}
+      padding-top: px !important;
+    {dot_u}pr{i}
+      padding-right: px !important;
+    {dot_u}pb{i}
+      padding-bottom: px !important;
+    {dot_u}pl{i}
+      padding-left: px !important;
+    {dot_u}p{i}
+      padding: px !important;
+
+  for i in (1..10)
+    st=(10 + (i * 5))
+    px=0px + st
+    {dot_u}pt{st}
+      padding-top: px !important;
+    {dot_u}pr{st}
+      padding-right: px !important;
+    {dot_u}pb{st}
+      padding-bottom: px !important;
+    {dot_u}pl{st}
+      padding-left: px !important;
+    {dot_u}p{st}
+      padding: px !important;
+
+  for i in (0..20)
+    px=(0px + i)
+    {dot_u}font-size{i}
+      font-size: px !important;

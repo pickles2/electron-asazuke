@@ -1,0 +1,26 @@
+
+<div style="    position: absolute;color: white;z-index: 10;right: 0;    bottom: 0;background-color: #333;opacity: .8;text-align: center;padding: 0 5px;" class="ace-filepath">file-name?</div>
+<div id="editor" style="width:100%;height:100%;"><%- editor_text %></div>
+<script src="./resources/libs/ace-min-noconflict/ace.js"></script>
+<script src="./resources/libs/ace-min-noconflict/ext-language_tools.js"></script>
+<script>
+  var editor;
+  editor = ace.edit("editor");
+  editor.commands.addCommand({
+      name : "savefile",
+      bindKey: {win : "Ctrl-s",mac : "Command-s"},
+      exec: function(editor) {
+          var filePath = $('.ace-filepath').text();
+          var ace_func = require('ace-func');
+          ace_func.saveFile(filePath, editor.getValue());
+      }
+  });
+  editor.$blockScrolling = Infinity;
+  editor.setOptions({
+    enableBasicAutocompletion: true,
+    enableSnippets: true,
+    enableLiveAutocompletion: true
+  });
+  editor.setTheme("ace/theme/monokai");
+  editor.getSession().setMode('ace/mode/<%= language %>');
+</script>

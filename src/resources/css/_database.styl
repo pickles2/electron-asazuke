@@ -1,0 +1,28 @@
+.database{
+    height: 100%;
+    width: 100%;
+    display: table;
+    h3{
+        margin-top: 0;
+    }
+    .database-header{
+        height: 90px;
+    }
+    .database-panel{
+        height: 100%;
+        position: relative;
+    }
+}
+
+.database-panel{
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 4px;
+    background-color: #fff;
+    display: none;
+    &.is-current{
+        display: block;
+    }
+}

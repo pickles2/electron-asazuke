@@ -1,0 +1,143 @@
+
+<div class="database">
+  <div class="database-header">
+    <h3>データベース</h3>
+    <div class="database_action">
+      <div role="group" aria-label="..." class="btn-group btn-block clearfix">
+        <input id="lbl-rdo01" type="radio" name="rdo_database" onclick="" checked="checked" class="btn btn-default"/>
+        <label for="lbl-rdo01" class="btn btn-default">ファイルリスト登録</label>
+        <input id="lbl-rdo02" type="radio" name="rdo_database" onclick="" class="btn btn-default"/>
+        <label for="lbl-rdo02" class="btn btn-default">データ確認</label>
+        <input id="lbl-rdo03" type="radio" name="rdo_database" onclick="" class="btn btn-default"/>
+        <label for="lbl-rdo03" class="btn btn-default">SQL実行</label>
+      </div>
+    </div>
+  </div>
+  <div class="database-panel action_filelist is-current">ファイルリスト登録
+    <p>改行区切りのファイルリストをデータベースに登録します。<br>※重複データがあるとエラーになります。</p>
+    <textarea style="width:100%;height:50%;" placeholder="/&#13;&#10;/institute/&#13;&#10;/institute/economics/&#13;&#10;/institute/economics/ice/&#13;&#10;/institute/economics/ice/Grant.html&#13;&#10;/institute/economics/ice/Shadow.html&#13;&#10;/treaty/&#13;&#10;/treaty/section/&#13;&#10;/treaty/section/divorce/&#13;&#10;" class="js-registDB-data"></textarea>
+    <button class="btn btn-default js-registDB">登録</button>
+  </div>
+  <div class="database-panel">データ確認(SELECT文のみ)
+    <textarea style="width:100%;height:40%;" placeholder="-- 登録データ確認
+SELECT
+   id, fullPath
+FROM
+   t_asazukeSS
+ORDER BY
+  id
+;" class="js-selectSQL-data">-- 登録データ確認
+SELECT
+   id, fullPath
+FROM
+   t_asazukeSS
+ORDER BY
+  id
+;</textarea>
+    <button class="btn btn-default js-selectSQL">実行</button>
+    <div class="js-selectSQL-result"></div>
+  </div>
+  <div class="database-panel">SQL実行
+    <textarea style="width:100%;height:50%;" placeholder="-- 件数確認
+SELECT
+   count(*)
+FROM
+   t_asazukeSS
+;" class="js-execSQL-data">-- 件数確認
+SELECT
+   count(*)
+FROM
+   t_asazukeSS
+;</textarea>
+    <button class="btn btn-default js-execSQL">実行</button>
+  </div>
+</div>
+<script>
+  // パネル切り替え
+  $('input[name="rdo_database"]').on('click', function(e){
+      var menu_idx = $('input[name="rdo_database"]').index(this);
+      $('.database-panel').removeClass('is-current').eq(menu_idx).addClass('is-current');
+  });
+  
+  // ファイルリスト登録
+  $('.js-registDB').on('click', function(e){
+      console.log(this);
+      console.log($('.js-registDB-data').val());
+      var sql = `
+      -- 元データ削除
+      DELETE FROM t_asazukeSS;
+      commit;
+      `;
+      
+      sql += '-- データ更新' + "\n";
+      // INSERT INTO t_asazukeSS (fullPath) VALUES ('/showroom/vehicle_heritage/landcruiser/gallery/world_africa.html');
+      
+      var recoad_data = $('.js-registDB-data').val().split("\n");
+      var path;
+      for(var no in recoad_data){
+          // console.log();
+          path = (recoad_data[no]).trim();
+          if(path != ""){
+              path = path.replace(/\'/, "''");
+              sql += "      INSERT INTO t_asazukeSS (fullPath) VALUES ('"+ path + "');" + "\n";
+          }
+      }
+  
+      sql += `
+      -- 適当な値を埋める
+      UPDATE t_asazukeSS SET	depth = 5, checkCount = 1, status='HTTP/1.1 401 Authorization Required', statusCode=200;
+  
+      -- 忘れずに
+      commit;
+      `;
+      console.log(sql);
+      var appConf = require('app-conf');
+      appConf.readConf(function(jsonConf){
+          fs.writeFile(jsonConf.asazuke + '/desktop.sql', sql, function(err) {
+              console.log(err);
+              console.log("ファイル書き込み");
+              App.execExecFileSQL();
+              console.log("SQL実行");
+          });
+      });
+  });
+  $('.js-selectSQL').on('click', function(e){
+      console.log(this);
+      var sql = $('.js-selectSQL-data').val();
+  
+      console.log(sql);
+      var appConf = require('app-conf');
+      appConf.readConf(function(jsonConf){
+          fs.writeFile(jsonConf.asazuke + '/desktop.sql', sql, function(err) {
+              console.log(err);
+              console.log("ファイル書き込み");
+              App.execExecFileSQL_JSON();
+              console.log("SQL実行");
+          });
+      });
+  });
+  
+  $('.js-execSQL').on('click', function(e){
+      console.log(this);
+      var sql = $('.js-execSQL-data').val();
+  
+      console.log(sql);
+      var appConf = require('app-conf');
+      appConf.readConf(function(jsonConf){
+          fs.writeFile(jsonConf.asazuke + '/desktop.sql', sql, function(err) {
+              console.log(err);
+              console.log("ファイル書き込み");
+              App.execExecFileSQL();
+              console.log("SQL実行");
+          });
+      });
+  });
+</script>
+<style>
+  .database_action input[type="radio"]{
+      display:none;
+  }
+  .database_action input[type="radio"]:checked + label.btn-default{
+      background-image: -webkit-linear-gradient(top, #aaa 0%, #e0e0e0 100%);
+  }
+</style>

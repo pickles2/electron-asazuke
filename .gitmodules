@@ -1,0 +1,21 @@
+[submodule "submodules/smalltalk"]
+	path = submodules/smalltalk
+	url = https://github.com/m-prj/smalltalk.git
+[submodule "submodules/php-killer"]
+	path = submodules/php-killer
+	url = https://github.com/m-prj/php-killer.git
+[submodule "submodules/jquery-file-tree"]
+	path = submodules/jquery-file-tree
+	url = https://github.com/m-prj/jquery-file-tree.git
+[submodule "submodules/asazuke-conf"]
+	path = submodules/asazuke-conf
+	url = https://github.com/pickles2/asazuke-conf.git
+[submodule "submodules/ace-min-noconflict"]
+	path = submodules/ace-min-noconflict
+	url = https://github.com/m-prj/ace-min-noconflict.git
+[submodule "submodules/app-conf"]
+	path = submodules/app-conf
+	url = https://github.com/m-prj/app-conf.git
+[submodule "submodules/ace-func"]
+	path = submodules/ace-func
+	url = https://github.com/m-prj/ace-func.git

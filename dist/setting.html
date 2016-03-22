@@ -1,0 +1,73 @@
+
+<div class="setting">
+  <h3>設定</h3>
+  <fieldset>
+    <legend>環境設定</legend>
+    <div class="field_group">
+      <!--p-->
+      <!--    label.col-sm-12.control-label PHPパス-->
+      <!--    .col-sm-12.uploadButton-->
+      <!--        span(style="width: 15%;display: inline-block; vertical-align: top;") ファイルを選択-->
+      <!--        input(type="file" id="uv1_file" onchange="uv1.style.display='inline-block'; uv1.value = this.value;" required)-->
+      <!--        input(type="text" id="uv1" name='PHP_PATH' class="uploadValue" disabled)-->
+      <p>
+        <label class="col-sm-12 control-label">Asazukeパス</label>
+        <div class="col-sm-12 uploadButton"><span style="width: 15%;display: inline-block; vertical-align: top;">ディレクトリを選択</span>
+          <input type="file" id="uv2_file" onchange="uv2.style.display='inline-block'; uv2.value = this.value;" webkitdirectory="webkitdirectory" directory="directory" required="required"/>
+          <input type="text" id="uv2" name="ASAZUKE_DIR_PATH" disabled="disabled" class="uploadValue"/>
+        </div>
+      </p>
+      <div class="col-sm-12 u-mt10">
+        <input type="button" value="パス確定" onclick="Setting.paths();" class="btn btn-default"/>
+        <input type="button" value="Asazukeインストール" onclick="App.asazuke_install();" class="btn btn-default"/>
+        <input type="button" value="Asazukeアップデート" onclick="App.asazuke_update();" class="btn btn-default js-asazuke-update"/>
+      </div>
+    </div>
+  </fieldset>
+  <fieldset class="u-mt10">
+    <legend>プロジェクト設定</legend>
+    <div class="field_group">
+      <h5>プロジェクトを作成</h5>
+      <p class="new_project">
+        <input type="button" value="新規プロジェクト" onclick="Setting.addProject();" class="btn btn-default"/>
+      </p>
+      <h5>既存のプロジェクトから選択</h5>
+      <div class="form-group">
+        <label class="col-sm-2 control-label">プロジェクトを選択して下さい。</label>
+        <div class="col-sm-10">
+          <select onchange="Setting.selectProject($(this).val());" class="form-control js-projectList project_lists"></select>
+        </div>
+      </div>
+    </div>
+  </fieldset>
+  <fieldset class="setting_target u-mt10">
+    <legend>解析対象サイト</legend>
+    <div class="field_group">
+      <p>
+        <label>サイトURL：
+          <input type="text" name="SITE_URL" size="40" value="" placeholder="http://www.sample.jp"/>
+        </label>
+      </p>
+      <p>
+        <label>ディレクトリ：
+          <input type="text" name="START_PATH" size="40" value="" placeholder="/"/>
+        </label>
+      </p>
+      <p>
+        <label>ユーザ：
+          <input type="text" name="AUTH_USER" size="40" value="" placeholder="auth_user"/>
+        </label>
+      </p>
+      <p>
+        <label>パスワード：
+          <input type="text" name="AUTH_PASS" size="40" value="" placeholder="auth_password"/>
+        </label>
+      </p>
+      <div class="col-sm-12">
+        <input type="button" value="確定" onclick="Setting.target();" class="btn btn-default"/>
+      </div>
+    </div>
+  </fieldset>
+  <!-- p-->
+  <!--     input#setting_modify_all(type='button', value='すべて確定' onclick="Setting.all();")-->
+</div>
