@@ -915,6 +915,13 @@ body {
 }
 #content-header {
   overflow-x: auto;
+  background-image: url("../../resources/images/app-logo.png");
+  background-position: top left;
+  background-repeat: no-repeat;
+  background-size: 50px 50px;
+}
+.nav-tabs.header-menu {
+  margin-left: 52px;
 }
 #content {
   height: 80%;

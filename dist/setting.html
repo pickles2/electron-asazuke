@@ -11,16 +11,16 @@
       <!--        input(type="file" id="uv1_file" onchange="uv1.style.display='inline-block'; uv1.value = this.value;" required)-->
       <!--        input(type="text" id="uv1" name='PHP_PATH' class="uploadValue" disabled)-->
       <p>
-        <label class="col-sm-12 control-label">Asazukeパス</label>
+        <label class="col-sm-12 control-label">コマンドラインツールのインストール先</label>
         <div class="col-sm-12 uploadButton"><span style="width: 15%;display: inline-block; vertical-align: top;">ディレクトリを選択</span>
           <input type="file" id="uv2_file" onchange="uv2.style.display='inline-block'; uv2.value = this.value;" webkitdirectory="webkitdirectory" directory="directory" required="required"/>
           <input type="text" id="uv2" name="ASAZUKE_DIR_PATH" disabled="disabled" class="uploadValue"/>
         </div>
       </p>
       <div class="col-sm-12 u-mt10">
-        <input type="button" value="パス確定" onclick="Setting.paths();" class="btn btn-default"/>
-        <input type="button" value="Asazukeインストール" onclick="App.asazuke_install();" class="btn btn-default"/>
-        <input type="button" value="Asazukeアップデート" onclick="App.asazuke_update();" class="btn btn-default js-asazuke-update"/>
+        <input type="button" value="パス変更" onclick="Setting.paths();" class="btn btn-default"/>
+        <input type="button" value="コマンドラインツールのインストール" onclick="App.asazuke_install();" class="btn btn-default"/>
+        <input type="button" value="コマンドラインツールアップデート" onclick="App.asazuke_update();" class="btn btn-default js-asazuke-update"/>
       </div>
     </div>
   </fieldset>

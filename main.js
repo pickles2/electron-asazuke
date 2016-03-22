@@ -43,7 +43,7 @@ fs.stat(global.SETTING_JSON, function(stat) {
         appConf.readConf(function(jsonConf) {
             appConf.setConfFilePath(global.SETTING_JSON);
             console.log(jsonConf);
-            jsonConf.asazuke = global.homeDir + '/Asazuke';
+            jsonConf.asazuke = global.homeDir + '/marble-scraper-cli';
             fs.writeFile(global.SETTING_JSON, JSON.stringify(jsonConf, null, 　"    "), function(err) {
                 if (err) throw err;
                 // setting.jsonのコピーを作成する

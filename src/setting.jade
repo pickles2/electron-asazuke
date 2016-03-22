@@ -10,15 +10,15 @@
             //        input(type="file" id="uv1_file" onchange="uv1.style.display='inline-block'; uv1.value = this.value;" required)
             //        input(type="text" id="uv1" name='PHP_PATH' class="uploadValue" disabled)
             p
-                label.col-sm-12.control-label Asazukeパス
+                label.col-sm-12.control-label コマンドラインツールのインストール先
                 .col-sm-12.uploadButton
                     span(style="width: 15%;display: inline-block; vertical-align: top;") ディレクトリを選択
                     input(type="file" id="uv2_file" onchange="uv2.style.display='inline-block'; uv2.value = this.value;" webkitdirectory directory required)
                     input(type="text" id="uv2" name='ASAZUKE_DIR_PATH' class="uploadValue" disabled)
             .col-sm-12.u-mt10
-                input.btn.btn-default(type='button', value='パス確定' onclick="Setting.paths();")
-                input.btn.btn-default(type='button', value='Asazukeインストール' onclick="App.asazuke_install();")
-                input.btn.btn-default.js-asazuke-update(type='button', value='Asazukeアップデート' onclick="App.asazuke_update();")
+                input.btn.btn-default(type='button', value='パス変更' onclick="Setting.paths();")
+                input.btn.btn-default(type='button', value='コマンドラインツールのインストール' onclick="App.asazuke_install();")
+                input.btn.btn-default.js-asazuke-update(type='button', value='コマンドラインツールアップデート' onclick="App.asazuke_update();")
     
     fieldset.u-mt10
         legend プロジェクト設定

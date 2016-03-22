@@ -32,7 +32,15 @@ if (!isWin) {
         w = fs.createWriteStream('./setting.json');
     r.pipe(w);
 }
-
+var arch = 'x64';
+if (typeof process.argv[3] === 'undefined') {
+  console.log('arch -> x64');
+} else if (/ia32/.test(process.argv[3])) {
+  console.log('arch -> ia32');
+  arch = 'ia32'; // i686 linux option or Windows 32bit
+} else {
+  console.log('arch -> x64');
+}
 var dir = './';
 var out = './bin';
 var app_name = config.config.appname;
@@ -44,12 +52,9 @@ if (isWin) {
     icon = './app.ico';
 }
 // platform: 'linux',
-var arch = 'ia32'; // i686 linux option
-//var arch = 'x86'; // windows 32bit
-//var arch = 'x64';
 var version = '0.36.1';
-var app_bundle_id = 'jp.pxt.pickles2'; //<- 自分のドメインなどを使用してください
-var helper_bundle_id = 'jp.pxt.pickles2.asazuke'; //<- 自分のドメインなどを使用してください
+var app_bundle_id = 'jp.co.imjp'; //<- 自分のドメインなどを使用してください
+var helper_bundle_id = 'jp.co.imjp.scraper'; //<- 自分のドメインなどを使用してください
 
 var aser_unpack_dir = 'node-php-bin';
 
@@ -106,7 +111,7 @@ packager({
     //ignore: 'node_modules/(' + ignores + '|\.bin)|release(\.sh|\.js)|win32/',
     ignore: 'node_modules/(' + ignores + '|\.bin)|release(\.sh|\.js)|'+ ignore_phpDir,
     'version-string': {
-        CompanyName: 'Pickles2 Project',
+        CompanyName: 'IMJ Corporation.',
         FileDescription: config.description,
         OriginalFilename: app_name,
         FileVersion: config.version,

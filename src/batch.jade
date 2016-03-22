@@ -24,7 +24,7 @@
             input(type="checkbox" name="check[]" value="1" id="lbl-btn03" onclick='$("#lbl-btn03").click(function( event ) {event.stopPropagation();$(this).prop("checked", true);}); App.execSiteValidationCsv();')
             label.btn.btn-default(for="lbl-btn03") サイトマップCSV作成
         .detail-text
-            ダウンロードしたHTMLをもとにPickles2用のサイトマップCSVを作成します。
+            ダウンロードしたHTMLをもとにmarble Site Builder用のサイトマップCSVを作成します。
         .btn-group.btn-block.clearfix(role='group', aria-label='...')
             button.btn.btn-default(onclick='$("#lbl-btn03").prop("checked", false);') ボタンを戻す
             button.btn.btn-default(onclick='App.kill();') 処理を中止する

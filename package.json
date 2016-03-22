@@ -1,12 +1,12 @@
 {
-  "name": "electron-asazuke",
+  "name": "marble-scraper",
   "version": "0.0.1",
   "description": "HTML Scraping Tool.",
   "main": "main.js",
   "config": {
-    "appname": "Asazuke",
-    "company": "Pickles2 Project",
-    "copyright": "&copy; 2016 Pickles2 Project"
+    "appname": "marble Scraper",
+    "company": "IMJ Corporation",
+    "copyright": "(C)IMJ Corporation."
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -16,12 +16,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/pickles2/electron-asazuke.git"
+    "url": "https://i-project.backlog.jp/git/REPROCESS/marbleScraper.git"
   },
   "author": {
     "name": "Misaki Shibata",
-    "email": "misaki.pink@gmail.com",
-    "url": "http://pickles2.pxt.jp/tools/asazuke/"
+    "email": "m-shibata@imjp.co.jp",
+    "url": "https://sites.google.com/a/imjp.co.jp/marble/"
   },
   "license": "MIT",
   "devDependencies": {
