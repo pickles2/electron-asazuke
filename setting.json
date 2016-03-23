@@ -2,7 +2,7 @@
     "git": "c:\\Program Files\\Git\\cmd\\git.exe",
     "php": "c:\\xampp\\php\\php.exe",
     "composer": "composer.bat",
-    "asazuke": "c:\\asazuke",
+    "asazuke": "c:\\marble-scraper-cli",
     "asazuke_repos": "https://github.com/pickles2/asazuke.git",
     "projects": [
         "sample.jp"
