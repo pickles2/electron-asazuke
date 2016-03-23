@@ -569,9 +569,9 @@ global.App = {
 					console.log('gitHashRemote', global.gitHashRemote);
 					console.log('gitHashLocal', global.gitHashLocal);
 					if((global.gitHashRemote).toString() == (global.gitHashLocal).toString()){
-						appendMsg("-> Asazukeのアップデートはありません");
+						appendMsg("-> コマンドラインツールのアップデートはありません");
 					}else{
-						appendMsg("-> Asazukeのアップデートが見つかりました。");
+						appendMsg("-> コマンドラインツールのアップデートが見つかりました。");
 						$('.js-asazuke-update').after($('<span style="border-radius: 50%;background-color: #F00;display: inline-block;width: 1.5em;box-sizing: border-box;text-align: center;color: #ffF;border: 2px solid #FFF;position: relative;top: -0.5em;left: -1em;" class="update_icon">1</span>'));
 					}
 				});
@@ -593,13 +593,13 @@ global.App = {
 					var os = require('os');
 					var platform = os.platform().toLowerCase();
 					var fnCompliteMsg = function(){
-						appendMsg("Asazukeのインストールが完了しました。");
+						appendMsg("コマンドラインツールのインストールが完了しました。");
 					}
 					if(!!(global.platform.match(/darwin|linux/i))){
 						// mac or linux
 						appendMsg(phpBin);
 						appendMsg(composerPhar);
-						exec(phpBin, [composerPhar, 'chmod'], workdir, fnCompliteMsg);
+						exec(phpBin, [composerPhar, 'darwin-chmod'], workdir, fnCompliteMsg);
 					}else{
 						// if platform.match('win') != null
 						fnCompliteMsg()
@@ -619,11 +619,11 @@ global.App = {
 					var os = require('os');
 					var platform = os.platform().toLowerCase();
 					var fnCompliteMsg = function(){
-						appendMsg("Asazukeのアップデートが完了しました。");
+						appendMsg("コマンドラインツールのアップデートが完了しました。");
 					}
 					if(!!(global.platform.match(/darwin|linux/i))){
 						// mac or linux
-						exec(phpBin, [composerPhar, 'chmod'], workdir, fnCompliteMsg);
+						exec(phpBin, [composerPhar, 'darwin-chmod'], workdir, fnCompliteMsg);
 					}else{
 						// if platform.match('win') != null
 						fnCompliteMsg()
