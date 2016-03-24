@@ -39,11 +39,14 @@ fs.stat(unpackedDir, function(stat){
 var iconv = require('iconv-lite');
 var phpKiller = require('php-killer');
 var appConf = require('app-conf');
+var mConsole= require('m-console');
 // ./node-php-bin/bin/darwin/5.6.18/bin/php ./node-php-bin/bin/darwin/composer.phar
-//var console = remote.require('m-console');
+//console.log(__dirname);
+//var mConsole= require(__dirname + '/../../resouces/libs/m-console/m-console.js');
 
 global.userDataDir = app.getPath('userData');
 global.SETTING_JSON = global.userDataDir + '/setting.json';
+//var mConsole= require(global.userDataDir + '/resouces/libs/m-console/m-console.js');
 console.log(global.SETTING_JSON);
 
 var BrowserWindow = remote.require('browser-window');
@@ -84,8 +87,9 @@ var go_bottom = function ($divTextarea){
 }
 // メッセージエリアへの出力
 var appendMsg = function(text){
-	$('#consolePanel .layer-panel.is-current .div-textarea')[0].value += text + "\n";
-	go_bottom($('#consolePanel .layer-panel.is-current .div-textarea'));
+  mConsole.appendMsg(text);
+	//$('#consolePanel .layer-panel.is-current .div-textarea')[0].value += text + "\n";
+	//go_bottom($('#consolePanel .layer-panel.is-current .div-textarea'));
 }
 
 var job = null;
@@ -1111,6 +1115,9 @@ global.Setting = {
 				//});
 				// Asazuke設定読み込み
 				App.execConfJson();
+        
+	//$('#consolePanel .layer-panel.is-current .div-textarea')[0].value += text + "\n";
+mConsole.init('#consolePanel .layer-panel.is-current .div-textarea');
 
 			}
 		};
