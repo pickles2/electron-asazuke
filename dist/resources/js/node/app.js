@@ -40,6 +40,7 @@ var iconv = require('iconv-lite');
 var phpKiller = require('php-killer');
 var appConf = require('app-conf');
 // ./node-php-bin/bin/darwin/5.6.18/bin/php ./node-php-bin/bin/darwin/composer.phar
+//var console = remote.require('m-console');
 
 global.userDataDir = app.getPath('userData');
 global.SETTING_JSON = global.userDataDir + '/setting.json';
@@ -74,17 +75,17 @@ var showMsg = function(options){
 };
 
 // カーソルを最下行に合わせる
-var go_bottom = function ($textarea){
+var go_bottom = function ($divTextarea){
 	console.log('go_bottom');
-	var $obj = $textarea;
+	var $obj = $divTextarea;
 	console.log($obj);
 	if($obj.length == 0) return;
 	$obj.scrollTop($obj[0].scrollHeight);
 }
 // メッセージエリアへの出力
 var appendMsg = function(text){
-	$('#consolePanel .layer-panel.is-current textarea')[0].value += text + "\n";
-	go_bottom($('#consolePanel .layer-panel.is-current textarea'));
+	$('#consolePanel .layer-panel.is-current .div-textarea')[0].value += text + "\n";
+	go_bottom($('#consolePanel .layer-panel.is-current .div-textarea'));
 }
 
 var job = null;
@@ -637,7 +638,7 @@ global.App = {
 // consoleメニュー
 global.Console = {
 	clear: function(){
-		$('#consolePanel .layer-panel.is-current textarea')[0].value = '';
+		$('#consolePanel .layer-panel.is-current .div-textarea')[0].value = '';
 	}
 };
 
