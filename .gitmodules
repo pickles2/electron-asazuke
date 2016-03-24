@@ -19,3 +19,6 @@
 [submodule "submodules/ace-func"]
 	path = submodules/ace-func
 	url = https://github.com/m-prj/ace-func.git
+[submodule "submodules/m-console"]
+	path = submodules/m-console
+	url = https://github.com/m-prj/m-console.git
