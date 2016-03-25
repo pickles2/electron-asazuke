@@ -11,7 +11,8 @@ var zipFolder = require('zip-folder');
 var rimraf = require('rimraf');
 var fs = require('fs');
 
-var isZip = false;
+//var isZip = false;
+var isZip = true;
 
 var isWin = false;
 if (typeof process.argv[2] === 'undefined') {
@@ -44,6 +45,8 @@ if (typeof process.argv[3] === 'undefined') {
 var dir = './';
 var out = './bin';
 var app_name = config.config.appname;
+var app_version = config.version;
+var app_file_name = config.config.appfilename;
 var platform = 'darwin'
 // アプリアイコン
 var icon = './app.icns';
@@ -58,10 +61,13 @@ var helper_bundle_id = 'jp.co.imjp.scraper'; //<- 自分のドメインなどを
 
 var aser_unpack_dir = 'node-php-bin';
 
-var zip = function (relativePath, cb) {
+var zip = function (relativePath, zipFileName, cb) {
+  console.log('relativePath', relativePath);
+  console.log('zipFileName', zipFileName);
     zipFolder(
         __dirname + '/' + relativePath + '/',
-        __dirname + '/' + relativePath + '.zip',
+        //__dirname + '/' + relativePath + '.zip',
+        __dirname + '/' + zipFileName + '.zip',
         function (err) {
             if (err) {
                 console.log('zip ERROR!', err);
@@ -88,6 +94,8 @@ if(isWin){
   ignore_phpDir += 'win32/';
 }
 console.time("build-time");
+var zipFileName = app_file_name + '-' + app_version +'+'+ platform +'-' + arch;
+
 packager({
     "dir": dir,
     "out": out,
@@ -125,7 +133,7 @@ packager({
     }
     console.log('appPath', appPath);
     if (isZip) {
-        zip(appPath, function () {
+        zip(appPath + '/',  'bin/' + zipFileName, function () {
             console.timeEnd("build-time");
             console.log('Done!!');
         });

@@ -5,6 +5,7 @@
   "main": "main.js",
   "config": {
     "appname": "marble Scraper",
+    "appfilename": "marbleScraper",
     "company": "IMJ Corporation",
     "copyright": "(C)IMJ Corporation."
   },
