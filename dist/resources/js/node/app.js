@@ -324,11 +324,20 @@ var exec = function(cmd, args, cwd, cb) {
                 }
             });
         } else if (args[args.length - 1] === 'which-php') {
-            appendMsg(phpBin);
-            if (phpBin === '_data') {
+            appendMsg('phpBin:' + phpBin);
+            appendMsg('_data:' + _data);
+            if (phpBin === _data) {
                 appendMsg("phpパスok");
             } else {
-                Console.appendMsg("conposer.json内のphpパスの修正が必要です。", "info");
+                Console.appendMsg("composer.json内のphpパスの修正が必要です。", "info");
+                Console.appendMsg(global.SETTING_JSON, "info");
+                var appConf = require('app-conf');
+                appConf.setConfFilePath(global.SETTING_JSON);
+                appConf.readConf(function(jsonConf) {
+                Console.appendMsg(jsonConf.asazuke, "info");
+                    var composerPhpUpdate = require('composer-php-update');
+                    composerPhpUpdate.init(jsonConf.asazuke, phpBin);
+                });
             }
         } else {
             appendMsg(_data);
@@ -672,16 +681,15 @@ global.Console = {
     appendMsg: function(msg, msgType) {
         var selector = '#consolePanel .layer-panel.is-current .div-textarea';
         var txt = document.createElement("div");
-       if(msgType != null){
-           txt.setAttribute('class', msgType);
-        } 
+        if (msgType != null) {
+            txt.setAttribute('class', msgType);
+        }
         txt.innerHTML = msg;
         ta = document.querySelector(selector);
         ta.appendChild(txt);
         ta.removeChild(ta.children.item(0));
         Console.scroll_bottom();
-    }
-    ,
+    },
     scroll_bottom: function() {
         var selector = '#consolePanel .layer-panel.is-current .div-textarea';
         ta = document.querySelector(selector);
@@ -1190,10 +1198,10 @@ global.Load = {
         // Asazuke設定読み込み
         mConsole.init('#consolePanel .layer-panel.is-current .div-textarea');
         //mConsole.init();
-        App.execConfJson(function(){
-          //appendMsg("which PHP");
-          App.execWhichPhp();
-          Console.appendMsg("which PHP end.", "info");
+        App.execConfJson(function() {
+            //appendMsg("which PHP");
+            App.execWhichPhp();
+            Console.appendMsg("which PHP end.", "info");
         });
     }
 };

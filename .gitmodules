@@ -22,3 +22,6 @@
 [submodule "submodules/m-console"]
 	path = submodules/m-console
 	url = https://github.com/m-prj/m-console.git
+[submodule "submodules/composer-php-update"]
+	path = submodules/composer-php-update
+	url = https://github.com/m-prj/composer-php-update.git
