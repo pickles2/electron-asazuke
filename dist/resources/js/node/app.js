@@ -156,6 +156,7 @@ var exec = function(cmd, args, cwd, cb){
 		//  //alert(aryData[i]);
 		//  data = aryData[i]
 		////}
+		appendMsg('args[args.length -1]:' + args[args.length -1]);
 
 		//if(args[1] === 'site-scan'){
 		if(args[args.length -1] === 'run:site-scan'){
@@ -325,6 +326,14 @@ var exec = function(cmd, args, cwd, cb){
 				cb();
 			}
 		});
+	} else if(args[args.length -1] === 'which-php'){
+		appendMsg('which-php');
+		appendMsg(phpBin);
+if(phpBin === '_data'){
+		appendMsg("パスが正しいです");
+}else{
+		appendMsg("パスの修正が必要です。");
+}
 	}else{
 		appendMsg(_data);
 		//appendMsg(data);
@@ -558,6 +567,16 @@ global.App = {
 		appConf.setConfFilePath(global.SETTING_JSON);
 		appConf.readConf(function(jsonConf){
 			exec(phpBin, [composerPhar, 'run:file-sql-json'], jsonConf.asazuke);
+		});
+	}, 
+  // phpのインストール先確認
+	execWhichPhp: function(){
+    appendMsg("which php");
+		var appConf = require('app-conf');
+		appConf.setConfFilePath(global.SETTING_JSON);
+		appConf.readConf(function(jsonConf){
+      appendMsg(phpBin);
+			exec(phpBin, [composerPhar, 'which-php'], jsonConf.asazuke);
 		});
 	}, 
 	execAsazukeUpdateCheck: function(){
@@ -1125,6 +1144,9 @@ global.Setting = {
         mConsole.init('#consolePanel .layer-panel.is-current .div-textarea');
         //mConsole.init();
 				App.execConfJson();
+        appendMsg("which PHP");
+				App.execWhichPhp();
+        appendMsg("which PHP end.");
 
 			}
 		};
