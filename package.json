@@ -9,6 +9,8 @@
     "copyright": "&copy; 2016 Pickles2 Project"
   },
   "scripts": {
+    "preinstall": "git submodule update -i -r -f",
+    "start": "electron .;",
     "test": "echo \"Error: no test specified\" && exit 1",
     "up": "source release.sh; submodule_update; electron .;",
     "build": "source release.sh; submodule_update; node release.js; copy_shareDir;",
