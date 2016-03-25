@@ -6,8 +6,7 @@
   line-height: 1.25em;
   height: 20em;
   width: 50em;
-  /*overflow: scroll;*/
-  overflow: hidden;
+  overflow: scroll;
 }
 span {
   font-family: courier;

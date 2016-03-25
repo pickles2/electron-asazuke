@@ -39,14 +39,11 @@ fs.stat(unpackedDir, function(stat){
 var iconv = require('iconv-lite');
 var phpKiller = require('php-killer');
 var appConf = require('app-conf');
-var mConsole= require('m-console');
 // ./node-php-bin/bin/darwin/5.6.18/bin/php ./node-php-bin/bin/darwin/composer.phar
-//console.log(__dirname);
-//var mConsole= require(__dirname + '/../../resouces/libs/m-console/m-console.js');
+var mConsole = require('m-console');
 
 global.userDataDir = app.getPath('userData');
 global.SETTING_JSON = global.userDataDir + '/setting.json';
-//var mConsole= require(global.userDataDir + '/resouces/libs/m-console/m-console.js');
 console.log(global.SETTING_JSON);
 
 var BrowserWindow = remote.require('browser-window');
@@ -642,7 +639,18 @@ global.App = {
 // consoleメニュー
 global.Console = {
 	clear: function(){
-		$('#consolePanel .layer-panel.is-current .div-textarea')[0].value = '';
+    console.log('clear');
+    var max_row = 100;
+		//$('#consolePanel .layer-panel.is-current .div-textarea')[0].value = '';
+    var selector = '#consolePanel .layer-panel.is-current .div-textarea';
+    var txt = document.createElement("div");
+    ta = document.querySelector(selector);
+    var i = max_row;
+    while (i >= 0) {
+        ta.appendChild(document.createElement("div"));
+        ta.removeChild(ta.children.item(0));
+        i--;
+    }
 	}
 };
 
@@ -1114,10 +1122,9 @@ global.Setting = {
 				//	$('title').text($('.header-menu .item.active a').text() + ' | ' + appName);
 				//});
 				// Asazuke設定読み込み
+        mConsole.init('#consolePanel .layer-panel.is-current .div-textarea');
+        //mConsole.init();
 				App.execConfJson();
-        
-	//$('#consolePanel .layer-panel.is-current .div-textarea')[0].value += text + "\n";
-mConsole.init('#consolePanel .layer-panel.is-current .div-textarea');
 
 			}
 		};
