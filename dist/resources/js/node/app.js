@@ -484,6 +484,39 @@ global.SHELL = {
                 App.exec('start', [fullPath], jsonConf.asazuke);
             }
         });
+    },
+    execFile: function (fullPath) {
+      // SQL
+      if(path.extname(fullPath) == '.sql'){
+          // とりあえずWindowsのみ
+          //console.log('type '+  directory_separator_repair(fullPath) + ' | ' + phpLotSystem + '\\sqlite\\sqlite3.exe ' + phpLotSystem + '\\src\\data\\lots.sqlite');
+          var exec  = require('child_process').exec, child;  
+          child = exec('type '+  directory_separator_repair(fullPath) + ' | ' + phpLotSystem + '\\sqlite\\sqlite3.exe ' + phpLotSystem + '\\src\\data\\lots.sqlite',
+            function (error, stdout, stderr) {
+              console.log('stdout: ' + stdout);
+              appendMsg(stdout);
+              console.log('stderr: ' + stderr);
+              if (error !== null) {
+                console.log('exec error: ' + error);
+              }
+          });
+          //$('#consolePanel .layer-panel.is-current textarea')[0].value += '\'' + fullPath + '\'を実行しました。'+"\n";
+          Console.appenMsg(fullPath + ' を実行しました。', 'info');
+      }
+    }
+}
+global.Ace = {
+    save: function() {
+    editor = ace.edit("editor");
+      var filePath = $('.ace-filepath').text();
+      var ace_func = require('ace-func');
+      ace_func.saveFile(filePath, editor.getValue());
+    },
+    exec: function() {
+    editor = ace.edit("editor");
+      var filePath = $('.ace-filepath').text();
+      var ace_func = require('ace-func');
+      ace_func.execFile(filePath, editor.getValue());
     }
 }
 global.App = {
@@ -996,6 +1029,11 @@ global.Load = {
         // copyright
         $('.copyright').html(config.config.copyright);
 
+
+								// 左メニュー非表示
+                $("#content #div_vertical").css({'display':'block'});
+
+								// 
         // layer選択イベント
         switch (n) {
             case 0:
@@ -1166,7 +1204,7 @@ global.Load = {
 
                 break;
             case 5:
-                $('#LeftPanel').width(450);
+                $('#LeftPanel').width(0);
                 $(window).resize();
 
 
@@ -1174,6 +1212,11 @@ global.Load = {
                 var version = config.version;
                 var platform = global.platform;
                 var repos_url = (config.repository.url).replace(/\.git?$/g, '');
+
+								// 左メニュー非表示
+                $("#content #div_vertical").css({'display':'none'});
+                $("#content #RightPanel").css({'width':'100%'});
+
                 $("#div_C .layer-panel").eq(n).load("other.html", function(htmlData, loadStatus) {
                     //    console.log('htmlData', htmlData, config);
                     $('.tmpl_appInfo').append(`
