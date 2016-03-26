@@ -162,7 +162,7 @@ var exec = function(cmd, args, cwd, cb) {
         //  //alert(aryData[i]);
         //  data = aryData[i]
         ////}
-        appendMsg('args[args.length -1]:' + args[args.length - 1]);
+        //appendMsg('args[args.length -1]:' + args[args.length - 1]);
 
         //if(args[1] === 'site-scan'){
         if (args[args.length - 1] === 'run:site-scan') {
@@ -333,11 +333,11 @@ var exec = function(cmd, args, cwd, cb) {
                 }
             });
         } else if (args[args.length - 1] === 'which-php') {
-            appendMsg('phpBin:' + phpBin);
-            appendMsg('_data:' + _data);
-            if (phpBin === _data) {
-                appendMsg("phpパスok");
+            if (phpBin == _data) {
+                appendMsg("php stand ready.");
             } else {
+            appendMsg('phpBin:' + phpBin);
+            appendMsg('usePHP:' + _data);
                 Console.appendMsg("composer.json内のphpパスの修正が必要です。", "info");
                 Console.appendMsg(global.SETTING_JSON, "info");
                 var appConf = require('app-conf');
@@ -345,7 +345,7 @@ var exec = function(cmd, args, cwd, cb) {
                 appConf.readConf(function(jsonConf) {
                     Console.appendMsg(jsonConf.asazuke, "info");
                     var composerPhpUpdate = require('composer-php-update');
-                    composerPhpUpdate.init(jsonConf.asazuke, phpBin);
+                    composerPhpUpdate.init(jsonConf.asazuke + '/composer.json', phpBin);
                 });
             }
         } else {
@@ -1218,7 +1218,6 @@ global.Load = {
         App.execConfJson(function() {
             //appendMsg("which PHP");
             App.execWhichPhp();
-            Console.appendMsg("which PHP end.", "info");
         });
     }
 };
