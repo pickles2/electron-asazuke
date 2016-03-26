@@ -33,6 +33,15 @@ fs.stat(unpackedDir, function(stat) {
         }
     }
 });
+var fs_exists = function(file_path) {
+    fs.stat(file_path, function(stat) {
+        if (stat == null) {
+            return true;
+        } else if (stat.code === 'ENOENT') {
+            return false;
+        }
+    });
+}
 
 // global.APP_CONF = APP_PATH + '/setting.json';
 var iconv = require('iconv-lite');
@@ -334,7 +343,7 @@ var exec = function(cmd, args, cwd, cb) {
                 var appConf = require('app-conf');
                 appConf.setConfFilePath(global.SETTING_JSON);
                 appConf.readConf(function(jsonConf) {
-                Console.appendMsg(jsonConf.asazuke, "info");
+                    Console.appendMsg(jsonConf.asazuke, "info");
                     var composerPhpUpdate = require('composer-php-update');
                     composerPhpUpdate.init(jsonConf.asazuke, phpBin);
                 });
@@ -615,6 +624,10 @@ global.App = {
         var appConf = require('app-conf');
         appConf.setConfFilePath(global.SETTING_JSON);
         appConf.readConf(function(jsonConf) {
+            if (!fs_exists(jsonConf.git)) {
+                Console.appendMsg(jsonConf.git + 'が見つかりません', 'error');
+                Console.appendMsg('setting.jsonのgitパスを修正して下さい。', 'error');
+            }
             var workdir = jsonConf.asazuke;
             exec(jsonConf.git, ['clone', jsonConf.asazuke_repos, workdir], '.', function() {
                 exec(phpBin, [composerPhar, 'update'], workdir, function() {
@@ -641,6 +654,10 @@ global.App = {
         var appConf = require('app-conf');
         appConf.setConfFilePath(global.SETTING_JSON);
         appConf.readConf(function(jsonConf) {
+            if (!fs_exists(jsonConf.git)) {
+                Console.appendMsg(jsonConf.git + 'が見つかりません', 'error');
+                Console.appendMsg('setting.jsonのgitパスを修正して下さい。', 'error');
+            }
             var workdir = jsonConf.asazuke;
             exec(jsonConf.git, ['pull'], workdir, function() {
                 exec(phpBin, [composerPhar, 'update'], workdir, function() {
