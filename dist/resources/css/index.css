@@ -1148,7 +1148,12 @@ body {
   display: block;
 }
 .toggle-button {
+  margin-top: 5px;
   display: inline-block;
+  vertical-align: bottom;
+}
+.toggle-button + .btn-group {
+  width: auto;
 }
 .toggle-button input[type="checkbox"] {
   display: none;
@@ -1174,7 +1179,7 @@ body {
   margin-top: 5px;
 }
 .batch-html .detail-text {
-  display: inline-block;
+  display: block;
 }
 /*!
  * Bootstrap v3.3.6 (http://getbootstrap.com)
