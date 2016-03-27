@@ -33,6 +33,19 @@ fs.stat(unpackedDir, function(stat) {
         }
     }
 });
+var bs2sl = function(str){
+  return str.replace(/\u002F/g, "\u005C"); // / -> \
+}
+var sl2bs = function(str){
+  return str.replace(/\u005C/g, "\u002F"); // \ -> /
+}
+var directory_separator_repair = function(str){
+    if (!!(platform.match(/darwin/i))) {
+      return sl2bs(str);
+    } else if (!!(platform.match(/win32/i))) {
+      return bs2sl(str);
+    }
+}
 var fs_exists = function(file_path) {
     fs.stat(file_path, function(stat) {
         if (stat == null) {
@@ -91,7 +104,12 @@ var go_bottom = function($divTextarea) {
     }
     // メッセージエリアへの出力
 var appendMsg = function(text) {
-    mConsole.appendMsg(text);
+		var ary = (text).toString().split(/\r\n|\r|\n/);
+		for(var i in ary){
+      mConsole.appendMsg(ary[i]);
+}
+    //mConsole.appendMsg(text);
+
     //$('#consolePanel .layer-panel.is-current .div-textarea')[0].value += text + "\n";
     //go_bottom($('#consolePanel .layer-panel.is-current .div-textarea'));
 }
@@ -249,7 +267,7 @@ var exec = function(cmd, args, cwd, cb) {
             $('.js-selectSQL-result').empty();
             if (matches != null) {
                 $('.js-selectSQL-result').append($(`
-						<table class="tbl_result" border="1" style="margin:15px auto 0;"></table>
+						<table class="tbl_result" border="1" style="margin:15px 0 0; width:100%;"></table>
 						`));
                 var resultJson = JSON.parse(matches[1]);
                 console.log(resultJson);
@@ -489,9 +507,16 @@ global.SHELL = {
       // SQL
       if(path.extname(fullPath) == '.sql'){
           // とりあえずWindowsのみ
-          //console.log('type '+  directory_separator_repair(fullPath) + ' | ' + phpLotSystem + '\\sqlite\\sqlite3.exe ' + phpLotSystem + '\\src\\data\\lots.sqlite');
-          var exec  = require('child_process').exec, child;  
-          child = exec('type '+  directory_separator_repair(fullPath) + ' | ' + phpLotSystem + '\\sqlite\\sqlite3.exe ' + phpLotSystem + '\\src\\data\\lots.sqlite',
+          var exec  = require('child_process').exec, child;
+        var appConf = require('app-conf');
+        appConf.setConfFilePath(global.SETTING_JSON);
+        appConf.readConf(function(jsonConf) {
+// win
+     //     child = exec('type '+  directory_separator_repair(fullPath) + ' | ' + phpLotSystem + '\\sqlite\\sqlite3.exe ' + phpLotSystem + '\\src\\data\\lots.sqlite',
+// mac
+          child = exec('cat '+  directory_separator_repair(fullPath) + ' | ' + 'sqlite3 ' + jsonConf.asazuke + '/src/data/' + global.confJson.projectName + '/asazuke.sqlite',
+
+                        //jqueryFileTree.init('.fileTree4', jsonConf.asazuke + '/src/data/' + global.confJson.projectName + '/');
             function (error, stdout, stderr) {
               console.log('stdout: ' + stdout);
               appendMsg(stdout);
@@ -501,7 +526,8 @@ global.SHELL = {
               }
           });
           //$('#consolePanel .layer-panel.is-current textarea')[0].value += '\'' + fullPath + '\'を実行しました。'+"\n";
-          Console.appenMsg(fullPath + ' を実行しました。', 'info');
+          Console.appendMsg(fullPath + ' を実行しました。', 'info');
+});
       }
     }
 }
@@ -517,6 +543,9 @@ global.Ace = {
       var filePath = $('.ace-filepath').text();
       var ace_func = require('ace-func');
       ace_func.execFile(filePath, editor.getValue());
+    },
+    remove: function() {
+			$('.header-menu .item.active a').click();
     }
 }
 global.App = {
@@ -1032,6 +1061,7 @@ global.Load = {
 
 								// 左メニュー非表示
                 $("#content #div_vertical").css({'display':'block'});
+                $("#content").removeClass('is-Single');
 
 								// 
         // layer選択イベント
@@ -1173,7 +1203,7 @@ global.Load = {
 
                 break;
             case 4:
-                $('#LeftPanel').width(170);
+                $('#LeftPanel').width(250);
                 $(window).resize();
 
 
@@ -1185,20 +1215,26 @@ global.Load = {
                         $('.fileTree4').empty();
                         //console.log('.fileTree4',jsonConf.asazuke + '/src/data/' + jsonConf.select_project+ '/');
                         //jqueryFileTree.init('.fileTree4',jsonConf.asazuke + '/src/data/' + jsonConf.select_project+ '/');
-                        console.log('.fileTree4', jsonConf.asazuke + '/src/data/' + global.confJson.projectName + '/');
-                        jqueryFileTree.init('.fileTree4', jsonConf.asazuke + '/src/data/' + global.confJson.projectName + '/');
+                        //console.log('.fileTree4', jsonConf.asazuke + '/src/data/' + global.confJson.projectName + '/');
+                        //jqueryFileTree.init('.fileTree4', jsonConf.asazuke + '/src/data/' + global.confJson.projectName + '/');
+                        console.log('.fileTree4', jsonConf.asazuke + '/src/data/sql/');
+                        jqueryFileTree.init('.fileTree4', jsonConf.asazuke + '/src/data/sql/');
+
 
 
                         $('.jqueryFileTree a').addClass('mask')
-                        $('.file > a[rel*="asazuke.sqlite"]').css({
-                            'display': 'block',
-                            'color': '#BFBFBF'
-                        });
-                        $('.file > a[rel$="asazuke.sqlite"]').css({
+                        //$('.file > a[rel*="asazuke.sqlite"]').css({
+                        //    'display': 'block',
+                        //    'color': '#BFBFBF'
+                        //});
+                        //$('.file > a[rel$="asazuke.sqlite"]').css({
+                        //    'display': 'block',
+                        //    'color': '#333'
+                        //});
+                        $('.file > a[rel$=".sql"]').css({
                             'display': 'block',
                             'color': '#333'
                         });
-
                     });
                 });
 
@@ -1214,13 +1250,14 @@ global.Load = {
                 var repos_url = (config.repository.url).replace(/\.git?$/g, '');
 
 								// 左メニュー非表示
+                $("#content").addClass('is-Single');
                 $("#content #div_vertical").css({'display':'none'});
                 $("#content #RightPanel").css({'width':'100%'});
 
                 $("#div_C .layer-panel").eq(n).load("other.html", function(htmlData, loadStatus) {
                     //    console.log('htmlData', htmlData, config);
                     $('.tmpl_appInfo').append(`
-									<table border="1" style="margin: 0 auto;">
+									<table border="1" style="margin: 15px 0 0; width:100%;">
 									<tr>
 									<th>アプリケーションバージョン</th>
 									<td>${version}</td>
