@@ -182,6 +182,17 @@ var exec = function(cmd, args, cwd, cb) {
         ////}
         //appendMsg('args[args.length -1]:' + args[args.length - 1]);
 
+        // 完了メッセージ
+        var matches = data.match(/Finished\!\!(.*)/gi);
+        if (matches != null) {
+            if (matches.length >= 2) {
+                Console.appendMsg(matches.join("\n"), "success");
+            } else {
+                Console.appendMsg(matches[0], "success");
+            }
+            return true;
+        }
+
         //if(args[1] === 'site-scan'){
         if (args[args.length - 1] === 'run:site-scan') {
             // コンソールパネル
@@ -334,8 +345,9 @@ var exec = function(cmd, args, cwd, cb) {
                     path = matches[1].replace(/\//g, '\\\\').replace(/\\/g, '\\\\');
                 }
                 SHELL.openItem(path);
-
                 Load.sitemapCSV();
+                
+                Console.appendMsg("Finished!! (サイトマップCSV作成)", "success"); 
             }
             //} else if(args[0] === 'run:conf-json'){
         } else if (args[args.length - 1] === 'run:conf-json') {
