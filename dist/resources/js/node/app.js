@@ -1280,7 +1280,6 @@ global.Load = {
                 var platform = global.platform;
                 var repos_url = (config.repository.url).replace(/\.git?$/g, '');
 
-
                 $("#div_C .layer-panel").eq(n).load("other.html", function(htmlData, loadStatus) {
                     //    console.log('htmlData', htmlData, config);
                     $('.tmpl_appInfo').append(`

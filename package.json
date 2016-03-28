@@ -93,6 +93,7 @@
     "ace-min-noconflict": "file:submodules/ace-min-noconflict",
     "app-conf": "file:submodules/app-conf",
     "asazuke-conf": "file:submodules/asazuke-conf",
+    "m-console": "file:submodules/m-console",
     "async": "^1.5.2",
     "cheerio": "^0.19.0",
     "csv": "^0.4.6",
