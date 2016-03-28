@@ -503,6 +503,8 @@ global.SHELL = {
         //         App.exec('explorer', [fullPath], jsonConf.asazuke);
         //     });
         // }
+        var appConf = require('app-conf');
+        appConf.setConfFilePath(global.SETTING_JSON);
         appConf.readConf(function(jsonConf) {
             if (!!(global.platform.match(/darwin/i))) {
                 App.exec('open', [fullPath], jsonConf.asazuke);
@@ -512,6 +514,23 @@ global.SHELL = {
             } else {
                 // windows
                 App.exec('start', [fullPath], jsonConf.asazuke);
+            }
+        });
+    },
+    openSqlDir: function () {
+        var appConf = require('app-conf');
+        appConf.setConfFilePath(global.SETTING_JSON);
+        appConf.readConf(function(jsonConf) {
+            var sqlDir = directory_separator_repair(jsonConf.asazuke + '/src/data/sql/');
+            console.log('sqlDir', sqlDir);
+            if (!!(global.platform.match(/darwin/i))) {
+                App.exec('open', [sqlDir], jsonConf.asazuke);
+            } else if (!!(global.platform.match(/linux/i))) {
+                // linux
+                App.exec('xdg-open', [sqlDir], jsonConf.asazuke);
+            } else {
+                // windows
+                App.exec('start', [sqlDir], jsonConf.asazuke);
             }
         });
     },

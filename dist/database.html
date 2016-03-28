@@ -8,8 +8,10 @@
         <label for="lbl-rdo01" class="btn btn-default">ファイルリスト登録</label>
         <input id="lbl-rdo02" type="radio" name="rdo_database" onclick="" class="btn btn-default"/>
         <label for="lbl-rdo02" class="btn btn-default">データ確認</label>
-        <input id="lbl-rdo03" type="radio" name="rdo_database" onclick="" class="btn btn-default"/>
-        <label for="lbl-rdo03" class="btn btn-default">SQL実行</label>
+        <!--input.btn.btn-default#lbl-rdo03(type="radio" name="rdo_database" onclick='')-->
+        <!--label.btn.btn-default(for="lbl-rdo03") SQL実行-->
+        <input id="lbl-rdo04" type="radio" name="rdo_database" onclick="SHELL.openSqlDir();" class="btn btn-default"/>
+        <label for="lbl-rdo04" class="btn btn-default">SQLフォルダを開く</label>
       </div>
     </div>
   </div>
@@ -37,19 +39,9 @@ ORDER BY
     <button class="btn btn-default js-selectSQL">実行</button>
     <div class="js-selectSQL-result"></div>
   </div>
-  <div class="database-panel">SQL実行
-    <textarea style="width:100%;height:50%;" placeholder="-- 件数確認
-SELECT
-   count(*)
-FROM
-   t_asazukeSS
-;" class="js-execSQL-data">-- 件数確認
-SELECT
-   count(*)
-FROM
-   t_asazukeSS
-;</textarea>
-    <button class="btn btn-default js-execSQL">実行</button>
+  <div class="database-panel"><!--SQL実行-->
+    <!--textarea.js-execSQL-data(style="width:100%;height:50%;" placeholder=sampleSQL0)=sampleSQL0-->
+    <!--button.btn.btn-default.js-execSQL 実行-->
   </div>
 </div>
 <script>

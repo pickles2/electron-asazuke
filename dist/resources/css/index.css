@@ -1126,7 +1126,8 @@ body {
   display: table;
 }
 .database h3 {
-  margin-top: 0;
+  margin-top: 20px;
+  margin-bottom: 10px;
 }
 .database .database-header {
   height: 90px;
@@ -8424,6 +8425,12 @@ fieldset[disabled] .btn-danger.active {
   width: 50em;
  overflow-y: scroll;
  overflow-x: hidden;
+}
+.consolePanelMenu .btn-group-sm.console-btn-group{
+  margin: 10px 2px 0 10px;
+}
+.console-btn-group a{
+  color:#999;
 }
 .m-console.div-textarea div{ white-space: pre-wrap; }
 .m-console.div-textarea .error{ color: #f20;}

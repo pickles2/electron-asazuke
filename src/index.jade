@@ -68,9 +68,9 @@ body
                 #div_right.handler_horizontal
         #content-footer
             .consolePanelMenu
-                .btn-group-sm(role='group', aria-label='...')
-                    a.btn.btn-default.u-mr10(onclick="Console.clear();") バッファクリア
-                    a.btn.btn-default.u-mr10(onclick="App.toggleDevTools();") Developer Tools
+                .btn-group-sm.console-btn-group(role='group', aria-label='...')
+                    a.u-mr10(onclick="Console.clear();") バッファクリア
+                    a.u-mr10(onclick="App.toggleDevTools();") Developer Tools
             #consolePanel
                 .layer-wrap
                     .layer-panel

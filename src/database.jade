@@ -7,8 +7,10 @@
                 label.btn.btn-default(for="lbl-rdo01") ファイルリスト登録
                 input.btn.btn-default#lbl-rdo02(type="radio" name="rdo_database" onclick='') 
                 label.btn.btn-default(for="lbl-rdo02") データ確認
-                input.btn.btn-default#lbl-rdo03(type="radio" name="rdo_database" onclick='')
-                label.btn.btn-default(for="lbl-rdo03") SQL実行
+                //input.btn.btn-default#lbl-rdo03(type="radio" name="rdo_database" onclick='')
+                //label.btn.btn-default(for="lbl-rdo03") SQL実行
+                input.btn.btn-default#lbl-rdo04(type="radio" name="rdo_database" onclick='SHELL.openSqlDir();')
+                label.btn.btn-default(for="lbl-rdo04") SQLフォルダを開く
     .database-panel.action_filelist.is-current ファイルリスト登録
         p 改行区切りのファイルリストをデータベースに登録します。<br>※重複データがあるとエラーになります。
         textarea.js-registDB-data(style="width:100%;height:50%;" placeholder!="/&#13;&#10;/institute/&#13;&#10;/institute/economics/&#13;&#10;/institute/economics/ice/&#13;&#10;/institute/economics/ice/Grant.html&#13;&#10;/institute/economics/ice/Shadow.html&#13;&#10;/treaty/&#13;&#10;/treaty/section/&#13;&#10;/treaty/section/divorce/&#13;&#10;")
@@ -20,9 +22,9 @@
         textarea.js-selectSQL-data(style="width:100%;height:40%;" placeholder=sampleSQL1)=sampleSQL1
         button.btn.btn-default.js-selectSQL 実行
         .js-selectSQL-result
-    .database-panel SQL実行
-        textarea.js-execSQL-data(style="width:100%;height:50%;" placeholder=sampleSQL0)=sampleSQL0
-        button.btn.btn-default.js-execSQL 実行
+    .database-panel <!--SQL実行-->
+        //textarea.js-execSQL-data(style="width:100%;height:50%;" placeholder=sampleSQL0)=sampleSQL0
+        //button.btn.btn-default.js-execSQL 実行
 script.
     // パネル切り替え
     $('input[name="rdo_database"]').on('click', function(e){
