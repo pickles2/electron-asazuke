@@ -21,7 +21,7 @@
             button.btn.btn-default(onclick='$(".header-menu .item").eq(2).find("a").click();') ダウンロードしたデータを確認する
     .action
         .detail-text
-            ダウンロードしたHTMLをもとにmarble Site Builder用のサイトマップCSVを作成します。
+            ダウンロードしたHTMLをもとにPickles2用のサイトマップCSVを作成します。
         .toggle-button
             input(type="checkbox" name="check[]" value="1" id="lbl-btn03" onclick='$("#lbl-btn03").click(function( event ) {event.stopPropagation();$(this).prop("checked", true);}); App.execSiteValidationCsv();')
             label.btn.btn-primary(for="lbl-btn03") サイトマップCSV作成

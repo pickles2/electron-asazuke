@@ -1271,7 +1271,7 @@ global.Load = {
 
                 break;
             case 5:
-                $('#LeftPanel').width(0);
+                $('#LeftPanel').width(250);
                 $(window).resize();
 
 
@@ -1280,10 +1280,6 @@ global.Load = {
                 var platform = global.platform;
                 var repos_url = (config.repository.url).replace(/\.git?$/g, '');
 
-								// 左メニュー非表示
-                $("#content").addClass('is-Single');
-                $("#content #div_vertical").css({'display':'none'});
-                $("#content #RightPanel").css({'width':'100%'});
 
                 $("#div_C .layer-panel").eq(n).load("other.html", function(htmlData, loadStatus) {
                     //    console.log('htmlData', htmlData, config);
