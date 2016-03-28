@@ -6,11 +6,12 @@
   "config": {
     "appname": "Asazuke",
     "company": "Pickles2 Project",
+    "appfilename": "Asazuke",
     "copyright": "&copy; 2016 Pickles2 Project"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "up": "source release.sh; submodule_update; electron .;",
+    "start": "source release.sh; submodule_update; electron .;",
     "build": "source release.sh; submodule_update; node release.js; copy_shareDir;",
     "submodule_update": "git submodule foreach git pull origin master"
   },
@@ -84,6 +85,8 @@
     "zip-folder": "^1.0.0"
   },
   "dependencies": {
+    "m-console": "file:submodules/m-console",
+    "composer-php-update": "file:submodules/composer-php-update",
     "ace-func": "file:submodules/ace-func",
     "ace-min-noconflict": "file:submodules/ace-min-noconflict",
     "app-conf": "file:submodules/app-conf",

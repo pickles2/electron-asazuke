@@ -22,6 +22,10 @@ var floatFormat = function( number, n ) {
 }
 
 var resize = function (){
+    if($content.hasClass('is-Single')){
+      console.log('not resize');
+      return true;
+    }
     winHeight = (window.innerHeight || (window.document.documentElement.clientHeight || window.document.body.clientHeight));
 
     var ratio =  floatFormat($content.height() / winHeight, 2);

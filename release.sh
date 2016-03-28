@@ -1,9 +1,8 @@
 # submodule更新
 function submodule_update() {
-  \rm -rfv node_modules/ace-func;
-  \rm -rfv node_modules/app-conf;
-  \rm -rfv node_modules/jquery-file-tree;
-  \rm -rfv node_modules/smalltalk;
+  for dirname in `ls submodules`; do
+    \rm -rfv node_modules/${dirname};
+  done
   npm i;
 }
 function copy_shareDir() {

@@ -958,7 +958,8 @@ body {
   width: 100%;
   height: 100%;
 }
-#consolePanel textarea {
+#consolePanel textarea,
+#consolePanel .div-textarea {
   width: 100%;
   height: 100%;
 /* 等幅フォント */
@@ -1118,7 +1119,8 @@ body {
   display: table;
 }
 .database h3 {
-  margin-top: 0;
+  margin-top: 20px;
+  margin-bottom: 10px;
 }
 .database .database-header {
   height: 90px;
@@ -1140,7 +1142,12 @@ body {
   display: block;
 }
 .toggle-button {
+  margin-top: 5px;
   display: inline-block;
+  vertical-align: bottom;
+}
+.toggle-button + .btn-group {
+  width: auto;
 }
 .toggle-button input[type="checkbox"] {
   display: none;
@@ -1166,7 +1173,7 @@ body {
   margin-top: 5px;
 }
 .batch-html .detail-text {
-  display: inline-block;
+  display: block;
 }
 /*!
  * Bootstrap v3.3.6 (http://getbootstrap.com)
@@ -8400,4 +8407,27 @@ fieldset[disabled] .btn-danger.active {
   border-color: #dcdcdc;
   box-shadow: inset 0 1px 3px rgba(0, 0, 0, .05), 0 1px 0 rgba(255, 255, 255, .1);
 }
+
+.m-console.div-textarea{
+  background-color:#333;
+  color: #fff;
+  font-family: courier;
+  font-size: 14px;
+  line-height: 1.25em;
+  height: 20em;
+  width: 50em;
+ overflow-y: scroll;
+ overflow-x: hidden;
+}
+.consolePanelMenu .btn-group-sm.console-btn-group{
+  margin: 10px 2px 0 10px;
+}
+.console-btn-group a{
+  color:#999;
+}
+.m-console.div-textarea div{ white-space: pre-wrap; }
+.m-console.div-textarea .error{ color: #f20;}
+.m-console.div-textarea .warn { color: #fe0;}
+.m-console.div-textarea .info { color: #0ef;}
+.m-console.div-textarea .success { color: #0e0;}
 
