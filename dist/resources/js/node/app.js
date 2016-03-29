@@ -376,12 +376,16 @@ var exec = function(cmd, args, cwd, cb) {
             appendMsg('phpBin:' + phpBin);
             appendMsg('usePHP:' + _data);
                 Console.appendMsg("composer.json内のphpパスの修正が必要です。", "info");
-                Console.appendMsg(global.SETTING_JSON, "info");
                 var appConf = require('app-conf');
                 appConf.setConfFilePath(global.SETTING_JSON);
                 appConf.readConf(function(jsonConf) {
                     Console.appendMsg(jsonConf.asazuke, "info");
                     var composerPhpUpdate = require('composer-php-update');
+                    var path = require('path');
+		    // オプションを足すとphpが動かない..
+		    //phpBin += ' -d extension_dir=' + directory_separator_repair(path.dirname(phpBin)) + '\\ext\\';
+		    //phpBin += ' -d date.timezone="Asia/Tokyo"';
+                    Console.appendMsg(phpBin, "info");
                     composerPhpUpdate.init(jsonConf.asazuke + '/composer.json', phpBin);
                 });
             }
