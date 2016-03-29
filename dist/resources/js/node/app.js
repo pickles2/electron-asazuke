@@ -106,7 +106,14 @@ var go_bottom = function($divTextarea) {
 var appendMsg = function(text) {
 		var ary = (text).toString().split(/\r\n|\r|\n/);
 		for(var i in ary){
-      mConsole.appendMsg(ary[i]);
+	// 制御コード削除
+	data = ary[i];
+        if (!!(global.platform.match(/darwin|linux/i))) {
+        } else {
+            data = data.replace(/\[\d{2};\d{2}m/g, '').replace(/\[\d{2}m/g, '');
+            //data = data.replace(/\[/g, '');
+	}
+      mConsole.appendMsg(data);
 }
     //mConsole.appendMsg(text);
 
@@ -181,7 +188,7 @@ var exec = function(cmd, args, cwd, cb) {
         //  data = aryData[i]
         ////}
         //appendMsg('args[args.length -1]:' + args[args.length - 1]);
-
+	
         // 完了メッセージ
         var matches = data.match(/Finished\!\!(.*)/gi);
         if (matches != null) {
