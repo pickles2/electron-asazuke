@@ -128,8 +128,9 @@ var kill = function() {
     }
     appendMsg("KILLシグナル" + global.job.pid);
 
-
-    if (!!(global.platform.match(/darwin|linux/i))) {} else {
+    if (!!(global.platform.match(/darwin|linux/i))) {
+        // mac/linux 
+    } else {
         phpKiller.killProcess();
     }
 
@@ -140,6 +141,7 @@ var kill = function() {
     // 引数なし=SIGTERM
     global.job.kill();
     global.job = null;
+    $("#lbl-btn01, #lbl-btn02, #lbl-btn03, #lbl-btn04").prop("checked", false);
 };
 
 var confJson;
@@ -166,7 +168,12 @@ var exec = function(cmd, args, cwd, cb) {
     var path;
     if (!!(global.platform.match(/darwin|linux/i))) {} else {
         // php プロセス登録
-        phpKiller.getProcess();
+	// $('.js-cancel').prop('disabled',true); // <- batchの時だけ必要なので
+	setTimeout(function(){
+		Console.appendMsg('php　プロセス取得', 'warning');
+        	phpKiller.getProcess();
+		$('.js-cancel').prop('disabled',false);
+	}, 3000);
     }
 
     appendMsg("START PID:" + global.job.pid);
@@ -529,7 +536,7 @@ global.SHELL = {
                 App.exec('xdg-open', [fullPath], jsonConf.asazuke);
             } else {
                 // windows
-                App.exec('start', [fullPath], jsonConf.asazuke);
+                App.exec('cmd', ['/c', 'start', fullPath], jsonConf.asazuke);
             }
         });
     },
@@ -619,6 +626,11 @@ global.App = {
         exec(cmd, args, cwd);
     },
     execSiteScan: function() {
+        if (!!(global.platform.match(/darwin|linux/i))) {
+		// mac | linux
+	}else{
+		$('.js-cancel').prop('disabled',true);
+	}
 
         // ページ初期化
         $('#div_C .layer-panel.is-current').html('<div class="asazuke-sitescan">' +
@@ -645,8 +657,11 @@ global.App = {
         });
     },
     execSiteValidationEx: function() {
-
-
+        if (!!(global.platform.match(/darwin|linux/i))) {
+		// mac | linux
+	}else{
+		$('.js-cancel').prop('disabled',true);
+	}
 
         var appConf = require('app-conf');
         appConf.setConfFilePath(global.SETTING_JSON);
@@ -656,8 +671,11 @@ global.App = {
         });
     },
     execSiteValidationCsv: function() {
-
-
+        if (!!(global.platform.match(/darwin|linux/i))) {
+		// mac | linux
+	}else{
+		$('.js-cancel').prop('disabled',true);
+	}
 
         var appConf = require('app-conf');
         appConf.setConfFilePath(global.SETTING_JSON);
@@ -667,6 +685,11 @@ global.App = {
 
     },
     execSiteValidationJson: function() {
+        if (!!(global.platform.match(/darwin|linux/i))) {
+		// mac | linux
+	}else{
+		$('.js-cancel').prop('disabled',true);
+	}
 
         var appConf = require('app-conf');
         appConf.setConfFilePath(global.SETTING_JSON);
@@ -675,6 +698,11 @@ global.App = {
         });
     },
     execHtmlScraping: function() {
+        if (!!(global.platform.match(/darwin|linux/i))) {
+		// mac | linux
+	}else{
+		$('.js-cancel').prop('disabled',true);
+	}
 
         var appConf = require('app-conf');
         appConf.setConfFilePath(global.SETTING_JSON);
