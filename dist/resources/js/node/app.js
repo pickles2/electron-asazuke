@@ -1070,7 +1070,26 @@ global.Setting = {
         var newStartPath = $('input[name="START_PATH"]').val();
         var newAuthUser = $('input[name="AUTH_USER"]').val();
         var newAuthPass = $('input[name="AUTH_PASS"]').val();
-        AsazukeConf.updateConf(newUrl, newStartPath, newAuthUser, newAuthPass);
+        AsazukeConf.updateConf(newUrl, newStartPath, newAuthUser, newAuthPass, function(){
+		// windowsの場合は設定ファイルを元のファイルにコピーする
+        	if (!!(global.platform.match(/darwin|linux/i))) {
+		   // 実態を持たないので不要
+        	} else {
+		        console.log('設定を元ファイルに書き込みます');
+        		var appConf = require('app-conf');
+        		appConf.setConfFilePath(global.SETTING_JSON);
+        		appConf.readConf(function(jsonConf) {
+				var refConfPath = directory_separator_repair(jsonConf.asazuke + '\\src\\' + 'AsazukeConf-%s.php'.replace('%s', global.confJson.projectName));
+        			if(fs_exists(refConfPath)){
+				  	var contents = fs.readFileSync(jsonConf.asazuke + '\\src\\' + 'AsazukeConf.php');
+				  	fs.writeFileSync(refConfPath , contents );
+				}else{
+					// 設定ファイルが見つからない
+				}
+			});
+		}
+	});
+	
 
         showMsg({
             message: '設定を更新しました。'
