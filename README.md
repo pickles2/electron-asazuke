@@ -36,9 +36,26 @@ CSVの設定をサイトに合う形で修正して下さい。CSSセレクタ�
  
 - ビルド
 ```
-$ node release.js
+$ node release.js [(win|mac),(ia32|x86)]
 ```
 
 ### windows版とosx版の違い
 - AsazukeConf.phpがシムリンク/実態ファイル
 - setting.json内パス記述（パスセパレータの違いなど）
+
+- 設定ファイルが展開されるディレクトリ(setting.json)  　
+
+|setting.jsonの保存先||
+|:--|:--|
+|windows|%userprofile%\AppData\Roaming\electron-asazuke\setting.json|  
+|osx|~"/Library/Application Support/electron-asazuke/setting.json"|  
+
+
+### npmコマンド
+
+|コマンド|説明|
+|:--|:--|
+|npm i(install)|npm モジュールインストール|
+|npm start| electron実行|
+|npm run up| electron実行(サブモジュールの再インストール)|
+|npm run submodule_update | サブモジュール更新 |

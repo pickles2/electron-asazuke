@@ -11,7 +11,7 @@
   },
   "scripts": {
     "preinstall": "git submodule update -i -r -f",
-    "start": "electron .;",
+    "start": "electron .",
     "up": "source release.sh; submodule_update; electron .;",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "source release.sh; submodule_update; node release.js; copy_shareDir;",

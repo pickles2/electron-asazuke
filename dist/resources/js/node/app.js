@@ -106,7 +106,14 @@ var go_bottom = function($divTextarea) {
 var appendMsg = function(text) {
 		var ary = (text).toString().split(/\r\n|\r|\n/);
 		for(var i in ary){
-      mConsole.appendMsg(ary[i]);
+	// 制御コード削除
+	data = ary[i];
+        if (!!(global.platform.match(/darwin|linux/i))) {
+        } else {
+            data = data.replace(/\[\d{2};\d{2}m/g, '').replace(/\[\d{2}m/g, '');
+            //data = data.replace(/\[/g, '');
+	}
+      mConsole.appendMsg(data);
 }
     //mConsole.appendMsg(text);
 
@@ -181,7 +188,7 @@ var exec = function(cmd, args, cwd, cb) {
         //  data = aryData[i]
         ////}
         //appendMsg('args[args.length -1]:' + args[args.length - 1]);
-
+	
         // 完了メッセージ
         var matches = data.match(/Finished\!\!(.*)/gi);
         if (matches != null) {
@@ -347,7 +354,7 @@ var exec = function(cmd, args, cwd, cb) {
                 SHELL.openItem(path);
                 Load.sitemapCSV();
                 
-                Console.appendMsg("Finished!! (サイトマップCSV作成)", "success"); 
+                Console.appendMsg("Finished!! (sitemap-csv)", "success"); 
             }
             //} else if(args[0] === 'run:conf-json'){
         } else if (args[args.length - 1] === 'run:conf-json') {
@@ -369,12 +376,16 @@ var exec = function(cmd, args, cwd, cb) {
             appendMsg('phpBin:' + phpBin);
             appendMsg('usePHP:' + _data);
                 Console.appendMsg("composer.json内のphpパスの修正が必要です。", "info");
-                Console.appendMsg(global.SETTING_JSON, "info");
                 var appConf = require('app-conf');
                 appConf.setConfFilePath(global.SETTING_JSON);
                 appConf.readConf(function(jsonConf) {
                     Console.appendMsg(jsonConf.asazuke, "info");
                     var composerPhpUpdate = require('composer-php-update');
+                    var path = require('path');
+		    // オプションを足すとphpが動かない..
+		    //phpBin += ' -d extension_dir=' + directory_separator_repair(path.dirname(phpBin)) + '\\ext\\';
+		    //phpBin += ' -d date.timezone="Asia/Tokyo"';
+                    Console.appendMsg(phpBin, "info");
                     composerPhpUpdate.init(jsonConf.asazuke + '/composer.json', phpBin);
                 });
             }
@@ -542,12 +553,10 @@ global.SHELL = {
         var appConf = require('app-conf');
         appConf.setConfFilePath(global.SETTING_JSON);
         appConf.readConf(function(jsonConf) {
-// win
-     //     child = exec('type '+  directory_separator_repair(fullPath) + ' | ' + phpLotSystem + '\\sqlite\\sqlite3.exe ' + phpLotSystem + '\\src\\data\\lots.sqlite',
-// mac
-          child = exec('cat '+  directory_separator_repair(fullPath) + ' | ' + 'sqlite3 ' + jsonConf.asazuke + '/src/data/' + global.confJson.projectName + '/asazuke.sqlite',
-
-                        //jqueryFileTree.init('.fileTree4', jsonConf.asazuke + '/src/data/' + global.confJson.projectName + '/');
+            if (!!(platform.match(/darwin/i))) {
+                // mac
+                child = exec('cat  '+  directory_separator_repair(fullPath) + ' | ' + 'sqlite3                                       ' + jsonConf.asazuke + '/src/data/' + global.confJson.projectName + '/asazuke.sqlite',
+            //jqueryFileTree.init('.fileTree4', jsonConf.asazuke + '/src/data/' + global.confJson.projectName + '/');
             function (error, stdout, stderr) {
               console.log('stdout: ' + stdout);
               appendMsg(stdout);
@@ -556,6 +565,21 @@ global.SHELL = {
                 console.log('exec error: ' + error);
               }
           });
+            }else{
+                // win 
+                child = exec('type '+  directory_separator_repair(fullPath) + ' | ' 
+				+ directory_separator_repair(jsonConf.asazuke + '/bin/sqlite/sqlite3.exe ')
+				+ directory_separator_repair(jsonConf.asazuke + '/src/data/' + global.confJson.projectName + '/asazuke.sqlite'),
+            //jqueryFileTree.init('.fileTree4', jsonConf.asazuke + '/src/data/' + global.confJson.projectName + '/');
+            function (error, stdout, stderr) {
+              console.log('stdout: ' + stdout);
+              appendMsg(stdout);
+              console.log('stderr: ' + stderr);
+              if (error !== null) {
+                console.log('exec error: ' + error);
+              }
+          });
+	      }
           //$('#consolePanel .layer-panel.is-current textarea')[0].value += '\'' + fullPath + '\'を実行しました。'+"\n";
           Console.appendMsg(fullPath + ' を実行しました。', 'info');
 });
