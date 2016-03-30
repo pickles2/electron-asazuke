@@ -373,20 +373,25 @@ var exec = function(cmd, args, cwd, cb) {
             if (phpBin == _data) {
                 appendMsg("php stand ready.");
             } else {
-            appendMsg('phpBin:' + phpBin);
+            var tmpPhpBin = phpBin;
+            appendMsg('phpBin:' + tmpPhpBin);
             appendMsg('usePHP:' + _data);
                 Console.appendMsg("composer.json内のphpパスの修正が必要です。", "info");
                 var appConf = require('app-conf');
                 appConf.setConfFilePath(global.SETTING_JSON);
+    		if (!!(platform.match(/darwin/i))) {
+			// そのまま
+    		} else if (!!(platform.match(/win32/i))) {
+                    //var path = require('path');
+		    //tmpPhpBin += ' -d extension_dir=.\\ext\\';
+		    //tmpPhpBin += ' -d date.timezone="Asia/Tokyo"';
+		    tmpPhpBin += ' -c .\\php.ini';
+                    Console.appendMsg(tmpPhpBin, "info");
+		}
                 appConf.readConf(function(jsonConf) {
                     Console.appendMsg(jsonConf.asazuke, "info");
                     var composerPhpUpdate = require('composer-php-update');
-                    var path = require('path');
-		    // オプションを足すとphpが動かない..
-		    //phpBin += ' -d extension_dir=' + directory_separator_repair(path.dirname(phpBin)) + '\\ext\\';
-		    //phpBin += ' -d date.timezone="Asia/Tokyo"';
-                    Console.appendMsg(phpBin, "info");
-                    composerPhpUpdate.init(jsonConf.asazuke + '/composer.json', phpBin);
+                    composerPhpUpdate.init(jsonConf.asazuke + '/composer.json', tmpPhpBin);
                 });
             }
         } else {
@@ -541,7 +546,7 @@ global.SHELL = {
                 App.exec('xdg-open', [sqlDir], jsonConf.asazuke);
             } else {
                 // windows
-                App.exec('start', [sqlDir], jsonConf.asazuke);
+                App.exec('explorer', [sqlDir], jsonConf.asazuke);
             }
         });
     },
