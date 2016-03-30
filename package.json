@@ -1,6 +1,6 @@
 {
   "name": "electron-asazuke",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "HTML Scraping Tool.",
   "main": "main.js",
   "config": {
