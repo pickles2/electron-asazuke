@@ -36,7 +36,7 @@ CSVの設定をサイトに合う形で修正して下さい。CSSセレクタ�
  
 - ビルド
 ```
-$ node release.js [(win|mac),(ia32|x86)]
+$ node release.js [(win|mac),(ia32|x64)]
 ```
 
 ### windows版とosx版の違い
