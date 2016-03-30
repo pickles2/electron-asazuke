@@ -230,7 +230,7 @@ var exec = function(cmd, args, cwd, cb) {
 
             // テーブル表示
             $('#div_C .layer-panel.is-current').html($(`
-					<h3>HTMLダウンロード(+Linter)</h3>
+					<h3>HTMLダウンロード(検証)</h3>
 					<table class="tbl_htmlDL" border="1">
 					<tr><th>ID</th><th>filePath</th><th>Error件数</th><th>Warning件数</th></tr>
 					</table>
@@ -1209,7 +1209,28 @@ global.Load = {
                     jqueryFileTree.init('.fileTree2-1', jsonConf.asazuke + '/src/data/' + global.confJson.projectName + '/lintResult/');
 
                     // エラー件数表示
-                    App.execSiteValidationJson();
+                    // App.execSiteValidationJson();
+                    var maxCount = 10;
+                    var loop = function(i){
+                        return function(){
+                            if (i > maxCount){
+                                return;
+                            }
+                            console.log("try count. " + i);
+                            if (!(global.job == null || typeof global.job.pid === "undefined")) {
+                                var interval = 500;
+                                // 最大 maxCount * interval
+                                setTimeout(loop(++i), interval);
+                            } else {
+                                console.log('execSiteValidationJson');
+                                App.execSiteValidationJson();
+                                // カウントを無効化
+                                i=maxCount;
+                            }
+                    
+                        }   
+                    }
+                    setTimeout(loop(1),0);
 
                 });
                 break;
