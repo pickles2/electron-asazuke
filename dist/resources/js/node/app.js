@@ -47,13 +47,15 @@ var directory_separator_repair = function(str){
     }
 }
 var fs_exists = function(file_path) {
-    fs.stat(file_path, function(stat) {
-        if (stat == null) {
-            return true;
-        } else if (stat.code === 'ENOENT') {
-            return false;
-        }
-    });
+  try {
+    var status = fs.statSync(file_path);
+    console.log(file_path +' it exists');
+    return true;
+  }catch (e) {
+    console.log(file_path + ' it does not exist');
+    Console.appendMsg(file_path + 'が見つかりません', 'error');
+    return false;
+  }
 }
 
 // global.APP_CONF = APP_PATH + '/setting.json';
@@ -905,24 +907,35 @@ global.Setting = {
                 }
             }
             if (!!(global.platform.match(/darwin|linux/i))) {
-                // mac or linux
-                exec('unlink', ['AsazukeConf.php'], jsonConf.asazuke + '/src', function() {
-                    // $ ln <リンク元ファイル> <リンク名>
-                    exec('ln', ['-s', 'AsazukeConf-%s.php'.replace('%s', swProject), 'AsazukeConf.php'], jsonConf.asazuke + '/src', function() {
-                        appendMsg("プロジェクト設定を切り替えました。");
-                        Load.layerPanel(0);
-                    });
-                });
+		var refConfPath = 'AsazukeConf-%s.php'.replace('%s', swProject);
+                if(fs_exists(refConfPath)){
+                	// mac or linux
+                	exec('unlink', ['AsazukeConf.php'], jsonConf.asazuke + '/src', function() {
+                	    // $ ln <リンク元ファイル> <リンク名>
+                	    exec('ln', ['-s', refConfPath,  'AsazukeConf.php'], jsonConf.asazuke + '/src', function() {
+                	        appendMsg("プロジェクト設定を切り替えました。");
+                	        Load.layerPanel(0);
+                	    });
+                	});
+		}else{
+			// 設定ファイルが見つからない
+		}
             } else {
-                fs.unlink(jsonConf.asazuke + '\\src\\AsazukeConf.php', function() {
-                    // Windowsでは管理者モードで起動しないとsymlinkが使えないのでcopyで代用
-                    var r = fs.createReadStream(jsonConf.asazuke + '\\src\\' + 'AsazukeConf-%s.php'.replace('%s', swProject)),
-                        w = fs.createWriteStream(jsonConf.asazuke + '\\src\\' + 'AsazukeConf.php');
-                    w.on("close", function(ex) {
-                        Load.layerPanel(0);
-                    });
-                    r.pipe(w);
-                });
+		var refConfPath = directory_separator_repair(jsonConf.asazuke + '\\src\\' + 'AsazukeConf-%s.php'.replace('%s', swProject));
+                if(fs_exists(refConfPath)){
+                	fs.unlink(jsonConf.asazuke + '\\src\\AsazukeConf.php', function() {
+                	    // Windowsでは管理者モードで起動しないとsymlinkが使えないのでcopyで代用
+                	    //var r = fs.createReadStream(jsonConf.asazuke + '\\src\\' + 'AsazukeConf-%s.php'.replace('%s', swProject)),
+                	    var r = fs.createReadStream(refConfPath),
+                	        w = fs.createWriteStream(jsonConf.asazuke + '\\src\\' + 'AsazukeConf.php');
+                	    w.on("close", function(ex) {
+                	        Load.layerPanel(0);
+                	    });
+                	    r.pipe(w);
+                	});
+		}else{
+			// 設定ファイルが見つからない
+		}
             }
 
         });
