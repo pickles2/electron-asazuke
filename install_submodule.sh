@@ -6,3 +6,5 @@ git submodule add https://github.com/pickles2/asazuke-conf.git    submodules/asa
 git submodule add https://github.com/m-prj/ace-min-noconflict.git submodules/ace-min-noconflict
 git submodule add https://github.com/m-prj/app-conf.git           submodules/app-conf
 git submodule add https://github.com/m-prj/ace-func.git           submodules/ace-func
+
+git -c diff.mnemonicprefix=false -c core.quotepath=false -c credential.helper=sourcetree submodule update --init --recursive

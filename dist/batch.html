@@ -1,49 +1,49 @@
 
 <div class="batch-html">
   <div class="action">
+    <div class="detail-text">データベースにファイル一覧データを作成します</div>
     <div class="toggle-button">
       <input type="checkbox" name="check[]" value="1" id="lbl-btn01" onclick="$(&quot;#lbl-btn01&quot;).click(function( event ) {event.stopPropagation();$(this).prop(&quot;checked&quot;, true);}); App.execSiteScan();"/>
-      <label for="lbl-btn01" class="btn btn-default">サイトスキャン</label>
+      <label for="lbl-btn01" class="btn btn-primary">サイトスキャン</label>
     </div>
-    <div class="detail-text">データベースにファイル一覧データを作成します</div>
     <div role="group" aria-label="..." class="btn-group btn-block clearfix">
-      <button onclick="$(&quot;#lbl-btn01&quot;).prop(&quot;checked&quot;, false);" class="btn btn-default">ボタンを戻す</button>
-      <button onclick="App.kill();" class="btn btn-default">処理を中止する</button>
+      <!--button.btn.btn-default(onclick='$("#lbl-btn01").prop("checked", false);') ボタンを戻す-->
+      <button onclick="App.kill();" class="btn btn-default js-cancel">処理を中止する</button>
     </div>
   </div>
   <div class="action">
+    <div class="detail-text">データベースのファイル一覧を使ってHTMLファイルをダウンロードします。</div>
     <div class="toggle-button">
       <input type="checkbox" name="check[]" value="1" id="lbl-btn02" onclick="$(&quot;#lbl-btn02&quot;).click(function( event ) {event.stopPropagation();$(this).prop(&quot;checked&quot;, true);}); App.execSiteValidationEx();"/>
-      <label for="lbl-btn02" class="btn btn-default">HTMLダウンロード</label>
+      <label for="lbl-btn02" class="btn btn-primary">HTMLダウンロード</label>
     </div>
-    <div class="detail-text">データベースのファイル一覧を使ってHTMLファイルをダウンロードします。</div>
     <div role="group" aria-label="..." class="btn-group btn-block clearfix">
-      <button onclick="$(&quot;#lbl-btn02&quot;).prop(&quot;checked&quot;, false);" class="btn btn-default">ボタンを戻す</button>
-      <button onclick="App.kill();" class="btn btn-default">処理を中止する</button>
+      <!--button.btn.btn-default(onclick='$("#lbl-btn02").prop("checked", false);') ボタンを戻す-->
+      <button onclick="App.kill();" class="btn btn-default js-cancel">処理を中止する</button>
       <button onclick="$(&quot;.header-menu .item&quot;).eq(2).find(&quot;a&quot;).click();" class="btn btn-default">ダウンロードしたデータを確認する</button>
     </div>
   </div>
   <div class="action">
+    <div class="detail-text">ダウンロードしたHTMLをもとにPickles2用のサイトマップCSVを作成します。</div>
     <div class="toggle-button">
       <input type="checkbox" name="check[]" value="1" id="lbl-btn03" onclick="$(&quot;#lbl-btn03&quot;).click(function( event ) {event.stopPropagation();$(this).prop(&quot;checked&quot;, true);}); App.execSiteValidationCsv();"/>
-      <label for="lbl-btn03" class="btn btn-default">サイトマップCSV作成</label>
+      <label for="lbl-btn03" class="btn btn-primary">サイトマップCSV作成</label>
     </div>
-    <div class="detail-text">ダウンロードしたHTMLをもとにPickles2用のサイトマップCSVを作成します。</div>
     <div role="group" aria-label="..." class="btn-group btn-block clearfix">
-      <button onclick="$(&quot;#lbl-btn03&quot;).prop(&quot;checked&quot;, false);" class="btn btn-default">ボタンを戻す</button>
-      <button onclick="App.kill();" class="btn btn-default">処理を中止する</button>
+      <!--button.btn.btn-default(onclick='$("#lbl-btn03").prop("checked", false);') ボタンを戻す-->
+      <button onclick="App.kill();" class="btn btn-default js-cancel">処理を中止する</button>
       <button onclick="Load.sitemapCSV();" class="btn btn-default">作成済みのCSVデータを確認する</button>
     </div>
   </div>
   <div class="action">
+    <div class="detail-text">指定したCSSセレクタを元に、HTMLコードの抜き出し（スクレイピング)します。</div>
     <div class="toggle-button">
       <input type="checkbox" name="check[]" value="1" id="lbl-btn04" onclick="$(&quot;#lbl-btn04&quot;).click(function( event ) {event.stopPropagation();$(this).prop(&quot;checked&quot;, true);}); App.execHtmlScraping();"/>
-      <label for="lbl-btn04" class="btn btn-default">WEBスクレイピング</label>
+      <label for="lbl-btn04" class="btn btn-primary">WEBスクレイピング</label>
     </div>
-    <div class="detail-text">指定したCSSセレクタを元に、HTMLコードの抜き出し（スクレイピング)します。</div>
     <div role="group" aria-label="..." class="btn-group btn-block clearfix">
-      <button onclick="$(&quot;#lbl-btn04&quot;).prop(&quot;checked&quot;, false);" class="btn btn-default">ボタンを戻す</button>
-      <button onclick="App.kill();" class="btn btn-default">処理を中止する</button>
+      <!--button.btn.btn-default(onclick='$("#lbl-btn04").prop("checked", false);') ボタンを戻す-->
+      <button onclick="App.kill();" class="btn btn-default js-cancel">処理を中止する</button>
       <button onclick="$(&quot;.header-menu .item&quot;).eq(3).find(&quot;a&quot;).click();" class="btn btn-default">スクレイピングデータを確認する</button>
     </div>
   </div>

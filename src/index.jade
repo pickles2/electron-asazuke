@@ -68,32 +68,57 @@ body
                 #div_right.handler_horizontal
         #content-footer
             .consolePanelMenu
-                .btn-group-sm(role='group', aria-label='...')
-                    a.btn.btn-default.u-mr10(onclick="Console.clear();") バッファクリア
-                    a.btn.btn-default.u-mr10(onclick="App.toggleDevTools();") Developer Tools
+                .btn-group-sm.console-btn-group(role='group', aria-label='...')
+                    a.u-mr10(onclick="Console.clear();") バッファクリア
+                    a.u-mr10(onclick="App.toggleDevTools();") Developer Tools
             #consolePanel
                 .layer-wrap
                     .layer-panel
                         // 設定
-                        textarea(readonly)
+                        .m-console.div-textarea
+                          - var n = 100
+                          while n > 0
+                            div
+                            - n--
                     .layer-panel
                         // バッチ処理
-                        textarea(readonly)
+                        .m-console.div-textarea
+                          - var n = 100
+                          while n > 0
+                            div
+                            - n--
                     .layer-panel
                         // HTMLダウンロード
-                        textarea(readonly)
+                        .m-console.div-textarea
+                          - var n = 100
+                          while n > 0
+                            div
+                            - n--
                     .layer-panel
                         // WEBスクレイピング
-                        textarea(readonly)
+                        .m-console.div-textarea
+                          - var n = 100
+                          while n > 0
+                            div
+                            - n--
                     .layer-panel
                         // データベース
-                        textarea(readonly)
+                        .m-console.div-textarea
+                          - var n = 100
+                          while n > 0
+                            div
+                            - n--
                     .layer-panel
                         // その他
-                        textarea(readonly)
+                        .m-console.div-textarea
+                          - var n = 100
+                          while n > 0
+                            div
+                            - n--
         p.copyright $copy
 script(src="./resources/js/main.js")
 script(src='./resources/js/window/layout.js')
+//script(src='./resources/libs/m-console/m-console.js')
 script.
     SCRIPT.onload();
 

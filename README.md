@@ -4,7 +4,7 @@
 - GUIの実装は、javascriptのGUIフレームワークElectronを使っています。
 
 ## アプリケーションインストール
-### (widows/osx)共通
+### (windows/osx)共通
 
 1. Asazuke(CLI)のインストール  
 設定タブのAsazukeインストールをクリックして下さい。  
@@ -17,7 +17,12 @@
 2. 対象サイトの設定  
 新規プロジェクトボタンをおしてプロジェクトの設定ファイルを作成します。
 
-3. 処理/実行  
+3. サイトマップCSVの定義の設定
+AsazukeConfCsvCols.phpがCSVの設定になります。左側に表示されるファイルを選択して  
+CSVの設定をサイトに合う形で修正して下さい。CSSセレクタを使っています。  
+変更した内容を反映させるにはCtrl+s or Command+s を押すことで保存されます。
+
+4. 処理/実行  
 サイトスキャン、HTMLダウンロード、サイトマップCSV作成、WEBスクレイピングが実行できます。
  
 
@@ -31,9 +36,26 @@
  
 - ビルド
 ```
-$ node release.js
+$ node release.js [(win|mac),(ia32|x64)]
 ```
 
 ### windows版とosx版の違い
 - AsazukeConf.phpがシムリンク/実態ファイル
 - setting.json内パス記述（パスセパレータの違いなど）
+
+- 設定ファイルが展開されるディレクトリ(setting.json)  　
+
+|setting.jsonの保存先||
+|:--|:--|
+|windows|%userprofile%\AppData\Roaming\electron-asazuke\setting.json|  
+|osx|~"/Library/Application Support/electron-asazuke/setting.json"|  
+
+
+### npmコマンド
+
+|コマンド|説明|
+|:--|:--|
+|npm i(install)|npm モジュールインストール|
+|npm start| electron実行|
+|npm run up| electron実行(サブモジュールの再インストール)|
+|npm run submodule_update | サブモジュール更新 |

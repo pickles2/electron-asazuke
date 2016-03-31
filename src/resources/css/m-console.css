@@ -1,0 +1,22 @@
+.m-console.div-textarea{
+  background-color:#333;
+  color: #fff;
+  font-family: courier;
+  font-size: 14px;
+  line-height: 1.25em;
+  height: 20em;
+  width: 50em;
+ overflow-y: scroll;
+ overflow-x: hidden;
+}
+.consolePanelMenu .btn-group-sm.console-btn-group{
+  margin: 10px 2px 0 10px;
+}
+.console-btn-group a{
+  color:#999;
+}
+.m-console.div-textarea div{ white-space: pre-wrap; }
+.m-console.div-textarea .error{ color: #f20;}
+.m-console.div-textarea .warn { color: #fe0;}
+.m-console.div-textarea .info { color: #0ef;}
+.m-console.div-textarea .success { color: #0e0;}
