@@ -907,8 +907,8 @@ global.Setting = {
                 }
             }
             if (!!(global.platform.match(/darwin|linux/i))) {
-		var refConfPath = 'AsazukeConf-%s.php'.replace('%s', swProject);
-                if(fs_exists(refConfPath)){
+		            var refConfPath = 'AsazukeConf-%s.php'.replace('%s', swProject);
+                if(fs_exists(jsonConf.asazuke +'/src/' + refConfPath)){
                 	// mac or linux
                 	exec('unlink', ['AsazukeConf.php'], jsonConf.asazuke + '/src', function() {
                 	    // $ ln <リンク元ファイル> <リンク名>
