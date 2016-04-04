@@ -1,0 +1,15 @@
+{
+  "name": "composer-php-update",
+  "version": "0.0.1",
+  "description": "description",
+  "main": "composer-php-update.js",
+  "private": true,
+  "scripts": {
+    "test": "echo \"test\""
+  },
+  "keywords": [
+    "composer"
+  ],
+  "author": "Misaki Shibata",
+  "license": "MIT"
+}

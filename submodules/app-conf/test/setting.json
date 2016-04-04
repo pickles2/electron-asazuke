@@ -1,0 +1,13 @@
+{
+    "app_name": "electron-asazuke",
+    "git": "/usr/bin/git",
+    "php": "/usr/local/bin/php",
+    "composer": "/usr/local/bin/composer",
+    "asazuke": "/Users/mac/Documents/vhosts/asazuke",
+    "asazuke_repos": "https://github.com/pickles2/asazuke.git",
+    "projects": [
+        "www.test_example.jp",
+        "www.test_example.co.jp"
+    ],
+    "select_project": "test_example.jp"
+}

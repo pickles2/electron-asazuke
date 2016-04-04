@@ -1,0 +1,15 @@
+{
+  "name": "php-killer",
+  "version": "1.0.0",
+  "main": "php-killer.js",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Misaki Shibata",
+  "license": "ISC",
+  "dependencies": {
+    "csv": "^0.4.6"
+  },
+  "description": ""
+}

@@ -1,0 +1,12 @@
+{
+  "name": "ace-min-noconflict",
+  "version": "1.0.0",
+  "description": "ACE editor minimized noconflict built files.",
+  "main": "ace.js",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT"
+}

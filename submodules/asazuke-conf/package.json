@@ -1,0 +1,12 @@
+{
+  "name": "asazuke-conf",
+  "version": "1.0.1",
+  "description": "",
+  "main": "asazuke-conf.js",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT"
+}
