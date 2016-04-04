@@ -33,29 +33,29 @@ fs.stat(unpackedDir, function(stat) {
         }
     }
 });
-var bs2sl = function(str){
-  return str.replace(/\u002F/g, "\u005C"); // / -> \
+var bs2sl = function(str) {
+    return str.replace(/\u002F/g, "\u005C"); // / -> \
 }
-var sl2bs = function(str){
-  return str.replace(/\u005C/g, "\u002F"); // \ -> /
+var sl2bs = function(str) {
+    return str.replace(/\u005C/g, "\u002F"); // \ -> /
 }
-var directory_separator_repair = function(str){
+var directory_separator_repair = function(str) {
     if (!!(platform.match(/darwin/i))) {
-      return sl2bs(str);
+        return sl2bs(str);
     } else if (!!(platform.match(/win32/i))) {
-      return bs2sl(str);
+        return bs2sl(str);
     }
 }
 var fs_exists = function(file_path) {
-  try {
-    var status = fs.statSync(file_path);
-    console.log(file_path +' it exists');
-    return true;
-  }catch (e) {
-    console.log(file_path + ' it does not exist');
-    Console.appendMsg(file_path + 'が見つかりません', 'error');
-    return false;
-  }
+    try {
+        var status = fs.statSync(file_path);
+        console.log(file_path + ' it exists');
+        return true;
+    } catch (e) {
+        console.log(file_path + ' it does not exist');
+        Console.appendMsg(file_path + 'が見つかりません', 'error');
+        return false;
+    }
 }
 
 // global.APP_CONF = APP_PATH + '/setting.json';
@@ -106,17 +106,16 @@ var go_bottom = function($divTextarea) {
     }
     // メッセージエリアへの出力
 var appendMsg = function(text) {
-		var ary = (text).toString().split(/\r\n|\r|\n/);
-		for(var i in ary){
-	// 制御コード削除
-	data = ary[i];
-        if (!!(global.platform.match(/darwin|linux/i))) {
-        } else {
+    var ary = (text).toString().split(/\r\n|\r|\n/);
+    for (var i in ary) {
+        // 制御コード削除
+        data = ary[i];
+        if (!!(global.platform.match(/darwin|linux/i))) {} else {
             data = data.replace(/\[\d{2};\d{2}m/g, '').replace(/\[\d{2}m/g, '');
             //data = data.replace(/\[/g, '');
-	}
-      mConsole.appendMsg(data);
-}
+        }
+        mConsole.appendMsg(data);
+    }
     //mConsole.appendMsg(text);
 
     //$('#consolePanel .layer-panel.is-current .div-textarea')[0].value += text + "\n";
@@ -170,12 +169,12 @@ var exec = function(cmd, args, cwd, cb) {
     var path;
     if (!!(global.platform.match(/darwin|linux/i))) {} else {
         // php プロセス登録
-	// $('.js-cancel').prop('disabled',true); // <- batchの時だけ必要なので
-	setTimeout(function(){
-		Console.appendMsg('php　プロセス取得', 'warning');
-        	phpKiller.getProcess();
-		$('.js-cancel').prop('disabled',false);
-	}, 3000);
+        // $('.js-cancel').prop('disabled',true); // <- batchの時だけ必要なので
+        setTimeout(function() {
+            Console.appendMsg('php　プロセス取得', 'warning');
+            phpKiller.getProcess();
+            $('.js-cancel').prop('disabled', false);
+        }, 3000);
     }
 
     appendMsg("START PID:" + global.job.pid);
@@ -197,7 +196,7 @@ var exec = function(cmd, args, cwd, cb) {
         //  data = aryData[i]
         ////}
         //appendMsg('args[args.length -1]:' + args[args.length - 1]);
-	
+
         // 完了メッセージ
         var matches = data.match(/Finished\!\!(.*)/gi);
         if (matches != null) {
@@ -362,8 +361,8 @@ var exec = function(cmd, args, cwd, cb) {
                 }
                 SHELL.openItem(path);
                 Load.sitemapCSV();
-                
-                Console.appendMsg("Finished!! (sitemap-csv)", "success"); 
+
+                Console.appendMsg("Finished!! (sitemap-csv)", "success");
             }
             //} else if(args[0] === 'run:conf-json'){
         } else if (args[args.length - 1] === 'run:conf-json') {
@@ -382,21 +381,21 @@ var exec = function(cmd, args, cwd, cb) {
             if (phpBin == _data) {
                 appendMsg("php stand ready.");
             } else {
-            var tmpPhpBin = phpBin;
-            appendMsg('phpBin:' + tmpPhpBin);
-            appendMsg('usePHP:' + _data);
+                var tmpPhpBin = phpBin;
+                appendMsg('phpBin:' + tmpPhpBin);
+                appendMsg('usePHP:' + _data);
                 Console.appendMsg("composer.json内のphpパスの修正が必要です。", "info");
                 var appConf = require('app-conf');
                 appConf.setConfFilePath(global.SETTING_JSON);
-    		if (!!(platform.match(/darwin/i))) {
-			// そのまま
-    		} else if (!!(platform.match(/win32/i))) {
+                if (!!(platform.match(/darwin/i))) {
+                    // そのまま
+                } else if (!!(platform.match(/win32/i))) {
                     //var path = require('path');
-		    //tmpPhpBin += ' -d extension_dir=.\\ext\\';
-		    //tmpPhpBin += ' -d date.timezone="Asia/Tokyo"';
-		    tmpPhpBin += ' -c .\\php.ini';
+                    //tmpPhpBin += ' -d extension_dir=.\\ext\\';
+                    //tmpPhpBin += ' -d date.timezone="Asia/Tokyo"';
+                    tmpPhpBin += ' -c .\\php.ini';
                     Console.appendMsg(tmpPhpBin, "info");
-		}
+                }
                 appConf.readConf(function(jsonConf) {
                     Console.appendMsg(jsonConf.asazuke, "info");
                     var composerPhpUpdate = require('composer-php-update');
@@ -542,7 +541,7 @@ global.SHELL = {
             }
         });
     },
-    openSqlDir: function () {
+    openSqlDir: function() {
         var appConf = require('app-conf');
         appConf.setConfFilePath(global.SETTING_JSON);
         appConf.readConf(function(jsonConf) {
@@ -559,62 +558,61 @@ global.SHELL = {
             }
         });
     },
-    execFile: function (fullPath) {
-      // SQL
-      if(path.extname(fullPath) == '.sql'){
-          // とりあえずWindowsのみ
-          var exec  = require('child_process').exec, child;
-        var appConf = require('app-conf');
-        appConf.setConfFilePath(global.SETTING_JSON);
-        appConf.readConf(function(jsonConf) {
-            if (!!(platform.match(/darwin/i))) {
-                // mac
-                child = exec('cat  '+  directory_separator_repair(fullPath) + ' | ' + 'sqlite3                                       ' + jsonConf.asazuke + '/src/data/' + global.confJson.projectName + '/asazuke.sqlite',
-            //jqueryFileTree.init('.fileTree4', jsonConf.asazuke + '/src/data/' + global.confJson.projectName + '/');
-            function (error, stdout, stderr) {
-              console.log('stdout: ' + stdout);
-              appendMsg(stdout);
-              console.log('stderr: ' + stderr);
-              if (error !== null) {
-                console.log('exec error: ' + error);
-              }
-          });
-            }else{
-                // win 
-                child = exec('type '+  directory_separator_repair(fullPath) + ' | ' 
-				+ directory_separator_repair(jsonConf.asazuke + '/bin/sqlite/sqlite3.exe ')
-				+ directory_separator_repair(jsonConf.asazuke + '/src/data/' + global.confJson.projectName + '/asazuke.sqlite'),
-            //jqueryFileTree.init('.fileTree4', jsonConf.asazuke + '/src/data/' + global.confJson.projectName + '/');
-            function (error, stdout, stderr) {
-              console.log('stdout: ' + stdout);
-              appendMsg(stdout);
-              console.log('stderr: ' + stderr);
-              if (error !== null) {
-                console.log('exec error: ' + error);
-              }
-          });
-	      }
-          //$('#consolePanel .layer-panel.is-current textarea')[0].value += '\'' + fullPath + '\'を実行しました。'+"\n";
-          Console.appendMsg(fullPath + ' を実行しました。', 'info');
-});
-      }
+    execFile: function(fullPath) {
+        // SQL
+        if (path.extname(fullPath) == '.sql') {
+            // とりあえずWindowsのみ
+            var exec = require('child_process').exec,
+                child;
+            var appConf = require('app-conf');
+            appConf.setConfFilePath(global.SETTING_JSON);
+            appConf.readConf(function(jsonConf) {
+                if (!!(platform.match(/darwin/i))) {
+                    // mac
+                    child = exec('cat  ' + directory_separator_repair(fullPath) + ' | ' + 'sqlite3                                       ' + jsonConf.asazuke + '/src/data/' + global.confJson.projectName + '/asazuke.sqlite',
+                        //jqueryFileTree.init('.fileTree4', jsonConf.asazuke + '/src/data/' + global.confJson.projectName + '/');
+                        function(error, stdout, stderr) {
+                            console.log('stdout: ' + stdout);
+                            appendMsg(stdout);
+                            console.log('stderr: ' + stderr);
+                            if (error !== null) {
+                                console.log('exec error: ' + error);
+                            }
+                        });
+                } else {
+                    // win 
+                    child = exec('type ' + directory_separator_repair(fullPath) + ' | ' + directory_separator_repair(jsonConf.asazuke + '/bin/sqlite/sqlite3.exe ') + directory_separator_repair(jsonConf.asazuke + '/src/data/' + global.confJson.projectName + '/asazuke.sqlite'),
+                        //jqueryFileTree.init('.fileTree4', jsonConf.asazuke + '/src/data/' + global.confJson.projectName + '/');
+                        function(error, stdout, stderr) {
+                            console.log('stdout: ' + stdout);
+                            appendMsg(stdout);
+                            console.log('stderr: ' + stderr);
+                            if (error !== null) {
+                                console.log('exec error: ' + error);
+                            }
+                        });
+                }
+                //$('#consolePanel .layer-panel.is-current textarea')[0].value += '\'' + fullPath + '\'を実行しました。'+"\n";
+                Console.appendMsg(fullPath + ' を実行しました。', 'info');
+            });
+        }
     }
 }
 global.Ace = {
     save: function() {
-    editor = ace.edit("editor");
-      var filePath = $('.ace-filepath').text();
-      var ace_func = require('ace-func');
-      ace_func.saveFile(filePath, editor.getValue());
+        editor = ace.edit("editor");
+        var filePath = $('.ace-filepath').text();
+        var ace_func = require('ace-func');
+        ace_func.saveFile(filePath, editor.getValue());
     },
     exec: function() {
-    editor = ace.edit("editor");
-      var filePath = $('.ace-filepath').text();
-      var ace_func = require('ace-func');
-      ace_func.execFile(filePath, editor.getValue());
+        editor = ace.edit("editor");
+        var filePath = $('.ace-filepath').text();
+        var ace_func = require('ace-func');
+        ace_func.execFile(filePath, editor.getValue());
     },
     remove: function() {
-			$('.header-menu .item.active a').click();
+        $('.header-menu .item.active a').click();
     }
 }
 global.App = {
@@ -629,10 +627,10 @@ global.App = {
     },
     execSiteScan: function() {
         if (!!(global.platform.match(/darwin|linux/i))) {
-		// mac | linux
-	}else{
-		$('.js-cancel').prop('disabled',true);
-	}
+            // mac | linux
+        } else {
+            $('.js-cancel').prop('disabled', true);
+        }
 
         // ページ初期化
         $('#div_C .layer-panel.is-current').html('<div class="asazuke-sitescan">' +
@@ -660,10 +658,10 @@ global.App = {
     },
     execSiteValidationEx: function() {
         if (!!(global.platform.match(/darwin|linux/i))) {
-		// mac | linux
-	}else{
-		$('.js-cancel').prop('disabled',true);
-	}
+            // mac | linux
+        } else {
+            $('.js-cancel').prop('disabled', true);
+        }
 
         var appConf = require('app-conf');
         appConf.setConfFilePath(global.SETTING_JSON);
@@ -674,10 +672,10 @@ global.App = {
     },
     execSiteValidationCsv: function() {
         if (!!(global.platform.match(/darwin|linux/i))) {
-		// mac | linux
-	}else{
-		$('.js-cancel').prop('disabled',true);
-	}
+            // mac | linux
+        } else {
+            $('.js-cancel').prop('disabled', true);
+        }
 
         var appConf = require('app-conf');
         appConf.setConfFilePath(global.SETTING_JSON);
@@ -688,10 +686,10 @@ global.App = {
     },
     execSiteValidationJson: function() {
         if (!!(global.platform.match(/darwin|linux/i))) {
-		// mac | linux
-	}else{
-		$('.js-cancel').prop('disabled',true);
-	}
+            // mac | linux
+        } else {
+            $('.js-cancel').prop('disabled', true);
+        }
 
         var appConf = require('app-conf');
         appConf.setConfFilePath(global.SETTING_JSON);
@@ -701,10 +699,10 @@ global.App = {
     },
     execHtmlScraping: function() {
         if (!!(global.platform.match(/darwin|linux/i))) {
-		// mac | linux
-	}else{
-		$('.js-cancel').prop('disabled',true);
-	}
+            // mac | linux
+        } else {
+            $('.js-cancel').prop('disabled', true);
+        }
 
         var appConf = require('app-conf');
         appConf.setConfFilePath(global.SETTING_JSON);
@@ -907,35 +905,35 @@ global.Setting = {
                 }
             }
             if (!!(global.platform.match(/darwin|linux/i))) {
-		            var refConfPath = 'AsazukeConf-%s.php'.replace('%s', swProject);
-                if(fs_exists(jsonConf.asazuke +'/src/' + refConfPath)){
-                	// mac or linux
-                	exec('unlink', ['AsazukeConf.php'], jsonConf.asazuke + '/src', function() {
-                	    // $ ln <リンク元ファイル> <リンク名>
-                	    exec('ln', ['-s', refConfPath,  'AsazukeConf.php'], jsonConf.asazuke + '/src', function() {
-                	        appendMsg("プロジェクト設定を切り替えました。");
-                	        Load.layerPanel(0);
-                	    });
-                	});
-		}else{
-			// 設定ファイルが見つからない
-		}
+                var refConfPath = 'AsazukeConf-%s.php'.replace('%s', swProject);
+                if (fs_exists(jsonConf.asazuke + '/src/' + refConfPath)) {
+                    // mac or linux
+                    exec('unlink', ['AsazukeConf.php'], jsonConf.asazuke + '/src', function() {
+                        // $ ln <リンク元ファイル> <リンク名>
+                        exec('ln', ['-s', refConfPath, 'AsazukeConf.php'], jsonConf.asazuke + '/src', function() {
+                            appendMsg("プロジェクト設定を切り替えました。");
+                            Load.layerPanel(0);
+                        });
+                    });
+                } else {
+                    // 設定ファイルが見つからない
+                }
             } else {
-		var refConfPath = directory_separator_repair(jsonConf.asazuke + '\\src\\' + 'AsazukeConf-%s.php'.replace('%s', swProject));
-                if(fs_exists(refConfPath)){
-                	fs.unlink(jsonConf.asazuke + '\\src\\AsazukeConf.php', function() {
-                	    // Windowsでは管理者モードで起動しないとsymlinkが使えないのでcopyで代用
-                	    //var r = fs.createReadStream(jsonConf.asazuke + '\\src\\' + 'AsazukeConf-%s.php'.replace('%s', swProject)),
-                	    var r = fs.createReadStream(refConfPath),
-                	        w = fs.createWriteStream(jsonConf.asazuke + '\\src\\' + 'AsazukeConf.php');
-                	    w.on("close", function(ex) {
-                	        Load.layerPanel(0);
-                	    });
-                	    r.pipe(w);
-                	});
-		}else{
-			// 設定ファイルが見つからない
-		}
+                var refConfPath = directory_separator_repair(jsonConf.asazuke + '\\src\\' + 'AsazukeConf-%s.php'.replace('%s', swProject));
+                if (fs_exists(refConfPath)) {
+                    fs.unlink(jsonConf.asazuke + '\\src\\AsazukeConf.php', function() {
+                        // Windowsでは管理者モードで起動しないとsymlinkが使えないのでcopyで代用
+                        //var r = fs.createReadStream(jsonConf.asazuke + '\\src\\' + 'AsazukeConf-%s.php'.replace('%s', swProject)),
+                        var r = fs.createReadStream(refConfPath),
+                            w = fs.createWriteStream(jsonConf.asazuke + '\\src\\' + 'AsazukeConf.php');
+                        w.on("close", function(ex) {
+                            Load.layerPanel(0);
+                        });
+                        r.pipe(w);
+                    });
+                } else {
+                    // 設定ファイルが見つからない
+                }
             }
 
         });
@@ -1070,26 +1068,26 @@ global.Setting = {
         var newStartPath = $('input[name="START_PATH"]').val();
         var newAuthUser = $('input[name="AUTH_USER"]').val();
         var newAuthPass = $('input[name="AUTH_PASS"]').val();
-        AsazukeConf.updateConf(newUrl, newStartPath, newAuthUser, newAuthPass, function(){
-		// windowsの場合は設定ファイルを元のファイルにコピーする
-        	if (!!(global.platform.match(/darwin|linux/i))) {
-		   // 実態を持たないので不要
-        	} else {
-		        console.log('設定を元ファイルに書き込みます');
-        		var appConf = require('app-conf');
-        		appConf.setConfFilePath(global.SETTING_JSON);
-        		appConf.readConf(function(jsonConf) {
-				var refConfPath = directory_separator_repair(jsonConf.asazuke + '\\src\\' + 'AsazukeConf-%s.php'.replace('%s', global.confJson.projectName));
-        			if(fs_exists(refConfPath)){
-				  	var contents = fs.readFileSync(jsonConf.asazuke + '\\src\\' + 'AsazukeConf.php');
-				  	fs.writeFileSync(refConfPath , contents );
-				}else{
-					// 設定ファイルが見つからない
-				}
-			});
-		}
-	});
-	
+        AsazukeConf.updateConf(newUrl, newStartPath, newAuthUser, newAuthPass, function() {
+            // windowsの場合は設定ファイルを元のファイルにコピーする
+            if (!!(global.platform.match(/darwin|linux/i))) {
+                // 実態を持たないので不要
+            } else {
+                console.log('設定を元ファイルに書き込みます');
+                var appConf = require('app-conf');
+                appConf.setConfFilePath(global.SETTING_JSON);
+                appConf.readConf(function(jsonConf) {
+                    var refConfPath = directory_separator_repair(jsonConf.asazuke + '\\src\\' + 'AsazukeConf-%s.php'.replace('%s', global.confJson.projectName));
+                    if (fs_exists(refConfPath)) {
+                        var contents = fs.readFileSync(jsonConf.asazuke + '\\src\\' + 'AsazukeConf.php');
+                        fs.writeFileSync(refConfPath, contents);
+                    } else {
+                        // 設定ファイルが見つからない
+                    }
+                });
+            }
+        });
+
 
         showMsg({
             message: '設定を更新しました。'
@@ -1179,11 +1177,13 @@ global.Load = {
         $('.copyright').html(config.config.copyright);
 
 
-								// 左メニュー非表示
-                $("#content #div_vertical").css({'display':'block'});
-                $("#content").removeClass('is-Single');
+        // 左メニュー非表示
+        $("#content #div_vertical").css({
+            'display': 'block'
+        });
+        $("#content").removeClass('is-Single');
 
-								// 
+        // 
         // layer選択イベント
         switch (n) {
             case 0:
@@ -1300,9 +1300,9 @@ global.Load = {
                     // エラー件数表示
                     // App.execSiteValidationJson();
                     var maxCount = 10;
-                    var loop = function(i){
-                        return function(){
-                            if (i > maxCount){
+                    var loop = function(i) {
+                        return function() {
+                            if (i > maxCount) {
                                 return;
                             }
                             console.log("try count. " + i);
@@ -1314,12 +1314,12 @@ global.Load = {
                                 console.log('execSiteValidationJson');
                                 App.execSiteValidationJson();
                                 // カウントを無効化
-                                i=maxCount;
+                                i = maxCount;
                             }
-                    
-                        }   
+
+                        }
                     }
-                    setTimeout(loop(1),0);
+                    setTimeout(loop(1), 0);
 
                 });
                 break;
@@ -1364,14 +1364,14 @@ global.Load = {
 
 
                         $('.jqueryFileTree a').addClass('mask')
-                        //$('.file > a[rel*="asazuke.sqlite"]').css({
-                        //    'display': 'block',
-                        //    'color': '#BFBFBF'
-                        //});
-                        //$('.file > a[rel$="asazuke.sqlite"]').css({
-                        //    'display': 'block',
-                        //    'color': '#333'
-                        //});
+                            //$('.file > a[rel*="asazuke.sqlite"]').css({
+                            //    'display': 'block',
+                            //    'color': '#BFBFBF'
+                            //});
+                            //$('.file > a[rel$="asazuke.sqlite"]').css({
+                            //    'display': 'block',
+                            //    'color': '#333'
+                            //});
                         $('.file > a[rel$=".sql"]').css({
                             'display': 'block',
                             'color': '#333'

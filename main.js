@@ -79,19 +79,18 @@ app.on('ready', function() {
     var application_menu = [{
         label: "Edit",
         submenu: [{
-                label: "Cut",
-                accelerator: "CmdOrCtrl+X",
-                selector: "cut:"
-            }, {
-                label: "Copy",
-                accelerator: "CmdOrCtrl+C",
-                selector: "copy:"
-            }, {
-                label: "Paste",
-                accelerator: "CmdOrCtrl+V",
-                selector: "paste:"
-            }
-        ]
+            label: "Cut",
+            accelerator: "CmdOrCtrl+X",
+            selector: "cut:"
+        }, {
+            label: "Copy",
+            accelerator: "CmdOrCtrl+C",
+            selector: "copy:"
+        }, {
+            label: "Paste",
+            accelerator: "CmdOrCtrl+V",
+            selector: "paste:"
+        }]
     }];
     if (process.platform == 'darwin') {
         //var name = require('electron').app.getName();
@@ -101,17 +100,15 @@ app.on('ready', function() {
         application_menu.unshift({
             label: app_name,
             submenu: [{
-                    label: 'About ' + app_name,
-                    role: 'about'
+                label: 'About ' + app_name,
+                role: 'about'
+            }, {
+                label: 'Quit',
+                accelerator: 'CmdOrCtrl+Q',
+                click: function() {
+                    app.quit();
                 }
-                , {
-                    label: 'Quit',
-                    accelerator: 'CmdOrCtrl+Q',
-                    click: function() {
-                        app.quit();
-                    }
-                },
-            ]
+            }, ]
         });
     }
     var menu = Menu.buildFromTemplate(application_menu);

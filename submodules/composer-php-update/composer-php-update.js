@@ -7,13 +7,13 @@ module.exports = new(function() {
     // var phpPath = 'c:\\xampp\\php\\bin\\php.exe';
     var phpPath = '~/electron-asazuke/node-php-bin/bin/darwin/5.6.18/bin/php';
     this.init = function(_jsonPath, _phpPath) {
-        
+
         // パス初期化
         cjsonPath = _jsonPath;
         cjsonPathOrg = _jsonPath + '.org';
         phpPath = _phpPath;
-                Console.appendMsg('phpPath0:'+ phpPath);
-        
+        Console.appendMsg('phpPath0:' + phpPath);
+
 
         // composer.jsonのバックアップ
         var fs = require('fs');
@@ -45,7 +45,7 @@ module.exports = new(function() {
                         //b.splice(i, 1, "ajgaa oieajo");
                     }
                 }
-                Console.appendMsg('phpPath1:'+ b.join(' '));
+                Console.appendMsg('phpPath1:' + b.join(' '));
                 aryCmd.push(b.join(' '));
             }
             update_scripts[obj] = aryCmd;
@@ -54,9 +54,11 @@ module.exports = new(function() {
         var writeData = JSON.stringify(composerObj, null, '  ');
         console.log(writeData);
         fs.writeFile(cjsonPath, writeData, function(err) {
-                if (err) { throw err; }
-                // console.log ('Save');
-                Console.appendMsg('composer.json内のphpパスを更新しました。','info');
+            if (err) {
+                throw err;
+            }
+            // console.log ('Save');
+            Console.appendMsg('composer.json内のphpパスを更新しました。', 'info');
         });
     }
 })();

@@ -1,6 +1,6 @@
 {
   "name": "php-killer",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "php-killer.js",
   "private": true,
   "scripts": {

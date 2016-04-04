@@ -1,41 +1,41 @@
 (function(global) {
-    'use strict';
-    
-    if (typeof module !== 'undefined' && module.exports)
-        module.exports      = SmallTalk();
-    else
-        global.smalltalk    = SmallTalk();
-    
-    function SmallTalk(callback) {
-        if (!(this instanceof SmallTalk))
-            return new SmallTalk(callback);
-        
-        let remove              = bind(removeEl, '.smalltalk');
-        
-        const BUTTON_OK         = ['OK'];
-        const BUTTON_OK_CANCEL  = ['OK', 'Cancel'];
-        
-        this.alert = (title, msg, options) => {
-            return showDialog(title, msg, '', BUTTON_OK, options);
-        };
-        
-        this.prompt = (title, msg, value, options, placeholder) => {
-            let val         = value || '';
-            let sampletext  = placeholder || '';
-            let valueStr    = `<input type="text" value="${ val }" data-name="js-input" placeholder="${ sampletext }">`;
-            
-            return showDialog(title, msg, valueStr, BUTTON_OK_CANCEL, options);
-        };
-        
-        this.confirm = (title, msg, options) => {
-            return showDialog(title, msg, '', BUTTON_OK_CANCEL, options);
-        };
-        
-        function getTemplate(title, msg, value, buttons) {
-            if (!Array.isArray(buttons))
-                throw Error('buttons should be array!');
-            
-            return `<div class="page">
+        'use strict';
+
+        if (typeof module !== 'undefined' && module.exports)
+            module.exports = SmallTalk();
+        else
+            global.smalltalk = SmallTalk();
+
+        function SmallTalk(callback) {
+            if (!(this instanceof SmallTalk))
+                return new SmallTalk(callback);
+
+            let remove = bind(removeEl, '.smalltalk');
+
+            const BUTTON_OK = ['OK'];
+            const BUTTON_OK_CANCEL = ['OK', 'Cancel'];
+
+            this.alert = (title, msg, options) => {
+                return showDialog(title, msg, '', BUTTON_OK, options);
+            };
+
+            this.prompt = (title, msg, value, options, placeholder) => {
+                let val = value || '';
+                let sampletext = placeholder || '';
+                let valueStr = `<input type="text" value="${ val }" data-name="js-input" placeholder="${ sampletext }">`;
+
+                return showDialog(title, msg, valueStr, BUTTON_OK_CANCEL, options);
+            };
+
+            this.confirm = (title, msg, options) => {
+                return showDialog(title, msg, '', BUTTON_OK_CANCEL, options);
+            };
+
+            function getTemplate(title, msg, value, buttons) {
+                if (!Array.isArray(buttons))
+                    throw Error('buttons should be array!');
+
+                return `<div class="page">
                 <div class="msg-box">
                 <div data-name="js-close" class="close-button"></div>
                 <header>${ title }</header>

@@ -38,9 +38,9 @@ module.exports = new(function() {
     var selector;
 
     this.scrollBottom = function(boolVal) {
-        bottom_lock = boolVal;
-    }
-    // カーソルを最下行に合わせる
+            bottom_lock = boolVal;
+        }
+        // カーソルを最下行に合わせる
     this.scroll_bottom = function() {
         if (bottom_lock) {
             //console.log('go_bottom');
@@ -83,10 +83,10 @@ module.exports = new(function() {
         //
         // FIFO  Console
         var default_selector = '.div-textarea';
-        if(selector_txt == null || typeof selector_txt === 'undefined'){
-          selector = default_selector;
-        }else{
-          selector = selector_txt;
+        if (selector_txt == null || typeof selector_txt === 'undefined') {
+            selector = default_selector;
+        } else {
+            selector = selector_txt;
         }
         ta = document.querySelector(selector);
         var txt = document.createElement("div");
@@ -109,5 +109,5 @@ module.exports = new(function() {
         //loopFn();
     }
 })();
- //   return this;
+//   return this;
 //}));
