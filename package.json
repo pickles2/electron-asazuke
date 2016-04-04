@@ -10,12 +10,10 @@
     "copyright": "&copy; 2016 Pickles2 Project"
   },
   "scripts": {
-    "preinstall": "git submodule update -i -r -f",
     "start": "electron .",
     "up": "source release.sh; submodule_update; electron .;",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "source release.sh; submodule_update; node release.js; copy_shareDir;",
-    "submodules-update": "git submodule foreach git pull origin master"
+    "build": "source release.sh; submodule_update; node release.js; copy_shareDir;"
   },
   "repository": {
     "type": "git",
@@ -70,7 +68,7 @@
     "m-require": "0.0.1",
     "mkdirp": "^0.5.0",
     "nib": "^1.0.4",
-    "path": "^0.11.14",
+    "path": "^0.12.7",
     "phpjs": "^1.3.2",
     "request": "^2.67.0",
     "run-sequence": "^1.1.1",
@@ -103,7 +101,6 @@
     "glob": "^5.0.14",
     "gulp-htmllint": "0.0.4",
     "html-entities": "^1.2.0",
-    "http": "0.0.0",
     "iconv-lite": "^0.4.13",
     "jquery": "^2.1.4",
     "jquery-file-tree": "file:submodules/jquery-file-tree",
