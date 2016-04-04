@@ -15,7 +15,7 @@
     "up": "source release.sh; submodule_update; electron .;",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "source release.sh; submodule_update; node release.js; copy_shareDir;",
-    "submodule_update": "git submodule foreach git pull origin master"
+    "submodules-update": "git submodule foreach git pull origin master"
   },
   "repository": {
     "type": "git",
