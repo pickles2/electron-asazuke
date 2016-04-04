@@ -20,7 +20,7 @@ fs.stat(unpackedDir, function(stat) {
 
     } else if (stat.code === 'ENOENT') {
         // ファイルがない場合。
-        console.log('ディレクトリがない場合。');
+        console.log(unpackedDir + 'ディレクトリが見つかりません。');
         if (!!(global.platform.match(/darwin/i))) {
             phpBin = global.APP_PATH + '/node-php-bin/bin/darwin/5.6.18/bin/php';
             composerPhar = global.APP_PATH + '/node-php-bin/bin/darwin/composer.phar';
@@ -29,23 +29,26 @@ fs.stat(unpackedDir, function(stat) {
             phpBin = global.APP_PATH + '/node-php-bin/bin/win32/php-5.6.18/php.exe';
             composerPhar = global.APP_PATH + '/node-php-bin/bin/win32/composer.phar';
             isElectron = true;
-
         }
     }
 });
+// バックスラッシュ(/)->スラッシュ(\)
 var bs2sl = function(str) {
-    return str.replace(/\u002F/g, "\u005C"); // / -> \
-}
+    return str.replace(/\u002F/g, "\u005C");
+};
+// スラッシュ(\)->バックスラッシュ(/)
 var sl2bs = function(str) {
-    return str.replace(/\u005C/g, "\u002F"); // \ -> /
-}
-var directory_separator_repair = function(str) {
+    return str.replace(/\u005C/g, "\u002F");
+};
+// ディレクトリセパレータを修復
+var ds_repair = function(str) {
     if (!!(platform.match(/darwin/i))) {
         return sl2bs(str);
     } else if (!!(platform.match(/win32/i))) {
         return bs2sl(str);
     }
-}
+};
+// ファイルの有無
 var fs_exists = function(file_path) {
     try {
         var status = fs.statSync(file_path);
@@ -56,13 +59,11 @@ var fs_exists = function(file_path) {
         Console.appendMsg(file_path + 'が見つかりません', 'error');
         return false;
     }
-}
+};
 
-// global.APP_CONF = APP_PATH + '/setting.json';
 var iconv = require('iconv-lite');
 var phpKiller = require('php-killer');
 var appConf = require('app-conf');
-// ./node-php-bin/bin/darwin/5.6.18/bin/php ./node-php-bin/bin/darwin/composer.phar
 var mConsole = require('m-console');
 
 global.userDataDir = app.getPath('userData');
@@ -77,7 +78,7 @@ appConf.readConf(function(jsonConf) {
     phpKiller.setDir(jsonConf.asazuke);
 });
 
-
+var asazukeConf = require('asazuke-conf');
 var dialog = remote.require('dialog');
 var jqueryFileTree = require('jquery-file-tree');
 var showMsg = function(options) {
@@ -98,13 +99,15 @@ var showMsg = function(options) {
 
 // カーソルを最下行に合わせる
 var go_bottom = function($divTextarea) {
-        console.log('go_bottom');
-        var $obj = $divTextarea;
-        console.log($obj);
-        if ($obj.length == 0) return;
-        $obj.scrollTop($obj[0].scrollHeight);
+    console.log('go_bottom');
+    var $obj = $divTextarea;
+    console.log($obj);
+    if ($obj.length == 0) {
+        return;
     }
-    // メッセージエリアへの出力
+    $obj.scrollTop($obj[0].scrollHeight);
+};
+// メッセージエリアへの出力
 var appendMsg = function(text) {
     var ary = (text).toString().split(/\r\n|\r|\n/);
     for (var i in ary) {
@@ -120,7 +123,7 @@ var appendMsg = function(text) {
 
     //$('#consolePanel .layer-panel.is-current .div-textarea')[0].value += text + "\n";
     //go_bottom($('#consolePanel .layer-panel.is-current .div-textarea'));
-}
+};
 
 var job = null;
 var kill = function() {
@@ -145,6 +148,8 @@ var kill = function() {
     $("#lbl-btn01, #lbl-btn02, #lbl-btn03, #lbl-btn04").prop("checked", false);
 };
 
+var util = require('util');
+var _exec = require('child_process').spawn;
 var confJson;
 var appJson;
 var gitHashRemote = null;
@@ -155,17 +160,13 @@ var exec = function(cmd, args, cwd, cb) {
         return;
     }
 
-    var util = require('util'),
-        _exec = require('child_process').spawn,
-
-        job = _exec(cmd, args, {
-            "cwd": cwd
-        });
+    var job = _exec(cmd, args, {
+        "cwd": cwd
+    });
     console.log('cmd', cmd);
     global.job = job;
 
-    // windows
-
+    // for Windows
     var path;
     if (!!(global.platform.match(/darwin|linux/i))) {} else {
         // php プロセス登録
@@ -178,24 +179,14 @@ var exec = function(cmd, args, cwd, cb) {
     }
 
     appendMsg("START PID:" + global.job.pid);
-
     global.job.stdout.on('data', function(data) {
         var _data = data;
         // data = String(data).replace(/\n?$/g,');
         if (!!(global.platform.match(/darwin|linux/i))) {} else {
-            data = iconv.decode(data, "cp932")
+            data = iconv.decode(data, "cp932");
         }
         data = data.toString();
         console.log('stdout: ' + data);
-        //var data0 = data.toString();
-        //console.log('stdout: ' + data0);
-        // 改行で分割
-        //var aryData = data0.split(/\r\n|\r|\n/);
-        //for (i = 0; i < aryData.length; i++) {
-        //  //alert(aryData[i]);
-        //  data = aryData[i]
-        ////}
-        //appendMsg('args[args.length -1]:' + args[args.length - 1]);
 
         // 完了メッセージ
         var matches = data.match(/Finished\!\!(.*)/gi);
@@ -208,10 +199,9 @@ var exec = function(cmd, args, cwd, cb) {
             return true;
         }
 
-        //if(args[1] === 'site-scan'){
         if (args[args.length - 1] === 'run:site-scan') {
             // コンソールパネル
-            var matches = data.match(/Finished\s->\s(.*)/gi);
+            matches = data.match(/Finished\s->\s(.*)/gi);
             if (matches != null) {
                 //appendMsg(matches[0]);
                 if (matches.length >= 2) {
@@ -226,9 +216,6 @@ var exec = function(cmd, args, cwd, cb) {
             if (matches != null) {
                 for (var xxi in matches) {
                     var resultJson = JSON.parse(matches[xxi].match(/Result\s->\s(.*)/)[1]);
-                    //var resultJson =  JSON.parse(matches[1]);
-                    //    var resultJson =  JSON.parse(matches[0]);
-                    // appendMsg(JSON.stringify(resultJson)); 
                     $('#tbl-sitescan').append($('<tr>' +
                         '<td>' + resultJson.id + '</td>' +
                         '<td>' + resultJson.fullPath + '</td>' +
@@ -351,7 +338,6 @@ var exec = function(cmd, args, cwd, cb) {
                 // 規定のアプリで開く
                 console.log('matches[1]', matches[1]);
 
-
                 var path;
                 if (!!(global.platform.match(/darwin|linux/i))) {
                     path = matches[1];
@@ -368,8 +354,8 @@ var exec = function(cmd, args, cwd, cb) {
         } else if (args[args.length - 1] === 'run:conf-json') {
             console.log('run:conf-json');
             global.confJson = JSON.parse(data);
-            var appConf = require('app-conf');
-            appConf.setConfFilePath(global.SETTING_JSON);
+            //var appConf = require('app-conf');
+            //appConf.setConfFilePath(global.SETTING_JSON);
             appConf.readConf(function(jsonConf) {
                 global.appJson = jsonConf;
                 PHP.start(global.confJson.buildInServerIp, global.confJson.buildInServerPort);
@@ -385,8 +371,8 @@ var exec = function(cmd, args, cwd, cb) {
                 appendMsg('phpBin:' + tmpPhpBin);
                 appendMsg('usePHP:' + _data);
                 Console.appendMsg("composer.json内のphpパスの修正が必要です。", "info");
-                var appConf = require('app-conf');
-                appConf.setConfFilePath(global.SETTING_JSON);
+                //var appConf = require('app-conf');
+                //appConf.setConfFilePath(global.SETTING_JSON);
                 if (!!(platform.match(/darwin/i))) {
                     // そのまま
                 } else if (!!(platform.match(/win32/i))) {
@@ -404,7 +390,6 @@ var exec = function(cmd, args, cwd, cb) {
             }
         } else {
             appendMsg(_data);
-            //appendMsg(data);
         }
         //} // end for
     });
@@ -429,8 +414,8 @@ var exec = function(cmd, args, cwd, cb) {
 };
 
 var projectSettingLoad = function() {
-    var appConf = require('app-conf');
-    appConf.setConfFilePath(global.SETTING_JSON);
+    //var appConf = require('app-conf');
+    //appConf.setConfFilePath(global.SETTING_JSON);
     var path = require('path');
     // var confPath = appConf.getConfFilePath();
     // 表示初期化
@@ -463,8 +448,8 @@ var http = require('http');
 global.PHP = {
     start: function(hostname, port) {
         // Create a PHP Server 
-        var appConf = require('app-conf');
-        appConf.setConfFilePath(global.SETTING_JSON);
+        //var appConf = require('app-conf');
+        //appConf.setConfFilePath(global.SETTING_JSON);
         appConf.readConf(function(jsonConf) {
             phpServer.createServer({
                 "port": port,
@@ -512,23 +497,8 @@ global.SHELL = {
     openItem: function(fullPath) {
         var os = require('os');
         var platform = os.platform().toLowerCase();
-        // if(!!(global.platform.match(/darwin|linux/i))){
-        //     // windowsでは動かない。
-        //     shell.openItem(fullPath);
-        // }else{
-        //     // windowsではc:\asazuke\hoge.csvとかすると既定のプログラムで開くハズ、、、
-        //     appendMsg(fullPath);
-
-        //     fullPath = (fs.realpathSync(fullPath));
-        //     appendMsg(fullPath);
-        //     var appConf = require('app-conf');
-        //     appConf.setConfFilePath(global.SETTING_JSON);
-        //     appConf.readConf(function(jsonConf){
-        //         App.exec('explorer', [fullPath], jsonConf.asazuke);
-        //     });
-        // }
-        var appConf = require('app-conf');
-        appConf.setConfFilePath(global.SETTING_JSON);
+        //var appConf = require('app-conf');
+        //appConf.setConfFilePath(global.SETTING_JSON);
         appConf.readConf(function(jsonConf) {
             if (!!(global.platform.match(/darwin/i))) {
                 App.exec('open', [fullPath], jsonConf.asazuke);
@@ -542,10 +512,10 @@ global.SHELL = {
         });
     },
     openSqlDir: function() {
-        var appConf = require('app-conf');
-        appConf.setConfFilePath(global.SETTING_JSON);
+        //var appConf = require('app-conf');
+        //appConf.setConfFilePath(global.SETTING_JSON);
         appConf.readConf(function(jsonConf) {
-            var sqlDir = directory_separator_repair(jsonConf.asazuke + '/src/data/sql/');
+            var sqlDir = ds_repair(jsonConf.asazuke + '/src/data/sql/');
             console.log('sqlDir', sqlDir);
             if (!!(global.platform.match(/darwin/i))) {
                 App.exec('open', [sqlDir], jsonConf.asazuke);
@@ -564,12 +534,12 @@ global.SHELL = {
             // とりあえずWindowsのみ
             var exec = require('child_process').exec,
                 child;
-            var appConf = require('app-conf');
-            appConf.setConfFilePath(global.SETTING_JSON);
+            //var appConf = require('app-conf');
+            //appConf.setConfFilePath(global.SETTING_JSON);
             appConf.readConf(function(jsonConf) {
                 if (!!(platform.match(/darwin/i))) {
                     // mac
-                    child = exec('cat  ' + directory_separator_repair(fullPath) + ' | ' + 'sqlite3                                       ' + jsonConf.asazuke + '/src/data/' + global.confJson.projectName + '/asazuke.sqlite',
+                    child = exec('cat  ' + ds_repair(fullPath) + ' | ' + 'sqlite3                                       ' + jsonConf.asazuke + '/src/data/' + global.confJson.projectName + '/asazuke.sqlite',
                         //jqueryFileTree.init('.fileTree4', jsonConf.asazuke + '/src/data/' + global.confJson.projectName + '/');
                         function(error, stdout, stderr) {
                             console.log('stdout: ' + stdout);
@@ -581,7 +551,7 @@ global.SHELL = {
                         });
                 } else {
                     // win 
-                    child = exec('type ' + directory_separator_repair(fullPath) + ' | ' + directory_separator_repair(jsonConf.asazuke + '/bin/sqlite/sqlite3.exe ') + directory_separator_repair(jsonConf.asazuke + '/src/data/' + global.confJson.projectName + '/asazuke.sqlite'),
+                    child = exec('type ' + ds_repair(fullPath) + ' | ' + ds_repair(jsonConf.asazuke + '/bin/sqlite/sqlite3.exe ') + ds_repair(jsonConf.asazuke + '/src/data/' + global.confJson.projectName + '/asazuke.sqlite'),
                         //jqueryFileTree.init('.fileTree4', jsonConf.asazuke + '/src/data/' + global.confJson.projectName + '/');
                         function(error, stdout, stderr) {
                             console.log('stdout: ' + stdout);
@@ -647,8 +617,8 @@ global.App = {
             '</tr></table>' +
             '</div>');
 
-        var appConf = require('app-conf');
-        appConf.setConfFilePath(global.SETTING_JSON);
+        //var appConf = require('app-conf');
+        //appConf.setConfFilePath(global.SETTING_JSON);
         appConf.readConf(function(jsonConf) {
             exec(phpBin, [composerPhar, 'run:site-scan'], jsonConf.asazuke);
             //exec(composerPhar, ['run:site-scan'], jsonConf.asazuke);
@@ -663,8 +633,8 @@ global.App = {
             $('.js-cancel').prop('disabled', true);
         }
 
-        var appConf = require('app-conf');
-        appConf.setConfFilePath(global.SETTING_JSON);
+        //var appConf = require('app-conf');
+        //appConf.setConfFilePath(global.SETTING_JSON);
         appConf.readConf(function(jsonConf) {
             Load.htmlDownload();
             exec(phpBin, [composerPhar, 'run:site-validation-ex'], jsonConf.asazuke);
@@ -677,8 +647,8 @@ global.App = {
             $('.js-cancel').prop('disabled', true);
         }
 
-        var appConf = require('app-conf');
-        appConf.setConfFilePath(global.SETTING_JSON);
+        //var appConf = require('app-conf');
+        //appConf.setConfFilePath(global.SETTING_JSON);
         appConf.readConf(function(jsonConf) {
             exec(phpBin, [composerPhar, 'run:site-validation-csv'], jsonConf.asazuke);
         });
@@ -691,8 +661,8 @@ global.App = {
             $('.js-cancel').prop('disabled', true);
         }
 
-        var appConf = require('app-conf');
-        appConf.setConfFilePath(global.SETTING_JSON);
+        //var appConf = require('app-conf');
+        //appConf.setConfFilePath(global.SETTING_JSON);
         appConf.readConf(function(jsonConf) {
             exec(phpBin, [composerPhar, 'run:site-validation-json'], jsonConf.asazuke);
         });
@@ -704,8 +674,8 @@ global.App = {
             $('.js-cancel').prop('disabled', true);
         }
 
-        var appConf = require('app-conf');
-        appConf.setConfFilePath(global.SETTING_JSON);
+        //var appConf = require('app-conf');
+        //appConf.setConfFilePath(global.SETTING_JSON);
         appConf.readConf(function(jsonConf) {
             exec(phpBin, [composerPhar, 'run:scraping'], jsonConf.asazuke);
         });
@@ -713,24 +683,24 @@ global.App = {
     // AsazukeConf.php読み込み
     execConfJson: function(cb) {
 
-        var appConf = require('app-conf');
-        appConf.setConfFilePath(global.SETTING_JSON);
+        //var appConf = require('app-conf');
+        //appConf.setConfFilePath(global.SETTING_JSON);
         appConf.readConf(function(jsonConf) {
             exec(phpBin, [composerPhar, 'run:conf-json'], jsonConf.asazuke, cb);
         });
     },
     execExecFileSQL: function() {
 
-        var appConf = require('app-conf');
-        appConf.setConfFilePath(global.SETTING_JSON);
+        //var appConf = require('app-conf');
+        //appConf.setConfFilePath(global.SETTING_JSON);
         appConf.readConf(function(jsonConf) {
             exec(phpBin, [composerPhar, 'run:file-sql'], jsonConf.asazuke);
         });
     },
     execExecFileSQL_JSON: function() {
 
-        var appConf = require('app-conf');
-        appConf.setConfFilePath(global.SETTING_JSON);
+        //var appConf = require('app-conf');
+        //appConf.setConfFilePath(global.SETTING_JSON);
         appConf.readConf(function(jsonConf) {
             exec(phpBin, [composerPhar, 'run:file-sql-json'], jsonConf.asazuke);
         });
@@ -738,8 +708,8 @@ global.App = {
     // phpのインストール先確認
     execWhichPhp: function() {
         appendMsg("which php");
-        var appConf = require('app-conf');
-        appConf.setConfFilePath(global.SETTING_JSON);
+        //var appConf = require('app-conf');
+        //appConf.setConfFilePath(global.SETTING_JSON);
         appConf.readConf(function(jsonConf) {
             appendMsg(phpBin);
             exec(phpBin, [composerPhar, 'which-php'], jsonConf.asazuke);
@@ -747,8 +717,8 @@ global.App = {
     },
     execAsazukeUpdateCheck: function() {
 
-        var appConf = require('app-conf');
-        appConf.setConfFilePath(global.SETTING_JSON);
+        //var appConf = require('app-conf');
+        //appConf.setConfFilePath(global.SETTING_JSON);
         appConf.readConf(function(jsonConf) {
 
             exec(jsonConf.git, ['-C', jsonConf.asazuke, 'ls-remote', 'origin', 'HEAD'], jsonConf.asazuke, function() {
@@ -771,8 +741,8 @@ global.App = {
     },
     asazuke_install: function() {
         console.log('asazuke_install');
-        var appConf = require('app-conf');
-        appConf.setConfFilePath(global.SETTING_JSON);
+        //var appConf = require('app-conf');
+        //appConf.setConfFilePath(global.SETTING_JSON);
         appConf.readConf(function(jsonConf) {
             if (!fs_exists(jsonConf.git)) {
                 Console.appendMsg(jsonConf.git + 'が見つかりません', 'error');
@@ -801,8 +771,8 @@ global.App = {
     },
     asazuke_update: function() {
         console.log('asazuke_update');
-        var appConf = require('app-conf');
-        appConf.setConfFilePath(global.SETTING_JSON);
+        //var appConf = require('app-conf');
+        //appConf.setConfFilePath(global.SETTING_JSON);
         appConf.readConf(function(jsonConf) {
             if (!fs_exists(jsonConf.git)) {
                 Console.appendMsg(jsonConf.git + 'が見つかりません', 'error');
@@ -869,8 +839,8 @@ global.Console = {
 global.Setting = {
     paths: function() {
 
-        var appConf = require('app-conf');
-        appConf.setConfFilePath(global.SETTING_JSON);
+        //var appConf = require('app-conf');
+        //appConf.setConfFilePath(global.SETTING_JSON);
         appConf.readConf(function(jsonConf) {
             jsonConf.php = $('#uv1').val();
             jsonConf.asazuke = $('#uv2').val();
@@ -885,17 +855,17 @@ global.Setting = {
         var swProject = project;
 
         $('.js-projectList').empty();
-        var appConf = require('app-conf');
+        //var appConf = require('app-conf');
 
-        console.log('global.SETTING_JSON', global.SETTING_JSON);
+        //console.log('global.SETTING_JSON', global.SETTING_JSON);
         appConf.setConfFilePath(global.SETTING_JSON);
-        console.log('global.SETTING_JSON2', appConf.getConfFilePath());
+        //console.log('global.SETTING_JSON2', appConf.getConfFilePath());
 
         appConf.readConf(function(jsonConf) {
             jsonConf.select_project = swProject;
             appConf.updateConf(jsonConf);
 
-            // TODO 合わせて修正(#1000)
+            // 合わせて修正(#1000)
             for (var i in jsonConf.projects) {
                 var project = jsonConf.projects[i];
                 if (project === jsonConf.select_project) {
@@ -919,7 +889,7 @@ global.Setting = {
                     // 設定ファイルが見つからない
                 }
             } else {
-                var refConfPath = directory_separator_repair(jsonConf.asazuke + '\\src\\' + 'AsazukeConf-%s.php'.replace('%s', swProject));
+                var refConfPath = ds_repair(jsonConf.asazuke + '\\src\\' + 'AsazukeConf-%s.php'.replace('%s', swProject));
                 if (fs_exists(refConfPath)) {
                     fs.unlink(jsonConf.asazuke + '\\src\\AsazukeConf.php', function() {
                         // Windowsでは管理者モードで起動しないとsymlinkが使えないのでcopyで代用
@@ -947,14 +917,14 @@ global.Setting = {
             console.log(new_project);
 
             $('.js-projectList').empty();
-            var appConf = require('app-conf');
-            appConf.setConfFilePath(global.SETTING_JSON);
+            //var appConf = require('app-conf');
+            //appConf.setConfFilePath(global.SETTING_JSON);
             appConf.readConf(function(jsonConf) {
                 jsonConf.projects.push(new_project);
                 jsonConf.select_project = new_project;
                 appConf.updateConf(jsonConf);
 
-                // TODO 合わせて修正(#1000)
+                // 合わせて修正(#1000)
                 for (var i in jsonConf.projects) {
                     var project = jsonConf.projects[i];
                     if (project === jsonConf.select_project) {
@@ -977,8 +947,8 @@ global.Setting = {
                             // 表示初期化
                             $('.fileTree0').empty();
 
-                            var appConf = require('app-conf');
-                            appConf.setConfFilePath(global.SETTING_JSON);
+                            //var appConf = require('app-conf');
+                            //appConf.setConfFilePath(global.SETTING_JSON);
                             appConf.readConf(function(jsonConf) {
                                 // jqueryFileTree.init('.fileTree2',jsonConf.asazuke + '/src/data/test/cssWorks/');
                                 jqueryFileTree.init('.fileTree0', jsonConf.asazuke + '/src/');
@@ -1025,32 +995,6 @@ global.Setting = {
                                 r.pipe(w);
                             });
                         }
-                        // exec('unlink', ['AsazukeConf.php'], jsonConf.asazuke + '/src', function(){
-                        //     // $ ln <リンク元ファイル> <リンク名>
-                        //     exec('ln', ['-s', 'AsazukeConf-%s.php'.replace('%s', new_project), 'AsazukeConf.php'], jsonConf.asazuke + '/src', function(){
-                        // // fs.unlink(jsonConf.asazuke + '/src/AsazukeConf.php', function(){
-                        // //     fs.symlink(jsonConf.asazuke + '/src/' + 'AsazukeConf-%s.php'.replace('%s', new_project)
-                        // //                 , jsonConf.asazuke + '/src/' + 'AsazukeConf.php'
-                        // //                 , 'file'
-                        // //                 , function(){
-                        //         // 表示初期化
-                        //         $('.fileTree0').empty();
-                        //         var appConf = require('app-conf');
-                        //         appConf.setConfFilePath(global.SETTING_JSON);
-                        //         appConf.readConf(function(jsonConf){
-                        //             // jqueryFileTree.init('.fileTree2',jsonConf.asazuke + '/src/data/test/cssWorks/');
-                        //             jqueryFileTree.init('.fileTree0',jsonConf.asazuke + '/src/');
-                        //             // 表示フィルタ
-                        //             // $('.jqueryFileTree a').css({"display": "none"});
-                        //             $('.jqueryFileTree a').addClass('mask')
-                        //             $('.file > a[rel*="AsazukeConf"]').css({'display':'block'})
-                        //             $('.file > a[rel$="AsazukeConf.php"]').css({'color':'#BFBFBF'})
-                        //             //プロジェクト設定
-                        //             projectSettingLoad();
-                        //         });
-                        //         appendMsg("プロジェクト設定を切り替えました。");
-                        //     });
-                        // });
                     });
                 });
 
@@ -1063,21 +1007,20 @@ global.Setting = {
     target: function() {
         // 設定更新
         // var AsazukeConf = require('./resources/js/node/asazuke-conf.js');
-        var AsazukeConf = require('asazuke-conf');
         var newUrl = $('input[name="SITE_URL"]').val();
         var newStartPath = $('input[name="START_PATH"]').val();
         var newAuthUser = $('input[name="AUTH_USER"]').val();
         var newAuthPass = $('input[name="AUTH_PASS"]').val();
-        AsazukeConf.updateConf(newUrl, newStartPath, newAuthUser, newAuthPass, function() {
+        asazukeConf.updateConf(newUrl, newStartPath, newAuthUser, newAuthPass, function() {
             // windowsの場合は設定ファイルを元のファイルにコピーする
             if (!!(global.platform.match(/darwin|linux/i))) {
                 // 実態を持たないので不要
             } else {
                 console.log('設定を元ファイルに書き込みます');
-                var appConf = require('app-conf');
-                appConf.setConfFilePath(global.SETTING_JSON);
+                //var appConf = require('app-conf');
+                //appConf.setConfFilePath(global.SETTING_JSON);
                 appConf.readConf(function(jsonConf) {
-                    var refConfPath = directory_separator_repair(jsonConf.asazuke + '\\src\\' + 'AsazukeConf-%s.php'.replace('%s', global.confJson.projectName));
+                    var refConfPath = ds_repair(jsonConf.asazuke + '\\src\\' + 'AsazukeConf-%s.php'.replace('%s', global.confJson.projectName));
                     if (fs_exists(refConfPath)) {
                         var contents = fs.readFileSync(jsonConf.asazuke + '\\src\\' + 'AsazukeConf.php');
                         fs.writeFileSync(refConfPath, contents);
@@ -1087,8 +1030,6 @@ global.Setting = {
                 });
             }
         });
-
-
         showMsg({
             message: '設定を更新しました。'
         });
@@ -1114,8 +1055,8 @@ global.Load = {
 						`);
 
         // リスト更新
-        var appConf = require('app-conf');
-        appConf.setConfFilePath(global.SETTING_JSON);
+        //var appConf = require('app-conf');
+        //appConf.setConfFilePath(global.SETTING_JSON);
         appConf.readConf(function(jsonConf) {
             var dir = jsonConf.asazuke + "/";
             var files = fs.readdirSync(dir)
@@ -1194,15 +1135,15 @@ global.Load = {
                     console.log("setting loaded2.");
 
                     // AppConf
-                    var appConf = require('app-conf');
-                    console.log(global.SETTING_JSON);
-                    appConf.setConfFilePath(global.SETTING_JSON);
+                    //var appConf = require('app-conf');
+                    //console.log(global.SETTING_JSON);
+                    //appConf.setConfFilePath(global.SETTING_JSON);
                     appConf.readConf(function(jsonConf) {
                         $('input[name="PHP_PATH"]').val(jsonConf.php);
                         $('input[name="ASAZUKE_DIR_PATH"]').val(jsonConf.asazuke);
 
                         // AsazukeConf
-                        var asazukeConf = require('asazuke-conf');
+                        //var asazukeConf = require('asazuke-conf');
                         console.log(jsonConf.asazuke + '/src/AsazukeConf.php');
                         // var fs = require('fs');
                         // var fs = require('fs-extra');
@@ -1227,8 +1168,8 @@ global.Load = {
                         // 表示初期化
                         $('.fileTree0').empty();
 
-                        var appConf = require('app-conf');
-                        appConf.setConfFilePath(global.SETTING_JSON);
+                        //var appConf = require('app-conf');
+                        //appConf.setConfFilePath(global.SETTING_JSON);
                         appConf.readConf(function(jsonConf) {
                             // jqueryFileTree.init('.fileTree2',jsonConf.asazuke + '/src/data/test/cssWorks/');
                             jqueryFileTree.init('.fileTree0', jsonConf.asazuke + '/src/');
@@ -1267,7 +1208,6 @@ global.Load = {
                 $('#LeftPanel').width(710);
                 $(window).resize();
 
-
                 $("#div_A .layer-panel").eq(n).load("batch.html", function(htmlData, loadStatus) {
 
                 });
@@ -1281,8 +1221,8 @@ global.Load = {
                 $('#LeftPanel').width(500);
                 $(window).resize();
 
-                var appConf = require('app-conf');
-                appConf.setConfFilePath(global.SETTING_JSON);
+                //var appConf = require('app-conf');
+                //appConf.setConfFilePath(global.SETTING_JSON);
                 appConf.readConf(function(jsonConf) {
                     $('.fileTree2').empty();
                     var tmpl = `
@@ -1331,8 +1271,8 @@ global.Load = {
                 App.execConfJson(function() {
                     $("#div_C .layer-panel").eq(n).load("web_scraping.html", function(htmlData, loadStatus) {
 
-                        var appConf = require('app-conf');
-                        appConf.setConfFilePath(global.SETTING_JSON);
+                        //var appConf = require('app-conf');
+                        //appConf.setConfFilePath(global.SETTING_JSON);
                         appConf.readConf(function(jsonConf) {
                             $('.fileTree3').empty();
                             //jqueryFileTree.init('.fileTree3',jsonConf.asazuke + '/src/data/' + jsonConf.select_project+ '/SampleSite/');
@@ -1347,31 +1287,16 @@ global.Load = {
                 $('#LeftPanel').width(250);
                 $(window).resize();
 
-
                 $("#div_C .layer-panel").eq(n).load("database.html", function(htmlData, loadStatus) {
 
-                    var appConf = require('app-conf');
-                    appConf.setConfFilePath(global.SETTING_JSON);
+                    //var appConf = require('app-conf');
+                    //appConf.setConfFilePath(global.SETTING_JSON);
                     appConf.readConf(function(jsonConf) {
                         $('.fileTree4').empty();
-                        //console.log('.fileTree4',jsonConf.asazuke + '/src/data/' + jsonConf.select_project+ '/');
-                        //jqueryFileTree.init('.fileTree4',jsonConf.asazuke + '/src/data/' + jsonConf.select_project+ '/');
-                        //console.log('.fileTree4', jsonConf.asazuke + '/src/data/' + global.confJson.projectName + '/');
-                        //jqueryFileTree.init('.fileTree4', jsonConf.asazuke + '/src/data/' + global.confJson.projectName + '/');
                         console.log('.fileTree4', jsonConf.asazuke + '/src/data/sql/');
                         jqueryFileTree.init('.fileTree4', jsonConf.asazuke + '/src/data/sql/');
 
-
-
-                        $('.jqueryFileTree a').addClass('mask')
-                            //$('.file > a[rel*="asazuke.sqlite"]').css({
-                            //    'display': 'block',
-                            //    'color': '#BFBFBF'
-                            //});
-                            //$('.file > a[rel$="asazuke.sqlite"]').css({
-                            //    'display': 'block',
-                            //    'color': '#333'
-                            //});
+                        $('.jqueryFileTree a').addClass('mask');
                         $('.file > a[rel$=".sql"]').css({
                             'display': 'block',
                             'color': '#333'
@@ -1383,7 +1308,6 @@ global.Load = {
             case 5:
                 $('#LeftPanel').width(250);
                 $(window).resize();
-
 
                 //var config = require('../../../../package.json');
                 var version = config.version;
@@ -1420,19 +1344,13 @@ global.Load = {
         }
 
         // タイトル設定
-        var appConf = require('app-conf');
+        //var appConf = require('app-conf');
         var config = require('../../../../package.json');
         var appName = config.config.appname;
         $('title').text($('.header-menu .item.active a').text() + ' | ' + appName);
-        //appConf.setConfFilePath(global.SETTING_JSON);
-        //appConf.readConf(function(jsonConf){
-        //	$('title').text($('.header-menu .item.active a').text() + ' | ' + appName);
-        //});
         // Asazuke設定読み込み
         mConsole.init('#consolePanel .layer-panel.is-current .div-textarea');
-        //mConsole.init();
         App.execConfJson(function() {
-            //appendMsg("which PHP");
             App.execWhichPhp();
         });
     }
