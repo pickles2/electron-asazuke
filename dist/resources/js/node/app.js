@@ -492,6 +492,17 @@ global.SHELL = {
             }
         });
     },
+    openDir: function(filePath) {
+            if (!!(platform.match(/darwin/i))) {
+                App.exec('open', [filePath], '.');
+            } else if (!!(platform.match(/linux/i))) {
+                // linux
+                App.exec('xdg-open', [filePath], '.');
+            } else {
+                // windows
+                App.exec('explorer', [filePath], '.');
+            }
+    },
     openSqlDir: function() {
         appConf.readConf(function(jsonConf) {
             var sqlDir = ds_repair(jsonConf.asazuke + '/src/data/sql/');
@@ -730,6 +741,11 @@ global.App = {
             });
         });
     },
+    openSiteScan: function() {
+        appConf.readConf(function(jsonConf) {
+            SHELL.openDir(jsonConf.asazuke + '/src/data/' + global.confJson.projectName + '/SampleSite/');
+        });
+    }
 };
 
 // consoleメニュー
