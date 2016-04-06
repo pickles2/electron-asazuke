@@ -1,68 +1,71 @@
 var remote = require('remote');
+var fs = require('fs');
 var app = remote.require('app');
 global.APP_PATH = app.getAppPath();
 var exe = app.getPath('exe'); // win32はexe, osxはElectron
 var unpackedDir = path.normalize(path.dirname(exe) + '/../Resources/app.asar.unpacked');
 
-global.platform = require('os').platform().toLowerCase();
+var platform = require('os').platform().toLowerCase();
 var phpBin = unpackedDir + '/node-php-bin/bin/darwin/5.6.18/bin/php';
 var composerPhar = unpackedDir + '/node-php-bin/bin/darwin/composer.phar';
-if (!!(global.platform.match(/darwin/i))) {} else if (!!(global.platform.match(/win32/i))) {
+if (!!(platform.match(/darwin/i))) {
+    // mac
+} else if (!!(platform.match(/win32/i))) {
     unpackedDir = path.dirname(global.APP_PATH) + '\\app.asar.unpacked';
     phpBin = path.dirname(global.APP_PATH) + '\\app.asar.unpacked\\node-php-bin\\bin\\win32\\php-5.6.18\\php.exe';
     composerPhar = path.dirname(global.APP_PATH) + '\\app.asar.unpacked\\node-php-bin\\bin\\win32\\composer.phar';
 }
-var fs = require('fs');
 var isElectron = false; // $ electron . で起動した場合
 fs.stat(unpackedDir, function(stat) {
     //console.log('stat', stat);
     if (stat == null) {
-
+        // ファイルがある
     } else if (stat.code === 'ENOENT') {
         // ファイルがない場合。
-        console.log('ディレクトリがない場合。');
-        if (!!(global.platform.match(/darwin/i))) {
+        console.log(unpackedDir + 'ディレクトリが見つかりません。');
+        if (!!(platform.match(/darwin/i))) {
             phpBin = global.APP_PATH + '/node-php-bin/bin/darwin/5.6.18/bin/php';
             composerPhar = global.APP_PATH + '/node-php-bin/bin/darwin/composer.phar';
             isElectron = true;
-        } else if (!!(global.platform.match(/win32/i))) {
+        } else if (!!(platform.match(/win32/i))) {
             phpBin = global.APP_PATH + '/node-php-bin/bin/win32/php-5.6.18/php.exe';
             composerPhar = global.APP_PATH + '/node-php-bin/bin/win32/composer.phar';
             isElectron = true;
-
         }
     }
 });
-var bs2sl = function(str){
-  return str.replace(/\u002F/g, "\u005C"); // / -> \
-}
-var sl2bs = function(str){
-  return str.replace(/\u005C/g, "\u002F"); // \ -> /
-}
-var directory_separator_repair = function(str){
+// バックスラッシュ(/)->スラッシュ(\)
+var bs2sl = function(str) {
+    return str.replace(/\u002F/g, "\u005C");
+};
+// スラッシュ(\)->バックスラッシュ(/)
+var sl2bs = function(str) {
+    return str.replace(/\u005C/g, "\u002F");
+};
+// ディレクトリセパレータを修復
+var ds_repair = function(str) {
     if (!!(platform.match(/darwin/i))) {
-      return sl2bs(str);
+        return sl2bs(str);
     } else if (!!(platform.match(/win32/i))) {
-      return bs2sl(str);
+        return bs2sl(str);
     }
-}
+};
+// ファイルの有無
 var fs_exists = function(file_path) {
-  try {
-    var status = fs.statSync(file_path);
-    console.log(file_path +' it exists');
-    return true;
-  }catch (e) {
-    console.log(file_path + ' it does not exist');
-    Console.appendMsg(file_path + 'が見つかりません', 'error');
-    return false;
-  }
-}
+    try {
+        var status = fs.statSync(file_path);
+        console.log(file_path + ' it exists');
+        return true;
+    } catch (e) {
+        console.log(file_path + ' it does not exist');
+        Console.appendMsg(file_path + 'が見つかりません', 'error');
+        return false;
+    }
+};
 
-// global.APP_CONF = APP_PATH + '/setting.json';
 var iconv = require('iconv-lite');
 var phpKiller = require('php-killer');
 var appConf = require('app-conf');
-// ./node-php-bin/bin/darwin/5.6.18/bin/php ./node-php-bin/bin/darwin/composer.phar
 var mConsole = require('m-console');
 
 global.userDataDir = app.getPath('userData');
@@ -77,7 +80,7 @@ appConf.readConf(function(jsonConf) {
     phpKiller.setDir(jsonConf.asazuke);
 });
 
-
+var asazukeConf = require('asazuke-conf');
 var dialog = remote.require('dialog');
 var jqueryFileTree = require('jquery-file-tree');
 var showMsg = function(options) {
@@ -98,30 +101,29 @@ var showMsg = function(options) {
 
 // カーソルを最下行に合わせる
 var go_bottom = function($divTextarea) {
-        console.log('go_bottom');
-        var $obj = $divTextarea;
-        console.log($obj);
-        if ($obj.length == 0) return;
-        $obj.scrollTop($obj[0].scrollHeight);
+    console.log('go_bottom');
+    var $obj = $divTextarea;
+    console.log($obj);
+    if ($obj.length == 0) {
+        return;
     }
-    // メッセージエリアへの出力
+    $obj.scrollTop($obj[0].scrollHeight);
+};
+// メッセージエリアへの出力
 var appendMsg = function(text) {
-		var ary = (text).toString().split(/\r\n|\r|\n/);
-		for(var i in ary){
-	// 制御コード削除
-	data = ary[i];
-        if (!!(global.platform.match(/darwin|linux/i))) {
+    var ary = (text).toString().split(/\r\n|\r|\n/);
+    for (var i in ary) {
+        // 制御コード削除
+        data = ary[i];
+        if (!!(platform.match(/darwin|linux/i))) {
+            //
         } else {
             data = data.replace(/\[\d{2};\d{2}m/g, '').replace(/\[\d{2}m/g, '');
             //data = data.replace(/\[/g, '');
-	}
-      mConsole.appendMsg(data);
-}
-    //mConsole.appendMsg(text);
-
-    //$('#consolePanel .layer-panel.is-current .div-textarea')[0].value += text + "\n";
-    //go_bottom($('#consolePanel .layer-panel.is-current .div-textarea'));
-}
+        }
+        mConsole.appendMsg(data);
+    }
+};
 
 var job = null;
 var kill = function() {
@@ -130,7 +132,7 @@ var kill = function() {
     }
     appendMsg("KILLシグナル" + global.job.pid);
 
-    if (!!(global.platform.match(/darwin|linux/i))) {
+    if (!!(platform.match(/darwin|linux/i))) {
         // mac/linux 
     } else {
         phpKiller.killProcess();
@@ -146,6 +148,9 @@ var kill = function() {
     $("#lbl-btn01, #lbl-btn02, #lbl-btn03, #lbl-btn04").prop("checked", false);
 };
 
+var util = require('util');
+var _exec = require('child_process').spawn;
+var async = require("async");
 var confJson;
 var appJson;
 var gitHashRemote = null;
@@ -155,49 +160,37 @@ var exec = function(cmd, args, cwd, cb) {
         console.log('プロセスID「' + global.job.pid + '」が実行中です。');
         return;
     }
-
-    var util = require('util'),
-        _exec = require('child_process').spawn,
-
-        job = _exec(cmd, args, {
-            "cwd": cwd
-        });
+    var job = _exec(cmd, args, {
+        "cwd": cwd
+    });
     console.log('cmd', cmd);
     global.job = job;
 
-    // windows
-
+    // for Windows
     var path;
-    if (!!(global.platform.match(/darwin|linux/i))) {} else {
+    if (!!(platform.match(/darwin|linux/i))) {
+        //
+    } else {
         // php プロセス登録
-	// $('.js-cancel').prop('disabled',true); // <- batchの時だけ必要なので
-	setTimeout(function(){
-		Console.appendMsg('php　プロセス取得', 'warning');
-        	phpKiller.getProcess();
-		$('.js-cancel').prop('disabled',false);
-	}, 3000);
+        // $('.js-cancel').prop('disabled',true); // <- batchの時だけ必要なので
+        setTimeout(function() {
+            Console.appendMsg('php　プロセス取得', 'warning');
+            phpKiller.getProcess();
+            $('.js-cancel').prop('disabled', false);
+        }, 3000);
     }
 
     appendMsg("START PID:" + global.job.pid);
-
     global.job.stdout.on('data', function(data) {
         var _data = data;
-        // data = String(data).replace(/\n?$/g,');
-        if (!!(global.platform.match(/darwin|linux/i))) {} else {
-            data = iconv.decode(data, "cp932")
+        if (!!(platform.match(/darwin|linux/i))) {
+            //
+        } else {
+            data = iconv.decode(data, "cp932");
         }
         data = data.toString();
         console.log('stdout: ' + data);
-        //var data0 = data.toString();
-        //console.log('stdout: ' + data0);
-        // 改行で分割
-        //var aryData = data0.split(/\r\n|\r|\n/);
-        //for (i = 0; i < aryData.length; i++) {
-        //  //alert(aryData[i]);
-        //  data = aryData[i]
-        ////}
-        //appendMsg('args[args.length -1]:' + args[args.length - 1]);
-	
+
         // 完了メッセージ
         var matches = data.match(/Finished\!\!(.*)/gi);
         if (matches != null) {
@@ -209,10 +202,10 @@ var exec = function(cmd, args, cwd, cb) {
             return true;
         }
 
-        //if(args[1] === 'site-scan'){
-        if (args[args.length - 1] === 'run:site-scan') {
+        if (args[args.length - 1] === 'run:site-scan0'
+        || args[args.length - 1] === 'run:site-scan') {
             // コンソールパネル
-            var matches = data.match(/Finished\s->\s(.*)/gi);
+            matches = data.match(/Finished\s->\s(.*)/gi);
             if (matches != null) {
                 //appendMsg(matches[0]);
                 if (matches.length >= 2) {
@@ -221,15 +214,11 @@ var exec = function(cmd, args, cwd, cb) {
                     appendMsg(matches[0]);
                 }
             }
-
             // メインパネル
             matches = data.match(/Result\s->\s(.*)/gi);
             if (matches != null) {
                 for (var xxi in matches) {
                     var resultJson = JSON.parse(matches[xxi].match(/Result\s->\s(.*)/)[1]);
-                    //var resultJson =  JSON.parse(matches[1]);
-                    //    var resultJson =  JSON.parse(matches[0]);
-                    // appendMsg(JSON.stringify(resultJson)); 
                     $('#tbl-sitescan').append($('<tr>' +
                         '<td>' + resultJson.id + '</td>' +
                         '<td>' + resultJson.fullPath + '</td>' +
@@ -259,18 +248,16 @@ var exec = function(cmd, args, cwd, cb) {
 
                 $('.tbl_htmlDL').append(`
 					<tr><td>${no}</td><td>${path}</td><td>${err}</td><td>${warn}</td><</tr>
-					`)
+					`);
             });
-
 
             // Include the async package
             // Make sure you add "async" to your package.json
-            var async = require("async");
             $('.fileTree2-2 ul').empty();
             // 1st para in async.each() is the array of items
             async.each($('.fileTree2-0 a'), function(item, next) {
                 setTimeout(function() {
-                    var search_id = ($(item).text()).split('.')[0]
+                    var search_id = ($(item).text()).split('.')[0];
                     console.log(search_id, 'done!!');
                     $(jsonData).each(function(ind, ele) {
                         if (ele[0] == search_id) {
@@ -285,11 +272,9 @@ var exec = function(cmd, args, cwd, cb) {
             });
 
             // データベース | データ確認
-            //} else if(args[0] === 'run:file-sql-json'){
         } else if (args[args.length - 1] === 'run:file-sql-json') {
             console.log("// データベース | データ確認");
             // appendMsg(data+"\n";);
-            // $('.js-selectSQL-result').append($('<h4>結果</h4>'));
             var matches = data.match(/Result\s->\s(.*)/);
             $('.js-selectSQL-result').empty();
             if (matches != null) {
@@ -352,9 +337,8 @@ var exec = function(cmd, args, cwd, cb) {
                 // 規定のアプリで開く
                 console.log('matches[1]', matches[1]);
 
-
                 var path;
-                if (!!(global.platform.match(/darwin|linux/i))) {
+                if (!!(platform.match(/darwin|linux/i))) {
                     path = matches[1];
                 } else {
                     // PATHセパレータ正規化
@@ -362,15 +346,12 @@ var exec = function(cmd, args, cwd, cb) {
                 }
                 SHELL.openItem(path);
                 Load.sitemapCSV();
-                
-                Console.appendMsg("Finished!! (sitemap-csv)", "success"); 
+
+                Console.appendMsg("Finished!! (sitemap-csv)", "success");
             }
-            //} else if(args[0] === 'run:conf-json'){
         } else if (args[args.length - 1] === 'run:conf-json') {
             console.log('run:conf-json');
             global.confJson = JSON.parse(data);
-            var appConf = require('app-conf');
-            appConf.setConfFilePath(global.SETTING_JSON);
             appConf.readConf(function(jsonConf) {
                 global.appJson = jsonConf;
                 PHP.start(global.confJson.buildInServerIp, global.confJson.buildInServerPort);
@@ -382,21 +363,19 @@ var exec = function(cmd, args, cwd, cb) {
             if (phpBin == _data) {
                 appendMsg("php stand ready.");
             } else {
-            var tmpPhpBin = phpBin;
-            appendMsg('phpBin:' + tmpPhpBin);
-            appendMsg('usePHP:' + _data);
+                var tmpPhpBin = phpBin;
+                appendMsg('phpBin:' + tmpPhpBin);
+                appendMsg('usePHP:' + _data);
                 Console.appendMsg("composer.json内のphpパスの修正が必要です。", "info");
-                var appConf = require('app-conf');
-                appConf.setConfFilePath(global.SETTING_JSON);
-    		if (!!(platform.match(/darwin/i))) {
-			// そのまま
-    		} else if (!!(platform.match(/win32/i))) {
+                if (!!(platform.match(/darwin/i))) {
+                    // そのまま
+                } else if (!!(platform.match(/win32/i))) {
                     //var path = require('path');
-		    //tmpPhpBin += ' -d extension_dir=.\\ext\\';
-		    //tmpPhpBin += ' -d date.timezone="Asia/Tokyo"';
-		    tmpPhpBin += ' -c .\\php.ini';
+                    //tmpPhpBin += ' -d extension_dir=.\\ext\\';
+                    //tmpPhpBin += ' -d date.timezone="Asia/Tokyo"';
+                    tmpPhpBin += ' -c .\\php.ini';
                     Console.appendMsg(tmpPhpBin, "info");
-		}
+                }
                 appConf.readConf(function(jsonConf) {
                     Console.appendMsg(jsonConf.asazuke, "info");
                     var composerPhpUpdate = require('composer-php-update');
@@ -405,12 +384,10 @@ var exec = function(cmd, args, cwd, cb) {
             }
         } else {
             appendMsg(_data);
-            //appendMsg(data);
         }
-        //} // end for
     });
     global.job.stderr.on('data', function(data) {
-        data = iconv.decode(data, "cp932")
+        data = iconv.decode(data, "cp932");
         data = String(data).replace(/\n?$/g, '');
         data = data.toString();
         console.log('stdout: ' + data);
@@ -430,17 +407,14 @@ var exec = function(cmd, args, cwd, cb) {
 };
 
 var projectSettingLoad = function() {
-    var appConf = require('app-conf');
-    appConf.setConfFilePath(global.SETTING_JSON);
     var path = require('path');
-    // var confPath = appConf.getConfFilePath();
     // 表示初期化
     jqueryFileTree.init('.fileTree0', global.userDataDir + '/');
     // 表示フィルタ
-    $('.jqueryFileTree a').addClass('mask')
+    $('.jqueryFileTree a').addClass('mask');
     $('.file > a[rel$="' + "setting.json" + '"]').css({
         'display': 'block'
-    })
+    });
 
     // リスト更新
     appConf.readConf(function(jsonConf) {
@@ -456,7 +430,7 @@ var projectSettingLoad = function() {
         }
     });
     console.log("setting loaded.");
-}
+};
 
 
 var phpServer = require('node-php-server');
@@ -464,13 +438,10 @@ var http = require('http');
 global.PHP = {
     start: function(hostname, port) {
         // Create a PHP Server 
-        var appConf = require('app-conf');
-        appConf.setConfFilePath(global.SETTING_JSON);
         appConf.readConf(function(jsonConf) {
             phpServer.createServer({
                 "port": port,
                 "hostname": hostname,
-                //"base": jsonConf.asazuke + '/src/data/' + jsonConf.select_project + '/SampleSite/',
                 "base": jsonConf.asazuke + '/src/data/' + global.confJson.projectName + '/SampleSite/',
                 "keepalive": false,
                 "open": false,
@@ -501,39 +472,19 @@ global.PHP = {
         // Close server 
         phpServer.close();
     }
-}
+};
 
 
-const shell = require('electron').shell;
-// shell.openExternal('https://github.com');
+var shell = require('electron').shell;
 global.SHELL = {
     /**
      * @see http://electron.atom.io/docs/v0.36.5/api/shell/
      */
     openItem: function(fullPath) {
-        var os = require('os');
-        var platform = os.platform().toLowerCase();
-        // if(!!(global.platform.match(/darwin|linux/i))){
-        //     // windowsでは動かない。
-        //     shell.openItem(fullPath);
-        // }else{
-        //     // windowsではc:\asazuke\hoge.csvとかすると既定のプログラムで開くハズ、、、
-        //     appendMsg(fullPath);
-
-        //     fullPath = (fs.realpathSync(fullPath));
-        //     appendMsg(fullPath);
-        //     var appConf = require('app-conf');
-        //     appConf.setConfFilePath(global.SETTING_JSON);
-        //     appConf.readConf(function(jsonConf){
-        //         App.exec('explorer', [fullPath], jsonConf.asazuke);
-        //     });
-        // }
-        var appConf = require('app-conf');
-        appConf.setConfFilePath(global.SETTING_JSON);
         appConf.readConf(function(jsonConf) {
-            if (!!(global.platform.match(/darwin/i))) {
+            if (!!(platform.match(/darwin/i))) {
                 App.exec('open', [fullPath], jsonConf.asazuke);
-            } else if (!!(global.platform.match(/linux/i))) {
+            } else if (!!(platform.match(/linux/i))) {
                 // linux
                 App.exec('xdg-open', [fullPath], jsonConf.asazuke);
             } else {
@@ -542,15 +493,24 @@ global.SHELL = {
             }
         });
     },
-    openSqlDir: function () {
-        var appConf = require('app-conf');
-        appConf.setConfFilePath(global.SETTING_JSON);
+    openDir: function(filePath) {
+            if (!!(platform.match(/darwin/i))) {
+                App.exec('open', [filePath], '.');
+            } else if (!!(platform.match(/linux/i))) {
+                // linux
+                App.exec('xdg-open', [filePath], '.');
+            } else {
+                // windows
+                App.exec('explorer', [filePath], '.');
+            }
+    },
+    openSqlDir: function() {
         appConf.readConf(function(jsonConf) {
-            var sqlDir = directory_separator_repair(jsonConf.asazuke + '/src/data/sql/');
+            var sqlDir = ds_repair(jsonConf.asazuke + '/src/data/sql/');
             console.log('sqlDir', sqlDir);
-            if (!!(global.platform.match(/darwin/i))) {
+            if (!!(platform.match(/darwin/i))) {
                 App.exec('open', [sqlDir], jsonConf.asazuke);
-            } else if (!!(global.platform.match(/linux/i))) {
+            } else if (!!(platform.match(/linux/i))) {
                 // linux
                 App.exec('xdg-open', [sqlDir], jsonConf.asazuke);
             } else {
@@ -559,80 +519,74 @@ global.SHELL = {
             }
         });
     },
-    execFile: function (fullPath) {
-      // SQL
-      if(path.extname(fullPath) == '.sql'){
-          // とりあえずWindowsのみ
-          var exec  = require('child_process').exec, child;
-        var appConf = require('app-conf');
-        appConf.setConfFilePath(global.SETTING_JSON);
-        appConf.readConf(function(jsonConf) {
-            if (!!(platform.match(/darwin/i))) {
-                // mac
-                child = exec('cat  '+  directory_separator_repair(fullPath) + ' | ' + 'sqlite3                                       ' + jsonConf.asazuke + '/src/data/' + global.confJson.projectName + '/asazuke.sqlite',
-            //jqueryFileTree.init('.fileTree4', jsonConf.asazuke + '/src/data/' + global.confJson.projectName + '/');
-            function (error, stdout, stderr) {
-              console.log('stdout: ' + stdout);
-              appendMsg(stdout);
-              console.log('stderr: ' + stderr);
-              if (error !== null) {
-                console.log('exec error: ' + error);
-              }
-          });
-            }else{
-                // win 
-                child = exec('type '+  directory_separator_repair(fullPath) + ' | ' 
-				+ directory_separator_repair(jsonConf.asazuke + '/bin/sqlite/sqlite3.exe ')
-				+ directory_separator_repair(jsonConf.asazuke + '/src/data/' + global.confJson.projectName + '/asazuke.sqlite'),
-            //jqueryFileTree.init('.fileTree4', jsonConf.asazuke + '/src/data/' + global.confJson.projectName + '/');
-            function (error, stdout, stderr) {
-              console.log('stdout: ' + stdout);
-              appendMsg(stdout);
-              console.log('stderr: ' + stderr);
-              if (error !== null) {
-                console.log('exec error: ' + error);
-              }
-          });
-	      }
-          //$('#consolePanel .layer-panel.is-current textarea')[0].value += '\'' + fullPath + '\'を実行しました。'+"\n";
-          Console.appendMsg(fullPath + ' を実行しました。', 'info');
-});
-      }
+    execFile: function(fullPath) {
+        // SQL
+        if (path.extname(fullPath) == '.sql') {
+            // とりあえずWindowsのみ
+            var exec = require('child_process').exec,
+                child;
+            appConf.readConf(function(jsonConf) {
+                if (!!(platform.match(/darwin/i))) {
+                    // mac
+                    child = exec('cat  ' + ds_repair(fullPath) + ' | ' + 'sqlite3                                                        ' + jsonConf.asazuke + '/src/data/' + global.confJson.projectName + '/asazuke.sqlite',
+                        function(error, stdout, stderr) {
+                            console.log('stdout: ' + stdout);
+                            appendMsg(stdout);
+                            console.log('stderr: ' + stderr);
+                            if (error !== null) {
+                                console.log('exec error: ' + error);
+                            }
+                        });
+                } else {
+                    // win 
+                    child = exec('type ' + ds_repair(fullPath) + ' | ' + ds_repair(jsonConf.asazuke + '/bin/sqlite/sqlite3.exe ') + ds_repair(jsonConf.asazuke + '/src/data/' + global.confJson.projectName + '/asazuke.sqlite'),
+                        function(error, stdout, stderr) {
+                            console.log('stdout: ' + stdout);
+                            appendMsg(stdout);
+                            console.log('stderr: ' + stderr);
+                            if (error !== null) {
+                                console.log('exec error: ' + error);
+                            }
+                        });
+                }
+                Console.appendMsg(fullPath + ' を実行しました。', 'info');
+            });
+        }
     }
-}
+};
 global.Ace = {
     save: function() {
-    editor = ace.edit("editor");
-      var filePath = $('.ace-filepath').text();
-      var ace_func = require('ace-func');
-      ace_func.saveFile(filePath, editor.getValue());
+        editor = ace.edit("editor");
+        var filePath = $('.ace-filepath').text();
+        var ace_func = require('ace-func');
+        ace_func.saveFile(filePath, editor.getValue());
     },
     exec: function() {
-    editor = ace.edit("editor");
-      var filePath = $('.ace-filepath').text();
-      var ace_func = require('ace-func');
-      ace_func.execFile(filePath, editor.getValue());
+        editor = ace.edit("editor");
+        var filePath = $('.ace-filepath').text();
+        var ace_func = require('ace-func');
+        ace_func.execFile(filePath, editor.getValue());
     },
     remove: function() {
-			$('.header-menu .item.active a').click();
+        $('.header-menu .item.active a').click();
     }
-}
+};
 global.App = {
     toggleDevTools: function() {
         win.toggleDevTools();
         setTimeout(function() {
-            window.resize()
+            window.resize();
         }, 1500);
     },
     exec: function(cmd, args, cwd) {
         exec(cmd, args, cwd);
     },
     execSiteScan: function() {
-        if (!!(global.platform.match(/darwin|linux/i))) {
-		// mac | linux
-	}else{
-		$('.js-cancel').prop('disabled',true);
-	}
+        if (!!(platform.match(/darwin|linux/i))) {
+            // mac | linux
+        } else {
+            $('.js-cancel').prop('disabled', true);
+        }
 
         // ページ初期化
         $('#div_C .layer-panel.is-current').html('<div class="asazuke-sitescan">' +
@@ -649,90 +603,74 @@ global.App = {
             '</tr></table>' +
             '</div>');
 
-        var appConf = require('app-conf');
-        appConf.setConfFilePath(global.SETTING_JSON);
+        appConf.readConf(function(jsonConf) {
+            exec(phpBin, [composerPhar, 'run:site-scan0'], jsonConf.asazuke);
+        });
+    },
+    execSiteScanResume: function() {
+        if (!!(platform.match(/darwin|linux/i))) {
+            // mac | linux
+        } else {
+            $('.js-cancel').prop('disabled', true);
+        }
         appConf.readConf(function(jsonConf) {
             exec(phpBin, [composerPhar, 'run:site-scan'], jsonConf.asazuke);
-            //exec(composerPhar, ['run:site-scan'], jsonConf.asazuke);
-            //exec(phpBin, ['--file','index.php', '-c', '/Users/mac/php.ini', 'site-scan'], jsonConf.asazuke);
-            //exec(phpBin, ['--file','index.php', 'site-scan'], jsonConf.asazuke);
         });
     },
     execSiteValidationEx: function() {
-        if (!!(global.platform.match(/darwin|linux/i))) {
-		// mac | linux
-	}else{
-		$('.js-cancel').prop('disabled',true);
-	}
-
-        var appConf = require('app-conf');
-        appConf.setConfFilePath(global.SETTING_JSON);
+        if (!!(platform.match(/darwin|linux/i))) {
+            // mac | linux
+        } else {
+            $('.js-cancel').prop('disabled', true);
+        }
         appConf.readConf(function(jsonConf) {
             Load.htmlDownload();
             exec(phpBin, [composerPhar, 'run:site-validation-ex'], jsonConf.asazuke);
         });
     },
     execSiteValidationCsv: function() {
-        if (!!(global.platform.match(/darwin|linux/i))) {
-		// mac | linux
-	}else{
-		$('.js-cancel').prop('disabled',true);
-	}
-
-        var appConf = require('app-conf');
-        appConf.setConfFilePath(global.SETTING_JSON);
+        if (!!(platform.match(/darwin|linux/i))) {
+            // mac | linux
+        } else {
+            $('.js-cancel').prop('disabled', true);
+        }
         appConf.readConf(function(jsonConf) {
             exec(phpBin, [composerPhar, 'run:site-validation-csv'], jsonConf.asazuke);
         });
 
     },
     execSiteValidationJson: function() {
-        if (!!(global.platform.match(/darwin|linux/i))) {
-		// mac | linux
-	}else{
-		$('.js-cancel').prop('disabled',true);
-	}
-
-        var appConf = require('app-conf');
-        appConf.setConfFilePath(global.SETTING_JSON);
+        if (!!(platform.match(/darwin|linux/i))) {
+            // mac | linux
+        } else {
+            $('.js-cancel').prop('disabled', true);
+        }
         appConf.readConf(function(jsonConf) {
             exec(phpBin, [composerPhar, 'run:site-validation-json'], jsonConf.asazuke);
         });
     },
     execHtmlScraping: function() {
-        if (!!(global.platform.match(/darwin|linux/i))) {
-		// mac | linux
-	}else{
-		$('.js-cancel').prop('disabled',true);
-	}
-
-        var appConf = require('app-conf');
-        appConf.setConfFilePath(global.SETTING_JSON);
+        if (!!(platform.match(/darwin|linux/i))) {
+            // mac | linux
+        } else {
+            $('.js-cancel').prop('disabled', true);
+        }
         appConf.readConf(function(jsonConf) {
             exec(phpBin, [composerPhar, 'run:scraping'], jsonConf.asazuke);
         });
     },
     // AsazukeConf.php読み込み
     execConfJson: function(cb) {
-
-        var appConf = require('app-conf');
-        appConf.setConfFilePath(global.SETTING_JSON);
         appConf.readConf(function(jsonConf) {
             exec(phpBin, [composerPhar, 'run:conf-json'], jsonConf.asazuke, cb);
         });
     },
     execExecFileSQL: function() {
-
-        var appConf = require('app-conf');
-        appConf.setConfFilePath(global.SETTING_JSON);
         appConf.readConf(function(jsonConf) {
             exec(phpBin, [composerPhar, 'run:file-sql'], jsonConf.asazuke);
         });
     },
     execExecFileSQL_JSON: function() {
-
-        var appConf = require('app-conf');
-        appConf.setConfFilePath(global.SETTING_JSON);
         appConf.readConf(function(jsonConf) {
             exec(phpBin, [composerPhar, 'run:file-sql-json'], jsonConf.asazuke);
         });
@@ -740,19 +678,13 @@ global.App = {
     // phpのインストール先確認
     execWhichPhp: function() {
         appendMsg("which php");
-        var appConf = require('app-conf');
-        appConf.setConfFilePath(global.SETTING_JSON);
         appConf.readConf(function(jsonConf) {
             appendMsg(phpBin);
             exec(phpBin, [composerPhar, 'which-php'], jsonConf.asazuke);
         });
     },
     execAsazukeUpdateCheck: function() {
-
-        var appConf = require('app-conf');
-        appConf.setConfFilePath(global.SETTING_JSON);
         appConf.readConf(function(jsonConf) {
-
             exec(jsonConf.git, ['-C', jsonConf.asazuke, 'ls-remote', 'origin', 'HEAD'], jsonConf.asazuke, function() {
                 exec(jsonConf.git, ['-C', jsonConf.asazuke, 'show', '-s', '--format=%H'], jsonConf.asazuke, function() {
                     console.log('gitHashRemote', global.gitHashRemote);
@@ -765,7 +697,6 @@ global.App = {
                     }
                 });
             });
-            // exec(jsonConf.php, ['updatecheck.php'], jsonConf.asazuke);
         });
     },
     kill: function() {
@@ -773,8 +704,6 @@ global.App = {
     },
     asazuke_install: function() {
         console.log('asazuke_install');
-        var appConf = require('app-conf');
-        appConf.setConfFilePath(global.SETTING_JSON);
         appConf.readConf(function(jsonConf) {
             if (!fs_exists(jsonConf.git)) {
                 Console.appendMsg(jsonConf.git + 'が見つかりません', 'error');
@@ -783,28 +712,24 @@ global.App = {
             var workdir = jsonConf.asazuke;
             exec(jsonConf.git, ['clone', jsonConf.asazuke_repos, workdir], '.', function() {
                 exec(phpBin, [composerPhar, 'update'], workdir, function() {
-                    var os = require('os');
-                    var platform = os.platform().toLowerCase();
                     var fnCompliteMsg = function() {
                         appendMsg("コマンドラインツールのインストールが完了しました。");
-                    }
-                    if (!!(global.platform.match(/darwin|linux/i))) {
+                    };
+                    if (!!(platform.match(/darwin|linux/i))) {
                         // mac or linux
                         appendMsg(phpBin);
                         appendMsg(composerPhar);
                         exec(phpBin, [composerPhar, 'darwin-chmod'], workdir, fnCompliteMsg);
                     } else {
                         // if platform.match('win') != null
-                        fnCompliteMsg()
+                        fnCompliteMsg();
                     }
-                })
+                });
             });
         });
     },
     asazuke_update: function() {
         console.log('asazuke_update');
-        var appConf = require('app-conf');
-        appConf.setConfFilePath(global.SETTING_JSON);
         appConf.readConf(function(jsonConf) {
             if (!fs_exists(jsonConf.git)) {
                 Console.appendMsg(jsonConf.git + 'が見つかりません', 'error');
@@ -813,22 +738,25 @@ global.App = {
             var workdir = jsonConf.asazuke;
             exec(jsonConf.git, ['pull'], workdir, function() {
                 exec(phpBin, [composerPhar, 'update'], workdir, function() {
-                    var os = require('os');
-                    var platform = os.platform().toLowerCase();
                     var fnCompliteMsg = function() {
                         appendMsg("コマンドラインツールのアップデートが完了しました。");
-                    }
-                    if (!!(global.platform.match(/darwin|linux/i))) {
+                    };
+                    if (!!(platform.match(/darwin|linux/i))) {
                         // mac or linux
                         exec(phpBin, [composerPhar, 'darwin-chmod'], workdir, fnCompliteMsg);
                     } else {
                         // if platform.match('win') != null
-                        fnCompliteMsg()
+                        fnCompliteMsg();
                     }
-                })
+                });
             });
         });
     },
+    openSiteScan: function() {
+        appConf.readConf(function(jsonConf) {
+            SHELL.openDir(jsonConf.asazuke + '/src/data/' + global.confJson.projectName + '/SampleSite/');
+        });
+    }
 };
 
 // consoleメニュー
@@ -836,7 +764,6 @@ global.Console = {
     clear: function() {
         console.log('clear');
         var max_row = 100;
-        //$('#consolePanel .layer-panel.is-current .div-textarea')[0].value = '';
         var selector = '#consolePanel .layer-panel.is-current .div-textarea';
         var txt = document.createElement("div");
         ta = document.querySelector(selector);
@@ -870,34 +797,23 @@ global.Console = {
 // consoleメニュー
 global.Setting = {
     paths: function() {
-
-        var appConf = require('app-conf');
-        appConf.setConfFilePath(global.SETTING_JSON);
         appConf.readConf(function(jsonConf) {
             jsonConf.php = $('#uv1').val();
             jsonConf.asazuke = $('#uv2').val();
-
             appConf.updateConf(jsonConf);
         });
     },
     // プロジェクト切り替え
     selectProject: function(project) {
         console.log('selectProject');
-        // var swProject = $(elm).find('a').text();
         var swProject = project;
-
         $('.js-projectList').empty();
-        var appConf = require('app-conf');
-
-        console.log('global.SETTING_JSON', global.SETTING_JSON);
         appConf.setConfFilePath(global.SETTING_JSON);
-        console.log('global.SETTING_JSON2', appConf.getConfFilePath());
-
         appConf.readConf(function(jsonConf) {
             jsonConf.select_project = swProject;
             appConf.updateConf(jsonConf);
 
-            // TODO 合わせて修正(#1000)
+            // 合わせて修正(#1000)
             for (var i in jsonConf.projects) {
                 var project = jsonConf.projects[i];
                 if (project === jsonConf.select_project) {
@@ -906,36 +822,36 @@ global.Setting = {
                     $('.js-projectList').append('<option value="' + project + '">' + project + '</option>');
                 }
             }
-            if (!!(global.platform.match(/darwin|linux/i))) {
-		            var refConfPath = 'AsazukeConf-%s.php'.replace('%s', swProject);
-                if(fs_exists(jsonConf.asazuke +'/src/' + refConfPath)){
-                	// mac or linux
-                	exec('unlink', ['AsazukeConf.php'], jsonConf.asazuke + '/src', function() {
-                	    // $ ln <リンク元ファイル> <リンク名>
-                	    exec('ln', ['-s', refConfPath,  'AsazukeConf.php'], jsonConf.asazuke + '/src', function() {
-                	        appendMsg("プロジェクト設定を切り替えました。");
-                	        Load.layerPanel(0);
-                	    });
-                	});
-		}else{
-			// 設定ファイルが見つからない
-		}
+            var refConfPath;
+            if (!!(platform.match(/darwin|linux/i))) {
+                refConfPath = 'AsazukeConf-%s.php'.replace('%s', swProject);
+                if (fs_exists(jsonConf.asazuke + '/src/' + refConfPath)) {
+                    // mac or linux
+                    exec('unlink', ['AsazukeConf.php'], jsonConf.asazuke + '/src', function() {
+                        // $ ln <リンク元ファイル> <リンク名>
+                        exec('ln', ['-s', refConfPath, 'AsazukeConf.php'], jsonConf.asazuke + '/src', function() {
+                            appendMsg("プロジェクト設定を切り替えました。");
+                            Load.layerPanel(0);
+                        });
+                    });
+                } else {
+                    // 設定ファイルが見つからない
+                }
             } else {
-		var refConfPath = directory_separator_repair(jsonConf.asazuke + '\\src\\' + 'AsazukeConf-%s.php'.replace('%s', swProject));
-                if(fs_exists(refConfPath)){
-                	fs.unlink(jsonConf.asazuke + '\\src\\AsazukeConf.php', function() {
-                	    // Windowsでは管理者モードで起動しないとsymlinkが使えないのでcopyで代用
-                	    //var r = fs.createReadStream(jsonConf.asazuke + '\\src\\' + 'AsazukeConf-%s.php'.replace('%s', swProject)),
-                	    var r = fs.createReadStream(refConfPath),
-                	        w = fs.createWriteStream(jsonConf.asazuke + '\\src\\' + 'AsazukeConf.php');
-                	    w.on("close", function(ex) {
-                	        Load.layerPanel(0);
-                	    });
-                	    r.pipe(w);
-                	});
-		}else{
-			// 設定ファイルが見つからない
-		}
+                refConfPath = ds_repair(jsonConf.asazuke + '\\src\\' + 'AsazukeConf-%s.php'.replace('%s', swProject));
+                if (fs_exists(refConfPath)) {
+                    fs.unlink(jsonConf.asazuke + '\\src\\AsazukeConf.php', function() {
+                        // Windowsでは管理者モードで起動しないとsymlinkが使えないのでcopyで代用
+                        var r = fs.createReadStream(refConfPath),
+                            w = fs.createWriteStream(jsonConf.asazuke + '\\src\\' + 'AsazukeConf.php');
+                        w.on("close", function(ex) {
+                            Load.layerPanel(0);
+                        });
+                        r.pipe(w);
+                    });
+                } else {
+                    // 設定ファイルが見つからない
+                }
             }
 
         });
@@ -947,16 +863,13 @@ global.Setting = {
         var smalltalk = require('smalltalk');
         smalltalk.prompt('新規プロジェクト作成', 'プロジェクト名を入力して下さい。', '', undefined, 'sample.jp').then(function(new_project) {
             console.log(new_project);
-
             $('.js-projectList').empty();
-            var appConf = require('app-conf');
-            appConf.setConfFilePath(global.SETTING_JSON);
             appConf.readConf(function(jsonConf) {
                 jsonConf.projects.push(new_project);
                 jsonConf.select_project = new_project;
                 appConf.updateConf(jsonConf);
 
-                // TODO 合わせて修正(#1000)
+                // 合わせて修正(#1000)
                 for (var i in jsonConf.projects) {
                     var project = jsonConf.projects[i];
                     if (project === jsonConf.select_project) {
@@ -978,33 +891,27 @@ global.Setting = {
                         var treeReload = function() {
                             // 表示初期化
                             $('.fileTree0').empty();
-
-                            var appConf = require('app-conf');
-                            appConf.setConfFilePath(global.SETTING_JSON);
                             appConf.readConf(function(jsonConf) {
-                                // jqueryFileTree.init('.fileTree2',jsonConf.asazuke + '/src/data/test/cssWorks/');
                                 jqueryFileTree.init('.fileTree0', jsonConf.asazuke + '/src/');
-
 
                                 // 表示フィルタ
                                 // $('.jqueryFileTree a').css({"display": "none"});
-                                $('.jqueryFileTree a').addClass('mask')
+                                $('.jqueryFileTree a').addClass('mask');
                                 $('.file > a[rel*="AsazukeConf"]').css({
                                     'display': 'block'
-                                })
+                                });
                                 $('.file > a[rel$="AsazukeConf.php"]').css({
                                     'color': '#BFBFBF'
-                                })
+                                });
                                 $('.file > a[rel$="AsazukeConf-sample.jp.php"]').css({
                                     'display': 'none'
-                                })
-
+                                });
                                 //プロジェクト設定
                                 //projectSettingLoad();
                             });
                             appendMsg("プロジェクト設定を切り替えました。");
                         };
-                        if (!!(global.platform.match(/darwin|linux/i))) {
+                        if (!!(platform.match(/darwin|linux/i))) {
                             // mac or linux
                             exec('unlink', ['AsazukeConf.php'], jsonConf.asazuke + '/src', function() {
                                 // $ ln <リンク元ファイル> <リンク名>
@@ -1027,32 +934,6 @@ global.Setting = {
                                 r.pipe(w);
                             });
                         }
-                        // exec('unlink', ['AsazukeConf.php'], jsonConf.asazuke + '/src', function(){
-                        //     // $ ln <リンク元ファイル> <リンク名>
-                        //     exec('ln', ['-s', 'AsazukeConf-%s.php'.replace('%s', new_project), 'AsazukeConf.php'], jsonConf.asazuke + '/src', function(){
-                        // // fs.unlink(jsonConf.asazuke + '/src/AsazukeConf.php', function(){
-                        // //     fs.symlink(jsonConf.asazuke + '/src/' + 'AsazukeConf-%s.php'.replace('%s', new_project)
-                        // //                 , jsonConf.asazuke + '/src/' + 'AsazukeConf.php'
-                        // //                 , 'file'
-                        // //                 , function(){
-                        //         // 表示初期化
-                        //         $('.fileTree0').empty();
-                        //         var appConf = require('app-conf');
-                        //         appConf.setConfFilePath(global.SETTING_JSON);
-                        //         appConf.readConf(function(jsonConf){
-                        //             // jqueryFileTree.init('.fileTree2',jsonConf.asazuke + '/src/data/test/cssWorks/');
-                        //             jqueryFileTree.init('.fileTree0',jsonConf.asazuke + '/src/');
-                        //             // 表示フィルタ
-                        //             // $('.jqueryFileTree a').css({"display": "none"});
-                        //             $('.jqueryFileTree a').addClass('mask')
-                        //             $('.file > a[rel*="AsazukeConf"]').css({'display':'block'})
-                        //             $('.file > a[rel$="AsazukeConf.php"]').css({'color':'#BFBFBF'})
-                        //             //プロジェクト設定
-                        //             projectSettingLoad();
-                        //         });
-                        //         appendMsg("プロジェクト設定を切り替えました。");
-                        //     });
-                        // });
                     });
                 });
 
@@ -1064,33 +945,27 @@ global.Setting = {
     },
     target: function() {
         // 設定更新
-        // var AsazukeConf = require('./resources/js/node/asazuke-conf.js');
-        var AsazukeConf = require('asazuke-conf');
         var newUrl = $('input[name="SITE_URL"]').val();
         var newStartPath = $('input[name="START_PATH"]').val();
         var newAuthUser = $('input[name="AUTH_USER"]').val();
         var newAuthPass = $('input[name="AUTH_PASS"]').val();
-        AsazukeConf.updateConf(newUrl, newStartPath, newAuthUser, newAuthPass, function(){
-		// windowsの場合は設定ファイルを元のファイルにコピーする
-        	if (!!(global.platform.match(/darwin|linux/i))) {
-		   // 実態を持たないので不要
-        	} else {
-		        console.log('設定を元ファイルに書き込みます');
-        		var appConf = require('app-conf');
-        		appConf.setConfFilePath(global.SETTING_JSON);
-        		appConf.readConf(function(jsonConf) {
-				var refConfPath = directory_separator_repair(jsonConf.asazuke + '\\src\\' + 'AsazukeConf-%s.php'.replace('%s', global.confJson.projectName));
-        			if(fs_exists(refConfPath)){
-				  	var contents = fs.readFileSync(jsonConf.asazuke + '\\src\\' + 'AsazukeConf.php');
-				  	fs.writeFileSync(refConfPath , contents );
-				}else{
-					// 設定ファイルが見つからない
-				}
-			});
-		}
-	});
-	
-
+        asazukeConf.updateConf(newUrl, newStartPath, newAuthUser, newAuthPass, function() {
+            // windowsの場合は設定ファイルを元のファイルにコピーする
+            if (!!(platform.match(/darwin|linux/i))) {
+                // 実態を持たないので不要
+            } else {
+                console.log('設定を元ファイルに書き込みます');
+                appConf.readConf(function(jsonConf) {
+                    var refConfPath = ds_repair(jsonConf.asazuke + '\\src\\' + 'AsazukeConf-%s.php'.replace('%s', global.confJson.projectName));
+                    if (fs_exists(refConfPath)) {
+                        var contents = fs.readFileSync(jsonConf.asazuke + '\\src\\' + 'AsazukeConf.php');
+                        fs.writeFileSync(refConfPath, contents);
+                    } else {
+                        // 設定ファイルが見つからない
+                    }
+                });
+            }
+        });
         showMsg({
             message: '設定を更新しました。'
         });
@@ -1103,6 +978,7 @@ global.Setting = {
     }
 };
 
+var config = require('../../../../package.json');
 // 呼び出し
 global.Load = {
     htmlDownload: function() {
@@ -1116,8 +992,6 @@ global.Load = {
 						`);
 
         // リスト更新
-        var appConf = require('app-conf');
-        appConf.setConfFilePath(global.SETTING_JSON);
         appConf.readConf(function(jsonConf) {
             var dir = jsonConf.asazuke + "/";
             var files = fs.readdirSync(dir)
@@ -1137,22 +1011,18 @@ global.Load = {
 
             console.log(files);
             files.map(function(f) {
-                var os = require('os');
-                var platform = os.platform().toLowerCase();
-                var path;
-                if (!!(global.platform.match(/darwin|linux/i))) {
-                    path = (dir + f);
+                var _path;
+                if (!!(platform.match(/darwin|linux/i))) {
+                    _path = (dir + f);
                 } else {
                     // PATHセパレータ正規化
-                    path = (dir + f).replace(/\//g, '\\\\').replace(/\\/g, '\\\\');
+                    _path = (dir + f).replace(/\//g, '\\\\').replace(/\\/g, '\\\\');
                 }
-                // App.exec(path);
-                $('.js_exported_sitemap').append('<li><a rel="' + path + '" onclick="SHELL.openItem(\'' + path + '\');">' + f + '</a></li>')
+                $('.js_exported_sitemap').append('<li><a rel="' + _path + '" onclick="SHELL.openItem(\'' + _path + '\');">' + f + '</a></li>');
             });
             $('.js_exported_sitemap a').parent().css({
                 'display': 'none'
             });
-            //$('.js_exported_sitemap a[rel*="'+ jsonConf.select_project+'"]').parent().css({'display':'block'});
             $('.js_exported_sitemap a[rel*="' + global.confJson.projectName + '"]').parent().css({
                 'display': 'block'
             });
@@ -1174,16 +1044,15 @@ global.Load = {
         // SPAなので#editorが複数あると破綻するのでeditorは無きものにする。
         $("#div_C .layer-panel").empty();
 
-        var config = require('../../../../package.json');
         // copyright
         $('.copyright').html(config.config.copyright);
 
+        // 左メニュー非表示
+        $("#content #div_vertical").css({
+            'display': 'block'
+        });
+        $("#content").removeClass('is-Single');
 
-								// 左メニュー非表示
-                $("#content #div_vertical").css({'display':'block'});
-                $("#content").removeClass('is-Single');
-
-								// 
         // layer選択イベント
         switch (n) {
             case 0:
@@ -1194,18 +1063,11 @@ global.Load = {
                     console.log("setting loaded2.");
 
                     // AppConf
-                    var appConf = require('app-conf');
-                    console.log(global.SETTING_JSON);
-                    appConf.setConfFilePath(global.SETTING_JSON);
                     appConf.readConf(function(jsonConf) {
                         $('input[name="PHP_PATH"]').val(jsonConf.php);
                         $('input[name="ASAZUKE_DIR_PATH"]').val(jsonConf.asazuke);
-
                         // AsazukeConf
-                        var asazukeConf = require('asazuke-conf');
                         console.log(jsonConf.asazuke + '/src/AsazukeConf.php');
-                        // var fs = require('fs');
-                        // var fs = require('fs-extra');
                         fs.stat(jsonConf.asazuke + '/src/AsazukeConf.php', function(err, stats) {
                             if (!err) {
                                 asazukeConf.init(jsonConf.asazuke + '/src/AsazukeConf.php');
@@ -1226,13 +1088,8 @@ global.Load = {
 
                         // 表示初期化
                         $('.fileTree0').empty();
-
-                        var appConf = require('app-conf');
-                        appConf.setConfFilePath(global.SETTING_JSON);
                         appConf.readConf(function(jsonConf) {
-                            // jqueryFileTree.init('.fileTree2',jsonConf.asazuke + '/src/data/test/cssWorks/');
                             jqueryFileTree.init('.fileTree0', jsonConf.asazuke + '/src/');
-
 
                             // 表示フィルタ
                             // $('.jqueryFileTree a').css({"display": "none"});
@@ -1250,39 +1107,25 @@ global.Load = {
                             //プロジェクト設定
                             projectSettingLoad();
 
-
-                            // 更新チェック
-                            //<span style="border-radius: 50%;background-color: #F00;display: inline-block;width: 1.5em;box-sizing: border-box;text-align: center;color: #ffF;border: 2px solid #FFF;position: relative;top: -0.5em;left: -1em;" class="update_icon">1</span>
-
                             App.execAsazukeUpdateCheck();
-
                         });
-
                     });
                     appConf.bindChange();
                 });
-
                 break;
+
             case 1:
                 $('#LeftPanel').width(710);
                 $(window).resize();
 
-
                 $("#div_A .layer-panel").eq(n).load("batch.html", function(htmlData, loadStatus) {
 
                 });
-                // $("#div_C .layer-panel").eq(n).load("setting.html", function (htmlData, loadStatus){
-                //     console.log("setting loaded.");
-                // });
-                // var jqueryFileTree = require('jquery-file-tree');
-                // jqueryFileTree.init('.fileTree0','/Users/mac/vhosts/electron-asazuke/');
                 break;
+
             case 2:
                 $('#LeftPanel').width(500);
                 $(window).resize();
-
-                var appConf = require('app-conf');
-                appConf.setConfFilePath(global.SETTING_JSON);
                 appConf.readConf(function(jsonConf) {
                     $('.fileTree2').empty();
                     var tmpl = `
@@ -1292,17 +1135,15 @@ global.Load = {
 								<div class="fileTree2-2" style="display:table-cell"><ul></ul></div>
 								</div>`;
                     $('.fileTree2').html($(tmpl));
-                    //jqueryFileTree.init('.fileTree2-0',jsonConf.asazuke + '/src/data/' + jsonConf.select_project+ '/cssWorks/');
-                    //jqueryFileTree.init('.fileTree2-1',jsonConf.asazuke + '/src/data/' + jsonConf.select_project+ '/lintResult/');
                     jqueryFileTree.init('.fileTree2-0', jsonConf.asazuke + '/src/data/' + global.confJson.projectName + '/cssWorks/');
                     jqueryFileTree.init('.fileTree2-1', jsonConf.asazuke + '/src/data/' + global.confJson.projectName + '/lintResult/');
 
                     // エラー件数表示
                     // App.execSiteValidationJson();
                     var maxCount = 10;
-                    var loop = function(i){
-                        return function(){
-                            if (i > maxCount){
+                    var loop = function(i) {
+                        return function() {
+                            if (i > maxCount) {
                                 return;
                             }
                             console.log("try count. " + i);
@@ -1314,13 +1155,12 @@ global.Load = {
                                 console.log('execSiteValidationJson');
                                 App.execSiteValidationJson();
                                 // カウントを無効化
-                                i=maxCount;
+                                i = maxCount;
                             }
-                    
-                        }   
-                    }
-                    setTimeout(loop(1),0);
 
+                        };
+                    };
+                    setTimeout(loop(1), 0);
                 });
                 break;
 
@@ -1330,68 +1170,41 @@ global.Load = {
 
                 App.execConfJson(function() {
                     $("#div_C .layer-panel").eq(n).load("web_scraping.html", function(htmlData, loadStatus) {
-
-                        var appConf = require('app-conf');
-                        appConf.setConfFilePath(global.SETTING_JSON);
                         appConf.readConf(function(jsonConf) {
                             $('.fileTree3').empty();
-                            //jqueryFileTree.init('.fileTree3',jsonConf.asazuke + '/src/data/' + jsonConf.select_project+ '/SampleSite/');
                             jqueryFileTree.init('.fileTree3', jsonConf.asazuke + '/src/data/' + global.confJson.projectName + '/SampleSite/');
                         });
                     });
                 });
-
-
                 break;
+
             case 4:
                 $('#LeftPanel').width(250);
                 $(window).resize();
 
-
                 $("#div_C .layer-panel").eq(n).load("database.html", function(htmlData, loadStatus) {
-
-                    var appConf = require('app-conf');
-                    appConf.setConfFilePath(global.SETTING_JSON);
                     appConf.readConf(function(jsonConf) {
                         $('.fileTree4').empty();
-                        //console.log('.fileTree4',jsonConf.asazuke + '/src/data/' + jsonConf.select_project+ '/');
-                        //jqueryFileTree.init('.fileTree4',jsonConf.asazuke + '/src/data/' + jsonConf.select_project+ '/');
-                        //console.log('.fileTree4', jsonConf.asazuke + '/src/data/' + global.confJson.projectName + '/');
-                        //jqueryFileTree.init('.fileTree4', jsonConf.asazuke + '/src/data/' + global.confJson.projectName + '/');
                         console.log('.fileTree4', jsonConf.asazuke + '/src/data/sql/');
                         jqueryFileTree.init('.fileTree4', jsonConf.asazuke + '/src/data/sql/');
 
-
-
-                        $('.jqueryFileTree a').addClass('mask')
-                        //$('.file > a[rel*="asazuke.sqlite"]').css({
-                        //    'display': 'block',
-                        //    'color': '#BFBFBF'
-                        //});
-                        //$('.file > a[rel$="asazuke.sqlite"]').css({
-                        //    'display': 'block',
-                        //    'color': '#333'
-                        //});
+                        $('.jqueryFileTree a').addClass('mask');
                         $('.file > a[rel$=".sql"]').css({
                             'display': 'block',
                             'color': '#333'
                         });
                     });
                 });
-
                 break;
+
             case 5:
                 $('#LeftPanel').width(250);
                 $(window).resize();
 
-
-                //var config = require('../../../../package.json');
                 var version = config.version;
-                var platform = global.platform;
                 var repos_url = (config.repository.url).replace(/\.git?$/g, '');
 
                 $("#div_C .layer-panel").eq(n).load("other.html", function(htmlData, loadStatus) {
-                    //    console.log('htmlData', htmlData, config);
                     $('.tmpl_appInfo').append(`
 									<table border="1" style="margin: 15px 0 0; width:100%;">
 									<tr>
@@ -1413,26 +1226,19 @@ global.Load = {
 										`);
                     });
                 });
-
                 break;
+
             default:
                 break;
+
         }
 
         // タイトル設定
-        var appConf = require('app-conf');
-        var config = require('../../../../package.json');
         var appName = config.config.appname;
         $('title').text($('.header-menu .item.active a').text() + ' | ' + appName);
-        //appConf.setConfFilePath(global.SETTING_JSON);
-        //appConf.readConf(function(jsonConf){
-        //	$('title').text($('.header-menu .item.active a').text() + ' | ' + appName);
-        //});
         // Asazuke設定読み込み
         mConsole.init('#consolePanel .layer-panel.is-current .div-textarea');
-        //mConsole.init();
         App.execConfJson(function() {
-            //appendMsg("which PHP");
             App.execWhichPhp();
         });
     }

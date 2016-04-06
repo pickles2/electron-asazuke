@@ -1,8 +1,8 @@
 {
-    "git": "c:\\Program Files\\Git\\cmd\\git.exe",
-    "php": "c:\\xampp\\php\\php.exe",
-    "composer": "composer.bat",
-    "asazuke": "c:\\asazuke",
+    "git": "/usr/bin/git",
+    "php": "/usr/local/bin/php",
+    "composer": "/usr/local/bin/composer",
+    "asazuke": "/Users/mac/Asazuke",
     "asazuke_repos": "https://github.com/pickles2/asazuke.git",
     "projects": [
         "sample.jp"

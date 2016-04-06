@@ -1,0 +1,78 @@
+<div style="    position: absolute;color: white;z-index: 10;right: 0;    top: 0;margin: 4px 0;background-color: #333;opacity: .8;text-align: center;padding: 0 5px;" class="ace-menu">
+  <span class="glyphicon glyphicon-play" onclick="Ace.exec();" style="display:none;"></span>
+  <span class="glyphicon glyphicon-floppy-save" onclick="Ace.save();"></span>
+  <span class="glyphicon glyphicon-remove" onclick="Ace.remove();"></span>
+</div>
+<div style="    position: absolute;color: white;z-index: 10;right: 0;    bottom: 0;background-color: #333;opacity: .8;text-align: center;padding: 0 5px;" class="ace-filepath">file-name?</div>
+<div id="editor" style="width:100%;height:100%;"><%- editor_text %></div>
+<script src="./resources/libs/ace-builds/ace.js"></script>
+<script src="./resources/libs/ace-builds/ext-language_tools.js"></script>
+<style>
+  #editor {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+  }
+  .ace_gutter-layer .ace_gutter-cell.ace_breakpoint {
+      background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABFUlEQVQ4jbWTzWqDUBCFXeQ9fAvfw5+9kFUvZq4QSEBwYKbaQLspXslDhKQkr5R1SbSpJku76UKNMbaQgVmec+d8nKtpjxgiGhGRwcyCmQURGUQ0GiRmZjdCLBRAvrWsYmtZhQLII8SSmd1e8SIIVulkku91vao0rbF7Xa+WnndaBMGqU/yCOE58/7MtbK+S8vA2m4mrzBFi0fVy1yURYtlgQkRG4vuHe+LaFRkRGXVwYuM4gw02tp21yYu14xyHGnzYdsbMohlBysEGCiBvRPiFWA6FGIfh+apYr/P5UyLlXQ4K4Pg+nXo3i7T0vFNPkb5vFqkG1I0RyxQg35nmZWealxTgKw7D8zPiuFdcZ/Lvz/TX+QHyoTqYFEudWAAAAABJRU5ErkJggg==');
+  }
+</style>
+<script>
+  (function () {
+    var editor;
+    var text = $('#editor').text();
+    console.log(text);
+    var session = new ace.createEditSession(text, 'ace/mode/<%= language %>');
+    // session.setMode('ace/mode/<%= language %>');
+    console.log("lang", '<%= language %>');
+    if('<%= language %>' == 'sql'){
+                        $('.ace-menu .glyphicon-play').css({
+														'cssText': 'display: inline-block !important;'
+                        });
+    }
+    editor = ace.edit("editor");
+    editor.setSession(session);
+    editor.commands.addCommand(
+      {
+        name : "savefile",
+        bindKey: {win : "Ctrl-s",mac : "Command-s"},
+        exec: function(editor) {
+            var filePath = $('.ace-filepath').text();
+            var ace_func = require('ace-func');
+            ace_func.saveFile(filePath, editor.getValue());
+        }
+    });
+    editor.commands.addCommand({
+        name : "execFile",
+        bindKey: {win : "Ctrl-F5",mac : "Command-F5"},
+        exec: function(editor) {
+            var filePath = $('.ace-filepath').text();
+            var ace_func = require('ace-func');
+            ace_func.execFile(filePath, editor.getValue());
+        }
+      
+    });
+    editor.$blockScrolling = Infinity;
+    editor.setOptions({
+    enableBasicAutocompletion: true,
+    enableSnippets: true,
+    enableLiveAutocompletion: true
+    });
+    editor.setShowInvisibles(true);
+    editor.setTheme("ace/theme/monokai");
+    //editor.setTheme("ace/theme/chrome");
+    // editor.getSession().setMode('ace/mode/<%= language %>');
+
+    //   editor.getSession().setAnnotations([{
+    //       row: 1,
+    //       column: 0,
+    //       text: "Strange error",
+    //       type: "error" // also warning and information
+    //   }]);
+    //   var session = editor.getSession();
+    // editor.session.setOption("useWorker", false)
+    })();
+    // console.log('editor', editor);
+</script>

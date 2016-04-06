@@ -1,4 +1,3 @@
-node_modules/
 lib/
 bower_components/
 **/*.app/
@@ -41,3 +40,31 @@ node_modules
 .node_repl_history 
   
  
+### https://raw.github.com/github/gitignore/058d4918973c034c1c53215f28845c0342a0f6b1/Global/osx.gitignore
+
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Icon must end with two \r
+Icon
+
+# Thumbnails
+._*
+
+# Files that might appear in the root of a volume
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+
+# Directories potentially created on remote AFP share
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+

@@ -15,7 +15,7 @@ var SCRIPT = {
     //     // スクリプトの読み込みタイミング
     //     console.log('SCRIPT.load()');
     // },
-    onload: function(){
+    onload: function() {
         // </body>の直前
         console.log('SCRIPT.onload()');
         console.log('###', global.APP_CONF);
@@ -28,4 +28,3 @@ var SCRIPT = {
     }
 };
 // SCRIPT.load();
-

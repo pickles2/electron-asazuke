@@ -872,6 +872,9 @@ body {
 #consolePanel .layer-panel {
   background-color: #272822;
 }
+.ace_search_form .ace_search_field {
+  color: #000;
+}
 /* common */
 body {
   background-color: #272822;
@@ -8430,4 +8433,16 @@ fieldset[disabled] .btn-danger.active {
 .m-console.div-textarea .warn { color: #fe0;}
 .m-console.div-textarea .info { color: #0ef;}
 .m-console.div-textarea .success { color: #0e0;}
+
+.m-console::-webkit-scrollbar {
+    width: 8px;
+}
+.m-console::-webkit-scrollbar-track {
+    background-color: rgba(0,0,0,0);
+}
+.m-console::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    -webkit-box-shadow: inset 0 0 6px rgba(255,255,255,0.8);
+}
+
 

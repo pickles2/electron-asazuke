@@ -1,0 +1,15 @@
+{
+  "name": "m-console",
+  "version": "0.0.1",
+  "description": "description",
+  "main": "m-console.js",
+  "private": true,
+  "scripts": {
+    "test": "echo \"test\""
+  },
+  "keywords": [
+    "electron"
+  ],
+  "author": "Misaki Shibata",
+  "license": "MIT"
+}

@@ -35,12 +35,12 @@ if (!isWin) {
 }
 var arch = 'x64';
 if (typeof process.argv[3] === 'undefined') {
-  console.log('arch -> x64');
+    console.log('arch -> x64');
 } else if (/ia32/.test(process.argv[3])) {
-  console.log('arch -> ia32');
-  arch = 'ia32'; // i686 linux option or Windows 32bit
+    console.log('arch -> ia32');
+    arch = 'ia32'; // i686 linux option or Windows 32bit
 } else {
-  console.log('arch -> x64');
+    console.log('arch -> x64');
 }
 var dir = './';
 var out = './bin';
@@ -48,7 +48,7 @@ var app_name = config.config.appname;
 var app_version = config.version;
 var app_file_name = config.config.appfilename;
 var platform = 'darwin'
-// アプリアイコン
+    // アプリアイコン
 var icon = './app.icns';
 if (isWin) {
     platform = 'win32';
@@ -61,18 +61,18 @@ var helper_bundle_id = 'jp.pxt.pickles2.asazuke'; //<- 自分のドメインな�
 
 var aser_unpack_dir = 'node-php-bin';
 
-var zip = function (relativePath, zipFileName, cb) {
-  console.log('relativePath', relativePath);
-  console.log('zipFileName', zipFileName);
+var zip = function(relativePath, zipFileName, cb) {
+    console.log('relativePath', relativePath);
+    console.log('zipFileName', zipFileName);
     zipFolder(
         __dirname + '/' + relativePath + '/',
         //__dirname + '/' + relativePath + '.zip',
         __dirname + '/' + zipFileName + '.zip',
-        function (err) {
+        function(err) {
             if (err) {
                 console.log('zip ERROR!', err);
             } else {
-                rimraf('./' + relativePath, function () {
+                rimraf('./' + relativePath, function() {
                     // Something
                     console.log('zip SUCCESS!.');
                     cb();
@@ -80,21 +80,22 @@ var zip = function (relativePath, zipFileName, cb) {
 
             }
         }
-        );
+    );
 }
-var npm_ignore = [], ignores;
+var npm_ignore = [],
+    ignores;
 for (var key in config.devDependencies) {
     npm_ignore.push(key);
 }
 ignores = npm_ignore.join('|');
 var ignore_phpDir = 'node-php-bin/bin/';
-if(isWin){
-  ignore_phpDir += 'darwin/';
-}else{
-  ignore_phpDir += 'win32/';
+if (isWin) {
+    ignore_phpDir += 'darwin/';
+} else {
+    ignore_phpDir += 'win32/';
 }
 console.time("build-time");
-var zipFileName = app_file_name + '-' + app_version +'+'+ platform +'-' + arch;
+var zipFileName = app_file_name + '-' + app_version + '+' + platform + '-' + arch;
 
 packager({
     "dir": dir,
@@ -117,7 +118,7 @@ packager({
     // ignore: "node_modules/(electron-packager|electron-prebuilt|\.bin)|release\.js",
     //ignore: 'node_modules/(' + ignores + '|\.bin)|release(\.sh|\.js)|bin/|node-php-bin/bin/win32/',
     //ignore: 'node_modules/(' + ignores + '|\.bin)|release(\.sh|\.js)|win32/',
-    ignore: 'node_modules/(' + ignores + '|\.bin)|release(\.sh|\.js)|'+ ignore_phpDir,
+    ignore: 'node_modules/(' + ignores + '|\.bin)|release(\.sh|\.js)|' + ignore_phpDir,
     'version-string': {
         CompanyName: 'Pickles2 Project',
         FileDescription: config.description,
@@ -133,7 +134,7 @@ packager({
     }
     console.log('appPath', appPath);
     if (isZip) {
-        zip(appPath + '/',  'bin/' + zipFileName, function () {
+        zip(appPath + '/', 'bin/' + zipFileName, function() {
             console.timeEnd("build-time");
             console.log('Done!!');
         });

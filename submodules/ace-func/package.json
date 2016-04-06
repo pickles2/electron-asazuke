@@ -1,0 +1,14 @@
+{
+  "name": "ace-func",
+  "version": "1.0.0",
+  "description": "<pre>\r ファイル拡張子に応じてAceエディタの挙動を変えれるようにしたモジュールです。\r </pre>",
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT",
+  "readme": "# ace-func\r\n\r\n<pre>\r\nファイル拡張子に応じてAceエディタの挙動を変えれるようにしたモジュールです。\r\n</pre>",
+  "readmeFilename": "README.md"
+}

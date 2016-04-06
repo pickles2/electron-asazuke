@@ -8,6 +8,7 @@
         .btn-group.btn-block.clearfix(role='group', aria-label='...')
             //button.btn.btn-default(onclick='$("#lbl-btn01").prop("checked", false);') ボタンを戻す
             button.btn.btn-default.js-cancel(onclick='App.kill();') 処理を中止する
+            button.btn.btn-success(onclick='$(this).click(function( event ) {event.stopPropagation(); App.execSiteScanResume();});') 再開する
             
     .action
         .detail-text
@@ -38,7 +39,8 @@
         .btn-group.btn-block.clearfix(role='group', aria-label='...')
             //button.btn.btn-default(onclick='$("#lbl-btn04").prop("checked", false);') ボタンを戻す
             button.btn.btn-default.js-cancel(onclick='App.kill();') 処理を中止する
-            button.btn.btn-default(onclick='$(".header-menu .item").eq(3).find("a").click();') スクレイピングデータを確認する
+            button.btn.btn-default(onclick='$(".header-menu .item").eq(3).find("a").click();') データを確認する
+            button.btn.btn-default(onclick='App.openSiteScan();') フォルダを開く
         
 // .btn-group(role='group', aria-label='...')
 //   button.btn.btn-default(type='button') Left
