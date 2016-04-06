@@ -13,3 +13,8 @@ function copy_shareDir() {
 #  cp -Rfpav bin ${dir}
   exit 0;
 }
+function build_all(){
+  node release.js win32 x64;
+  node release.js win32 ia32;
+  node release.js mac x64;
+}

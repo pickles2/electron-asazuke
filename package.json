@@ -13,7 +13,8 @@
     "start": "electron .",
     "up": "source release.sh; submodule_update; electron .;",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "source release.sh; submodule_update; node release.js; copy_shareDir;"
+    "build": "source release.sh; submodule_update; node release.js; copy_shareDir;",
+    "build-all": "source release.sh; build_all;"
   },
   "repository": {
     "type": "git",
