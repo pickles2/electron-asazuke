@@ -202,7 +202,8 @@ var exec = function(cmd, args, cwd, cb) {
             return true;
         }
 
-        if (args[args.length - 1] === 'run:site-scan') {
+        if (args[args.length - 1] === 'run:site-scan0'
+        || args[args.length - 1] === 'run:site-scan') {
             // コンソールパネル
             matches = data.match(/Finished\s->\s(.*)/gi);
             if (matches != null) {
@@ -602,6 +603,16 @@ global.App = {
             '</tr></table>' +
             '</div>');
 
+        appConf.readConf(function(jsonConf) {
+            exec(phpBin, [composerPhar, 'run:site-scan0'], jsonConf.asazuke);
+        });
+    },
+    execSiteScanResume: function() {
+        if (!!(platform.match(/darwin|linux/i))) {
+            // mac | linux
+        } else {
+            $('.js-cancel').prop('disabled', true);
+        }
         appConf.readConf(function(jsonConf) {
             exec(phpBin, [composerPhar, 'run:site-scan'], jsonConf.asazuke);
         });
