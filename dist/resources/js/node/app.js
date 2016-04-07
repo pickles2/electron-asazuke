@@ -202,8 +202,8 @@ var exec = function(cmd, args, cwd, cb) {
             return true;
         }
 
-        if (args[args.length - 1] === 'run:site-scan0'
-        || args[args.length - 1] === 'run:site-scan') {
+        if (args[args.length - 1] === 'site-scan0'
+        || args[args.length - 1] === 'site-scan') {
             // コンソールパネル
             matches = data.match(/Finished\s->\s(.*)/gi);
             if (matches != null) {
@@ -230,8 +230,8 @@ var exec = function(cmd, args, cwd, cb) {
                         '</tr>'));
                 }
             }
-            //} else if(args[0] === 'run:site-validation-json'){
-        } else if (args[args.length - 1] === 'run:site-validation-json') {
+            //} else if(args[0] === 'site-validation-json'){
+        } else if (args[args.length - 1] === 'site-validation-json') {
 
             // テーブル表示
             $('#div_C .layer-panel.is-current').html($(`
@@ -272,7 +272,7 @@ var exec = function(cmd, args, cwd, cb) {
             });
 
             // データベース | データ確認
-        } else if (args[args.length - 1] === 'run:file-sql-json') {
+        } else if (args[args.length - 1] === 'file-sql-json') {
             console.log("// データベース | データ確認");
             // appendMsg(data+"\n";);
             var matches = data.match(/Result\s->\s(.*)/);
@@ -327,8 +327,8 @@ var exec = function(cmd, args, cwd, cb) {
             } catch (e) {
                 console.log(e);
             }
-            //} else if(args[0] === 'run:site-validation-csv'){
-        } else if (args[args.length - 1] === 'run:site-validation-csv') {
+            //} else if(args[0] === 'site-validation-csv'){
+        } else if (args[args.length - 1] === 'site-validation-csv') {
             appendMsg(_data);
             var matches = data.match(/Finished\s->\s(.*)/i);
             console.log(matches);
@@ -349,8 +349,8 @@ var exec = function(cmd, args, cwd, cb) {
 
                 Console.appendMsg("Finished!! (sitemap-csv)", "success");
             }
-        } else if (args[args.length - 1] === 'run:conf-json') {
-            console.log('run:conf-json');
+        } else if (args[args.length - 1] === 'conf-json') {
+            console.log('conf-json');
             global.confJson = JSON.parse(data);
             appConf.readConf(function(jsonConf) {
                 global.appJson = jsonConf;
@@ -378,6 +378,7 @@ var exec = function(cmd, args, cwd, cb) {
                 }
                 appConf.readConf(function(jsonConf) {
                     Console.appendMsg(jsonConf.asazuke, "info");
+                    // composer.json内のphpのパスを書き換える
                     var composerPhpUpdate = require('composer-php-update');
                     composerPhpUpdate.init(jsonConf.asazuke + '/composer.json', tmpPhpBin);
                 });
@@ -604,7 +605,7 @@ global.App = {
             '</div>');
 
         appConf.readConf(function(jsonConf) {
-            exec(phpBin, [composerPhar, 'run:site-scan0'], jsonConf.asazuke);
+            exec(phpBin, ['index.php', 'site-scan0'], jsonConf.asazuke);
         });
     },
     execSiteScanResume: function() {
@@ -614,7 +615,7 @@ global.App = {
             $('.js-cancel').prop('disabled', true);
         }
         appConf.readConf(function(jsonConf) {
-            exec(phpBin, [composerPhar, 'run:site-scan'], jsonConf.asazuke);
+            exec(phpBin, ['index.php', 'site-scan'], jsonConf.asazuke);
         });
     },
     execSiteValidationEx: function() {
@@ -625,7 +626,7 @@ global.App = {
         }
         appConf.readConf(function(jsonConf) {
             Load.htmlDownload();
-            exec(phpBin, [composerPhar, 'run:site-validation-ex'], jsonConf.asazuke);
+            exec(phpBin, ['index.php', 'queue_site-validation-ex'], jsonConf.asazuke);
         });
     },
     execSiteValidationCsv: function() {
@@ -635,7 +636,7 @@ global.App = {
             $('.js-cancel').prop('disabled', true);
         }
         appConf.readConf(function(jsonConf) {
-            exec(phpBin, [composerPhar, 'run:site-validation-csv'], jsonConf.asazuke);
+            exec(phpBin, ['index.php', 'site-validation-csv'], jsonConf.asazuke);
         });
 
     },
@@ -646,7 +647,7 @@ global.App = {
             $('.js-cancel').prop('disabled', true);
         }
         appConf.readConf(function(jsonConf) {
-            exec(phpBin, [composerPhar, 'run:site-validation-json'], jsonConf.asazuke);
+            exec(phpBin, ['index.php', 'site-validation-json'], jsonConf.asazuke);
         });
     },
     execHtmlScraping: function() {
@@ -656,23 +657,23 @@ global.App = {
             $('.js-cancel').prop('disabled', true);
         }
         appConf.readConf(function(jsonConf) {
-            exec(phpBin, [composerPhar, 'run:scraping'], jsonConf.asazuke);
+            exec(phpBin, ['index.php', 'queue_scraping'], jsonConf.asazuke);
         });
     },
     // AsazukeConf.php読み込み
     execConfJson: function(cb) {
         appConf.readConf(function(jsonConf) {
-            exec(phpBin, [composerPhar, 'run:conf-json'], jsonConf.asazuke, cb);
+            exec(phpBin, ['index.php', 'conf-json'], jsonConf.asazuke, cb);
         });
     },
     execExecFileSQL: function() {
         appConf.readConf(function(jsonConf) {
-            exec(phpBin, [composerPhar, 'run:file-sql'], jsonConf.asazuke);
+            exec(phpBin, ['index.php', 'file-sql'], jsonConf.asazuke);
         });
     },
     execExecFileSQL_JSON: function() {
         appConf.readConf(function(jsonConf) {
-            exec(phpBin, [composerPhar, 'run:file-sql-json'], jsonConf.asazuke);
+            exec(phpBin, ['index.php', 'file-sql-json'], jsonConf.asazuke);
         });
     },
     // phpのインストール先確認
@@ -680,7 +681,7 @@ global.App = {
         appendMsg("which php");
         appConf.readConf(function(jsonConf) {
             appendMsg(phpBin);
-            exec(phpBin, [composerPhar, 'which-php'], jsonConf.asazuke);
+            exec(phpBin, ['index.php', 'which-php'], jsonConf.asazuke);
         });
     },
     execAsazukeUpdateCheck: function() {
@@ -719,7 +720,7 @@ global.App = {
                         // mac or linux
                         appendMsg(phpBin);
                         appendMsg(composerPhar);
-                        exec(phpBin, [composerPhar, 'darwin-chmod'], workdir, fnCompliteMsg);
+                        exec(phpBin, ['index.php', 'darwin-chmod'], workdir, fnCompliteMsg);
                     } else {
                         // if platform.match('win') != null
                         fnCompliteMsg();
@@ -743,7 +744,7 @@ global.App = {
                     };
                     if (!!(platform.match(/darwin|linux/i))) {
                         // mac or linux
-                        exec(phpBin, [composerPhar, 'darwin-chmod'], workdir, fnCompliteMsg);
+                        exec(phpBin, ['index.php', 'darwin-chmod'], workdir, fnCompliteMsg);
                     } else {
                         // if platform.match('win') != null
                         fnCompliteMsg();
@@ -1239,7 +1240,7 @@ global.Load = {
         // Asazuke設定読み込み
         mConsole.init('#consolePanel .layer-panel.is-current .div-textarea');
         App.execConfJson(function() {
-            App.execWhichPhp();
+            //App.execWhichPhp();
         });
     }
 };
