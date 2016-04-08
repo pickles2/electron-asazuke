@@ -110,6 +110,7 @@ var go_bottom = function($divTextarea) {
     $obj.scrollTop($obj[0].scrollHeight);
 };
 // メッセージエリアへの出力
+require('m-util');
 var appendMsg = function(text) {
     var ary = (text).toString().split(/\r\n|\r|\n/);
     for (var i in ary) {
@@ -121,7 +122,7 @@ var appendMsg = function(text) {
             data = data.replace(/\[\d{2};\d{2}m/g, '').replace(/\[\d{2}m/g, '');
             //data = data.replace(/\[/g, '');
         }
-        mConsole.appendMsg(data);
+        mConsole.appendMsg(escapeHtml(data));
     }
 };
 
