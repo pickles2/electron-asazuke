@@ -203,8 +203,7 @@ var exec = function(cmd, args, cwd, cb) {
             return true;
         }
 
-        if (args[args.length - 1] === 'site-scan0'
-        || args[args.length - 1] === 'site-scan') {
+        if (args[args.length - 1] === 'site-scan0' || args[args.length - 1] === 'site-scan') {
             // コンソールパネル
             matches = data.match(/Finished\s->\s(.*)/gi);
             if (matches != null) {
@@ -213,6 +212,15 @@ var exec = function(cmd, args, cwd, cb) {
                     appendMsg(matches.join("\n"));
                 } else {
                     appendMsg(matches[0]);
+                }
+            }
+            matches = data.match(/Skip\s->\s(.*)/gi);
+            if (matches != null) {
+                //appendMsg(matches[0]);
+                if (matches.length >= 2) {
+                    Console.appendMsg(matches.join("\n"), 'warn');
+                } else {
+                    Console.appendMsg(matches[0], 'warn');
                 }
             }
             // メインパネル
@@ -417,6 +425,10 @@ var projectSettingLoad = function() {
     $('.file > a[rel$="' + "setting.json" + '"]').css({
         'display': 'block'
     });
+    $('.file > a[rel$="setting.json"]').css({
+        'color': '#BFBFBF'
+    });
+
 
     // リスト更新
     appConf.readConf(function(jsonConf) {
@@ -496,15 +508,15 @@ global.SHELL = {
         });
     },
     openDir: function(filePath) {
-            if (!!(platform.match(/darwin/i))) {
-                App.exec('open', [filePath], '.');
-            } else if (!!(platform.match(/linux/i))) {
-                // linux
-                App.exec('xdg-open', [filePath], '.');
-            } else {
-                // windows
-                App.exec('explorer', [filePath], '.');
-            }
+        if (!!(platform.match(/darwin/i))) {
+            App.exec('open', [filePath], '.');
+        } else if (!!(platform.match(/linux/i))) {
+            // linux
+            App.exec('xdg-open', [filePath], '.');
+        } else {
+            // windows
+            App.exec('explorer', [filePath], '.');
+        }
     },
     openSqlDir: function() {
         appConf.readConf(function(jsonConf) {
@@ -738,18 +750,21 @@ global.App = {
                 Console.appendMsg('setting.jsonのgitパスを修正して下さい。', 'error');
             }
             var workdir = jsonConf.asazuke;
-            exec(jsonConf.git, ['pull'], workdir, function() {
-                exec(phpBin, [composerPhar, 'update'], workdir, function() {
-                    var fnCompliteMsg = function() {
-                        appendMsg("コマンドラインツールのアップデートが完了しました。");
-                    };
-                    if (!!(platform.match(/darwin|linux/i))) {
-                        // mac or linux
-                        exec(phpBin, ['index.php', 'darwin-chmod'], workdir, fnCompliteMsg);
-                    } else {
-                        // if platform.match('win') != null
-                        fnCompliteMsg();
-                    }
+            // composer.jsonをコミット時点まで戻す
+            exec(jsonConf.git, ['checkout', '--', 'composer.json'], workdir, function() {
+                exec(jsonConf.git, ['pull'], workdir, function() {
+                    exec(phpBin, [composerPhar, 'update'], workdir, function() {
+                        var fnCompliteMsg = function() {
+                            appendMsg("コマンドラインツールのアップデートが完了しました。");
+                        };
+                        if (!!(platform.match(/darwin|linux/i))) {
+                            // mac or linux
+                            exec(phpBin, ['index.php', 'darwin-chmod'], workdir, fnCompliteMsg);
+                        } else {
+                            // if platform.match('win') != null
+                            fnCompliteMsg();
+                        }
+                    });
                 });
             });
         });
@@ -1099,7 +1114,8 @@ global.Load = {
                             $('.file > a[rel*="AsazukeConf"]').css({
                                 'display': 'block'
                             });
-                            $('.file > a[rel$="AsazukeConf.php"]').css({
+                            // アプリで使う設定ファイル
+                            $('.file > a[rel$="AsazukeConf.php"], .file > a[rel$="AsazukeConfGeneral.php"]').css({
                                 'color': '#BFBFBF'
                             });
                             $('.file > a[rel$="AsazukeConf-sample.jp.php"]').css({
