@@ -248,6 +248,50 @@ var exec = function(cmd, args, cwd, cb) {
                 }
             }
             //} else if(args[0] === 'site-validation-json'){
+        } else if (args[args.length - 1] === 'countSiteScan') {
+            matches = data.match(/(\d*)/i);
+            console.log(matches[0]);
+            // プロセスチェックの回避するため
+            global.job = null;
+
+            // ページ初期化
+            $('#div_C .layer-panel.is-current').html('<div class="asazuke-sitescan">' +
+            '<div class="action-title"><h3>サイト検索</h3></div>' +
+            '<div class="progress-sitescan"></div>' +
+            '<table id="tbl-sitescan" border="1"><tr>' +
+            '<th>id</th>' +
+            '<th>fullPath </th>' +
+            // '<th>depth </th>' +
+            // '<th>checkCount </th>' +
+            '<th>status </th>' +
+            '<th>statusCode </th>' +
+            // '<th>time </th>' +
+            '</tr></table>' +
+            '</div>');
+
+            for(var ai=1; ai<=matches[0]; ai++){
+              App.execSiteScanSelectById(cwd, ai);
+              global.job = null;
+            }
+        } else if (args[args.length - 1].match(/^selectSiteScanById\(\d*\)/gi)) {
+                    var resultJson = JSON.parse(data)[0];
+                    var path = "";
+                    // 文字列で返るから"1"と比較
+                    if(resultJson.checkCount === '1'){
+                      path = '<span class="marker_lime">'+resultJson.fullPath+'</span>';
+                    }else{
+                      path = resultJson.fullPath;
+                    }
+
+                    $('#tbl-sitescan').append($('<tr>' +
+                        '<td>' + resultJson.id + '</td>' +
+                        '<td>' + path + '</td>' +
+                        // '<td>' + resultJson.depth + '</td>' +
+                        // '<td>'+ resultJson.checkCount + '</td>' +
+                        '<td>' + resultJson.status + '</td>' +
+                        '<td>' + resultJson.statusCode + '</td>' +
+                        // '<td>'+ resultJson.time + '</td>' +
+                        '</tr>'));
         } else if (args[args.length - 1] === 'site-validation-json') {
 
             // テーブル表示
@@ -602,6 +646,7 @@ global.App = {
             window.resize();
         }, 1500);
     },
+    // 戻り値が要らない場合
     exec: function(cmd, args, cwd) {
         exec(cmd, args, cwd);
     },
@@ -637,9 +682,22 @@ global.App = {
         } else {
             $('.js-cancel').prop('disabled', true);
         }
+        App.execSiteScanShow();
+        console.log("AAAAAAAAAAAAAAAAAAA");
+        global.job = null;
         appConf.readConf(function(jsonConf) {
             exec(phpBin, ['index.php', 'site-scan'], jsonConf.asazuke);
         });
+    },
+    // 最大id取得
+    execSiteScanShow: function() {
+        appConf.readConf(function(jsonConf) {
+            exec(phpBin, ['index.php', 'countSiteScan'], jsonConf.asazuke);
+        });
+    },
+    // idからレコードデータ取得
+    execSiteScanSelectById: function(cwd, id) {
+        exec(phpBin, ['index.php', 'selectSiteScanById('+id+')'], cwd);
     },
     execSiteValidationEx: function() {
         if (!!(platform.match(/darwin|linux/i))) {
