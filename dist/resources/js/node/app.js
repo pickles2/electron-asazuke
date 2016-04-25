@@ -208,11 +208,19 @@ var exec = function(cmd, args, cwd, cb) {
             matches = data.match(/Finished\s->\s(.*)/gi);
             if (matches != null) {
                 //appendMsg(matches[0]);
+                var str = "";
                 if (matches.length >= 2) {
-                    appendMsg(matches.join("\n"));
+                    str = matches.join("\n");
                 } else {
-                    appendMsg(matches[0]);
+                    str = matches[0];
                 }
+                appendMsg(str);
+                var captureStr = matches[0].match(/Finished\s->\s(.*)/i);
+                $('#tbl-sitescan td:nth-child(2)').map(function(){
+                  if(captureStr[1] ===  $(this).text()){
+                    $(this).css({'background-color':'#FFF246'});
+                  }
+                });
             }
             matches = data.match(/Skip\s->\s(.*)/gi);
             if (matches != null) {
@@ -231,7 +239,7 @@ var exec = function(cmd, args, cwd, cb) {
                     $('#tbl-sitescan').append($('<tr>' +
                         '<td>' + resultJson.id + '</td>' +
                         '<td>' + resultJson.fullPath + '</td>' +
-                        '<td>' + resultJson.depth + '</td>' +
+                        // '<td>' + resultJson.depth + '</td>' +
                         // '<td>'+ resultJson.checkCount + '</td>' +
                         '<td>' + resultJson.status + '</td>' +
                         '<td>' + resultJson.statusCode + '</td>' +
@@ -609,7 +617,7 @@ global.App = {
             '<table id="tbl-sitescan" border="1"><tr>' +
             '<th>id</th>' +
             '<th>fullPath </th>' +
-            '<th>depth </th>' +
+            // '<th>depth </th>' +
             // '<th>checkCount </th>' +
             '<th>status </th>' +
             '<th>statusCode </th>' +
