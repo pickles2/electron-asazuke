@@ -251,6 +251,7 @@ var exec = function(cmd, args, cwd, cb) {
         } else if (args[args.length - 1] === 'site-validation-json') {
 
             // テーブル表示
+            /*
             $('#div_C .layer-panel.is-current').html($(`
 					<h3>HTMLダウンロード(検証)</h3>
 					<table class="tbl_htmlDL" border="1">
@@ -267,6 +268,7 @@ var exec = function(cmd, args, cwd, cb) {
 					<tr><td>${no}</td><td>${path}</td><td>${err}</td><td>${warn}</td><</tr>
 					`);
             });
+            */
 
             // Include the async package
             // Make sure you add "async" to your package.json
@@ -1067,7 +1069,9 @@ global.Load = {
         }
 
         // SPAなので#editorが複数あると破綻するのでeditorは無きものにする。
-        $("#div_C .layer-panel").empty();
+        //$("#div_C .layer-panel").empty();
+        // 処理/実行は残す
+        $("#div_C .layer-panel:not(:nth-child(2)").empty();
 
         // copyright
         $('.copyright').html(config.config.copyright);
@@ -1143,10 +1147,12 @@ global.Load = {
             case 1:
                 $('#LeftPanel').width(710);
                 $(window).resize();
+                // 再読込みしない
+                if($("#div_A .layer-panel").eq(1).find('.fileTree1').length){
+                    $("#div_A .layer-panel").eq(n).load("batch.html", function(htmlData, loadStatus) {
 
-                $("#div_A .layer-panel").eq(n).load("batch.html", function(htmlData, loadStatus) {
-
-                });
+                    });
+                }
                 break;
 
             case 2:
