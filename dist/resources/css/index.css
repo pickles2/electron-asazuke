@@ -875,6 +875,22 @@ body {
 .ace_search_form .ace_search_field {
   color: #000;
 }
+.marker_yellow {
+  background: -webkit-linear-gradient(transparent 60%, #ff6 60%);
+  background: linear-gradient(transparent 60%, #ff6 60%);
+}
+.marker_lime {
+  background: -webkit-linear-gradient(transparent 60%, #6fc 60%);
+  background: linear-gradient(transparent 60%, #6fc 60%);
+}
+.marker_blue {
+  background: -webkit-linear-gradient(transparent 60%, #6cf 60%);
+  background: linear-gradient(transparent 60%, #6cf 60%);
+}
+.marker_pink {
+  background: -webkit-linear-gradient(transparent 60%, #f6f 60%);
+  background: linear-gradient(transparent 60%, #f6f 60%);
+}
 /* common */
 body {
   background-color: #272822;

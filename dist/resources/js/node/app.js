@@ -218,7 +218,7 @@ var exec = function(cmd, args, cwd, cb) {
                 var captureStr = matches[0].match(/Finished\s->\s(.*)/i);
                 $('#tbl-sitescan td:nth-child(2)').map(function(){
                   if(captureStr[1] ===  $(this).text()){
-                    $(this).css({'background-color':'#FFF246'});
+                    $(this).wrapInner('<span class="marker_lime"></span>');
                   }
                 });
             }
