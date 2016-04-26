@@ -268,11 +268,21 @@ var exec = function(cmd, args, cwd, cb) {
             // '<th>time </th>' +
             '</tr></table>' +
             '</div>');
-
-            for(var ai=1; ai<=matches[0]; ai++){
-              App.execSiteScanSelectById(cwd, ai);
-              global.job = null;
-            }
+            
+            async.waterfall([
+                function(callback) {
+                    for(var ai=1; ai<=matches[0]; ai++){
+                      App.execSiteScanSelectById(cwd, ai);
+                      global.job = null;
+                    }
+                    callback(null, 1);
+                }
+            ], function(err, arg1){
+                if (err) {
+                    throw err;
+                }
+                App.execSiteScanRe();
+            });
         } else if (args[args.length - 1].match(/^selectSiteScanById\(\d*\)/gi)) {
                     var resultJson = JSON.parse(data)[0];
                     var path = "";
@@ -676,18 +686,26 @@ global.App = {
             exec(phpBin, ['index.php', 'site-scan0'], jsonConf.asazuke);
         });
     },
+    // 再実行用
+    execSiteScanRe: function() {
+        appConf.readConf(function(jsonConf) {
+            exec(phpBin, ['index.php', 'site-scan'], jsonConf.asazuke);
+        });
+    },
     execSiteScanResume: function() {
         if (!!(platform.match(/darwin|linux/i))) {
             // mac | linux
         } else {
             $('.js-cancel').prop('disabled', true);
         }
-        App.execSiteScanShow();
-        console.log("AAAAAAAAAAAAAAAAAAA");
-        global.job = null;
-        appConf.readConf(function(jsonConf) {
-            exec(phpBin, ['index.php', 'site-scan'], jsonConf.asazuke);
-        });
+        // 再読込みしない
+        if($("#div_C .layer-panel:nth-child(2) #tbl-sitescan").length){
+            console.log('再読込みしない');
+            App.execSiteScanRe();
+        }else{
+            console.log('再読込み');
+            App.execSiteScanShow();
+        }
     },
     // 最大id取得
     execSiteScanShow: function() {
