@@ -110,6 +110,7 @@ var go_bottom = function($divTextarea) {
     $obj.scrollTop($obj[0].scrollHeight);
 };
 // メッセージエリアへの出力
+require('m-util');
 var appendMsg = function(text) {
     var ary = (text).toString().split(/\r\n|\r|\n/);
     for (var i in ary) {
@@ -121,7 +122,7 @@ var appendMsg = function(text) {
             data = data.replace(/\[\d{2};\d{2}m/g, '').replace(/\[\d{2}m/g, '');
             //data = data.replace(/\[/g, '');
         }
-        mConsole.appendMsg(data);
+        mConsole.appendMsg(escapeHtml(data));
     }
 };
 
@@ -202,16 +203,32 @@ var exec = function(cmd, args, cwd, cb) {
             return true;
         }
 
-        if (args[args.length - 1] === 'site-scan0'
-        || args[args.length - 1] === 'site-scan') {
+        if (args[args.length - 1] === 'site-scan0' || args[args.length - 1] === 'site-scan') {
             // コンソールパネル
             matches = data.match(/Finished\s->\s(.*)/gi);
             if (matches != null) {
                 //appendMsg(matches[0]);
+                var str = "";
                 if (matches.length >= 2) {
-                    appendMsg(matches.join("\n"));
+                    str = matches.join("\n");
                 } else {
-                    appendMsg(matches[0]);
+                    str = matches[0];
+                }
+                appendMsg(str);
+                var captureStr = matches[0].match(/Finished\s->\s(.*)/i);
+                $('#tbl-sitescan td:nth-child(2)').map(function(){
+                  if(captureStr[1] ===  $(this).text()){
+                    $(this).wrapInner('<span class="marker_lime"></span>');
+                  }
+                });
+            }
+            matches = data.match(/Skip\s->\s(.*)/gi);
+            if (matches != null) {
+                //appendMsg(matches[0]);
+                if (matches.length >= 2) {
+                    Console.appendMsg(matches.join("\n"), 'warn');
+                } else {
+                    Console.appendMsg(matches[0], 'warn');
                 }
             }
             // メインパネル
@@ -222,7 +239,7 @@ var exec = function(cmd, args, cwd, cb) {
                     $('#tbl-sitescan').append($('<tr>' +
                         '<td>' + resultJson.id + '</td>' +
                         '<td>' + resultJson.fullPath + '</td>' +
-                        '<td>' + resultJson.depth + '</td>' +
+                        // '<td>' + resultJson.depth + '</td>' +
                         // '<td>'+ resultJson.checkCount + '</td>' +
                         '<td>' + resultJson.status + '</td>' +
                         '<td>' + resultJson.statusCode + '</td>' +
@@ -231,9 +248,64 @@ var exec = function(cmd, args, cwd, cb) {
                 }
             }
             //} else if(args[0] === 'site-validation-json'){
+        } else if (args[args.length - 1] === 'countSiteScan') {
+            matches = data.match(/(\d*)/i);
+            console.log(matches[0]);
+            // プロセスチェックの回避するため
+            global.job = null;
+
+            // ページ初期化
+            $('#div_C .layer-panel.is-current').html('<div class="asazuke-sitescan">' +
+            '<div class="action-title"><h3>サイト検索</h3></div>' +
+            '<div class="progress-sitescan"></div>' +
+            '<table id="tbl-sitescan" border="1"><tr>' +
+            '<th>id</th>' +
+            '<th>fullPath </th>' +
+            // '<th>depth </th>' +
+            // '<th>checkCount </th>' +
+            '<th>status </th>' +
+            '<th>statusCode </th>' +
+            // '<th>time </th>' +
+            '</tr></table>' +
+            '</div>');
+            
+            async.waterfall([
+                function(callback) {
+                    for(var ai=1; ai<=matches[0]; ai++){
+                      App.execSiteScanSelectById(cwd, ai);
+                      global.job = null;
+                    }
+                    callback(null, 1);
+                }
+            ], function(err, arg1){
+                if (err) {
+                    throw err;
+                }
+                App.execSiteScanRe();
+            });
+        } else if (args[args.length - 1].match(/^selectSiteScanById\(\d*\)/gi)) {
+                    var resultJson = JSON.parse(data)[0];
+                    var path = "";
+                    // 文字列で返るから"1"と比較
+                    if(resultJson.checkCount === '1'){
+                      path = '<span class="marker_lime">'+resultJson.fullPath+'</span>';
+                    }else{
+                      path = resultJson.fullPath;
+                    }
+
+                    $('#tbl-sitescan').append($('<tr>' +
+                        '<td>' + resultJson.id + '</td>' +
+                        '<td>' + path + '</td>' +
+                        // '<td>' + resultJson.depth + '</td>' +
+                        // '<td>'+ resultJson.checkCount + '</td>' +
+                        '<td>' + resultJson.status + '</td>' +
+                        '<td>' + resultJson.statusCode + '</td>' +
+                        // '<td>'+ resultJson.time + '</td>' +
+                        '</tr>'));
         } else if (args[args.length - 1] === 'site-validation-json') {
 
             // テーブル表示
+            /*
             $('#div_C .layer-panel.is-current').html($(`
 					<h3>HTMLダウンロード(検証)</h3>
 					<table class="tbl_htmlDL" border="1">
@@ -250,6 +322,7 @@ var exec = function(cmd, args, cwd, cb) {
 					<tr><td>${no}</td><td>${path}</td><td>${err}</td><td>${warn}</td><</tr>
 					`);
             });
+            */
 
             // Include the async package
             // Make sure you add "async" to your package.json
@@ -416,6 +489,10 @@ var projectSettingLoad = function() {
     $('.file > a[rel$="' + "setting.json" + '"]').css({
         'display': 'block'
     });
+    $('.file > a[rel$="setting.json"]').css({
+        'color': '#BFBFBF'
+    });
+
 
     // リスト更新
     appConf.readConf(function(jsonConf) {
@@ -495,15 +572,15 @@ global.SHELL = {
         });
     },
     openDir: function(filePath) {
-            if (!!(platform.match(/darwin/i))) {
-                App.exec('open', [filePath], '.');
-            } else if (!!(platform.match(/linux/i))) {
-                // linux
-                App.exec('xdg-open', [filePath], '.');
-            } else {
-                // windows
-                App.exec('explorer', [filePath], '.');
-            }
+        if (!!(platform.match(/darwin/i))) {
+            App.exec('open', [filePath], '.');
+        } else if (!!(platform.match(/linux/i))) {
+            // linux
+            App.exec('xdg-open', [filePath], '.');
+        } else {
+            // windows
+            App.exec('explorer', [filePath], '.');
+        }
     },
     openSqlDir: function() {
         appConf.readConf(function(jsonConf) {
@@ -579,6 +656,7 @@ global.App = {
             window.resize();
         }, 1500);
     },
+    // 戻り値が要らない場合
     exec: function(cmd, args, cwd) {
         exec(cmd, args, cwd);
     },
@@ -596,7 +674,7 @@ global.App = {
             '<table id="tbl-sitescan" border="1"><tr>' +
             '<th>id</th>' +
             '<th>fullPath </th>' +
-            '<th>depth </th>' +
+            // '<th>depth </th>' +
             // '<th>checkCount </th>' +
             '<th>status </th>' +
             '<th>statusCode </th>' +
@@ -608,15 +686,36 @@ global.App = {
             exec(phpBin, ['index.php', 'site-scan0'], jsonConf.asazuke);
         });
     },
+    // 再実行用
+    execSiteScanRe: function() {
+        appConf.readConf(function(jsonConf) {
+            exec(phpBin, ['index.php', 'site-scan'], jsonConf.asazuke);
+        });
+    },
     execSiteScanResume: function() {
         if (!!(platform.match(/darwin|linux/i))) {
             // mac | linux
         } else {
             $('.js-cancel').prop('disabled', true);
         }
+        // 再読込みしない
+        if($("#div_C .layer-panel:nth-child(2) #tbl-sitescan").length){
+            console.log('再読込みしない');
+            App.execSiteScanRe();
+        }else{
+            console.log('再読込み');
+            App.execSiteScanShow();
+        }
+    },
+    // 最大id取得
+    execSiteScanShow: function() {
         appConf.readConf(function(jsonConf) {
-            exec(phpBin, ['index.php', 'site-scan'], jsonConf.asazuke);
+            exec(phpBin, ['index.php', 'countSiteScan'], jsonConf.asazuke);
         });
+    },
+    // idからレコードデータ取得
+    execSiteScanSelectById: function(cwd, id) {
+        exec(phpBin, ['index.php', 'selectSiteScanById('+id+')'], cwd);
     },
     execSiteValidationEx: function() {
         if (!!(platform.match(/darwin|linux/i))) {
@@ -737,18 +836,21 @@ global.App = {
                 Console.appendMsg('setting.jsonのgitパスを修正して下さい。', 'error');
             }
             var workdir = jsonConf.asazuke;
-            exec(jsonConf.git, ['pull'], workdir, function() {
-                exec(phpBin, [composerPhar, 'update'], workdir, function() {
-                    var fnCompliteMsg = function() {
-                        appendMsg("コマンドラインツールのアップデートが完了しました。");
-                    };
-                    if (!!(platform.match(/darwin|linux/i))) {
-                        // mac or linux
-                        exec(phpBin, ['index.php', 'darwin-chmod'], workdir, fnCompliteMsg);
-                    } else {
-                        // if platform.match('win') != null
-                        fnCompliteMsg();
-                    }
+            // composer.jsonをコミット時点まで戻す
+            exec(jsonConf.git, ['checkout', '--', 'composer.json'], workdir, function() {
+                exec(jsonConf.git, ['pull'], workdir, function() {
+                    exec(phpBin, [composerPhar, 'update'], workdir, function() {
+                        var fnCompliteMsg = function() {
+                            appendMsg("コマンドラインツールのアップデートが完了しました。");
+                        };
+                        if (!!(platform.match(/darwin|linux/i))) {
+                            // mac or linux
+                            exec(phpBin, ['index.php', 'darwin-chmod'], workdir, fnCompliteMsg);
+                        } else {
+                            // if platform.match('win') != null
+                            fnCompliteMsg();
+                        }
+                    });
                 });
             });
         });
@@ -1043,7 +1145,9 @@ global.Load = {
         }
 
         // SPAなので#editorが複数あると破綻するのでeditorは無きものにする。
-        $("#div_C .layer-panel").empty();
+        //$("#div_C .layer-panel").empty();
+        // 処理/実行は残す
+        $("#div_C .layer-panel:not(:nth-child(2)").empty();
 
         // copyright
         $('.copyright').html(config.config.copyright);
@@ -1098,7 +1202,8 @@ global.Load = {
                             $('.file > a[rel*="AsazukeConf"]').css({
                                 'display': 'block'
                             });
-                            $('.file > a[rel$="AsazukeConf.php"]').css({
+                            // アプリで使う設定ファイル
+                            $('.file > a[rel$="AsazukeConf.php"], .file > a[rel$="AsazukeConfGeneral.php"]').css({
                                 'color': '#BFBFBF'
                             });
                             $('.file > a[rel$="AsazukeConf-sample.jp.php"]').css({
@@ -1118,10 +1223,12 @@ global.Load = {
             case 1:
                 $('#LeftPanel').width(710);
                 $(window).resize();
+                // 再読込みしない
+                if($("#div_A .layer-panel").eq(1).find('.fileTree1').length){
+                    $("#div_A .layer-panel").eq(n).load("batch.html", function(htmlData, loadStatus) {
 
-                $("#div_A .layer-panel").eq(n).load("batch.html", function(htmlData, loadStatus) {
-
-                });
+                    });
+                }
                 break;
 
             case 2:
