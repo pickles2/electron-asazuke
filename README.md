@@ -59,3 +59,21 @@ $ node release.js [(win|mac),(ia32|x64)]
 |npm start| electron実行|
 |npm run up| electron実行(サブモジュールの再インストール)|
 |npm run submodule_update | サブモジュール更新 |
+
+## 更新履歴 - Change log
+
+### v0.0.4 (2016年4月28日)
+- Asazukeのタスク起動方法変更、`php index.php ~`に変更
+- SiteScanの見た目まわりの調整
+- ページ切り替えると中断しているように見える問題などへの対応
+
+(過去バージョンとのv0.0.3以前と互換性がありません）
+
+## ライセンス - License
+
+MIT License
+
+
+## 作者 - Author
+
+- Misaki Shibata <misaki.pink@gmail.com>
