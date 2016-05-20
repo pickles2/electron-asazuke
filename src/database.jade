@@ -58,7 +58,7 @@ script.
 
         sql += `
         -- 適当な値を埋める
-        UPDATE t_asazukeSS SET	depth = 5, checkCount = 1, status='HTTP/1.1 401 Authorization Required', statusCode=200;
+        UPDATE t_asazukeSS SET checkCount = 1, status='HTTP/1.1 401 Authorization Required', statusCode=200;
 
         -- 忘れずに
         commit;
