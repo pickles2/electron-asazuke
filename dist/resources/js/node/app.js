@@ -1,6 +1,10 @@
-var remote = require('remote');
+// var remote = require('remote');
+const remote = require('electron').remote;
+const app = remote.app;
+
+
 var fs = require('fs');
-var app = remote.require('app');
+// var app = remote.require('app');
 global.APP_PATH = app.getAppPath();
 var exe = app.getPath('exe'); // win32はexe, osxはElectron
 var unpackedDir = path.normalize(path.dirname(exe) + '/../Resources/app.asar.unpacked');
@@ -72,7 +76,7 @@ global.userDataDir = app.getPath('userData');
 global.SETTING_JSON = global.userDataDir + '/setting.json';
 console.log(global.SETTING_JSON);
 
-var BrowserWindow = remote.require('browser-window');
+var BrowserWindow = remote.BrowserWindow;
 var win = BrowserWindow.getFocusedWindow();
 
 appConf.setConfFilePath(global.SETTING_JSON);
@@ -81,7 +85,7 @@ appConf.readConf(function(jsonConf) {
 });
 
 var asazukeConf = require('asazuke-conf');
-var dialog = remote.require('dialog');
+var dialog = remote;
 var jqueryFileTree = require('jquery-file-tree');
 var showMsg = function(options) {
     var default_options = {
