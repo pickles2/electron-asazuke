@@ -1,92 +1,92 @@
-// var remote = require('remote');
-const remote = require('electron').remote;
-const app = remote.app;
+// var remote = require('remote')
+const remote = require('electron').remote
+const app = remote.app
 
 
-var fs = require('fs');
-// var app = remote.require('app');
-global.APP_PATH = app.getAppPath();
-var exe = app.getPath('exe'); // win32はexe, osxはElectron
-var unpackedDir = path.normalize(path.dirname(exe) + '/../Resources/app.asar.unpacked');
+var fs = require('fs')
+// var app = remote.require('app')
+global.APP_PATH = app.getAppPath()
+var exe = app.getPath('exe') // win32はexe, osxはElectron
+var unpackedDir = path.normalize(path.dirname(exe) + '/../Resources/app.asar.unpacked')
 
-var platform = require('os').platform().toLowerCase();
-var phpBin = unpackedDir + '/node-php-bin/bin/darwin/5.6.18/bin/php';
-var composerPhar = unpackedDir + '/node-php-bin/bin/darwin/composer.phar';
+var platform = require('os').platform().toLowerCase()
+var phpBin = unpackedDir + '/node-php-bin/bin/darwin/5.6.18/bin/php'
+var composerPhar = unpackedDir + '/node-php-bin/bin/darwin/composer.phar'
 if (!!(platform.match(/darwin/i))) {
     // mac
 } else if (!!(platform.match(/win32/i))) {
-    unpackedDir = path.dirname(global.APP_PATH) + '\\app.asar.unpacked';
-    phpBin = path.dirname(global.APP_PATH) + '\\app.asar.unpacked\\node-php-bin\\bin\\win32\\php-5.6.18\\php.exe';
-    composerPhar = path.dirname(global.APP_PATH) + '\\app.asar.unpacked\\node-php-bin\\bin\\win32\\composer.phar';
+    unpackedDir = path.dirname(global.APP_PATH) + '\\app.asar.unpacked'
+    phpBin = path.dirname(global.APP_PATH) + '\\app.asar.unpacked\\node-php-bin\\bin\\win32\\php-5.6.18\\php.exe'
+    composerPhar = path.dirname(global.APP_PATH) + '\\app.asar.unpacked\\node-php-bin\\bin\\win32\\composer.phar'
 }
-var isElectron = false; // $ electron . で起動した場合
+var isElectron = false // $ electron . で起動した場合
 fs.stat(unpackedDir, function(stat) {
-    //console.log('stat', stat);
+    //console.log('stat', stat)
     if (stat == null) {
         // ファイルがある
     } else if (stat.code === 'ENOENT') {
         // ファイルがない場合。
-        console.log(unpackedDir + 'ディレクトリが見つかりません。');
+        console.log(unpackedDir + 'ディレクトリが見つかりません。')
         if (!!(platform.match(/darwin/i))) {
-            phpBin = global.APP_PATH + '/node-php-bin/bin/darwin/5.6.18/bin/php';
-            composerPhar = global.APP_PATH + '/node-php-bin/bin/darwin/composer.phar';
-            isElectron = true;
+            phpBin = global.APP_PATH + '/node-php-bin/bin/darwin/5.6.18/bin/php'
+            composerPhar = global.APP_PATH + '/node-php-bin/bin/darwin/composer.phar'
+            isElectron = true
         } else if (!!(platform.match(/win32/i))) {
-            phpBin = global.APP_PATH + '/node-php-bin/bin/win32/php-5.6.18/php.exe';
-            composerPhar = global.APP_PATH + '/node-php-bin/bin/win32/composer.phar';
-            isElectron = true;
+            phpBin = global.APP_PATH + '/node-php-bin/bin/win32/php-5.6.18/php.exe'
+            composerPhar = global.APP_PATH + '/node-php-bin/bin/win32/composer.phar'
+            isElectron = true
         }
     }
-});
+})
 // バックスラッシュ(/)->スラッシュ(\)
 var bs2sl = function(str) {
-    return str.replace(/\u002F/g, "\u005C");
-};
+    return str.replace(/\u002F/g, "\u005C")
+}
 // スラッシュ(\)->バックスラッシュ(/)
 var sl2bs = function(str) {
-    return str.replace(/\u005C/g, "\u002F");
-};
+    return str.replace(/\u005C/g, "\u002F")
+}
 // ディレクトリセパレータを修復
 var ds_repair = function(str) {
     if (!!(platform.match(/darwin/i))) {
-        return sl2bs(str);
+        return sl2bs(str)
     } else if (!!(platform.match(/win32/i))) {
-        return bs2sl(str);
+        return bs2sl(str)
     }
-};
+}
 // ファイルの有無
 var fs_exists = function(file_path) {
     try {
-        var status = fs.statSync(file_path);
-        console.log(file_path + ' it exists');
-        return true;
+        var status = fs.statSync(file_path)
+        console.log(file_path + ' it exists')
+        return true
     } catch (e) {
-        console.log(file_path + ' it does not exist');
-        Console.appendMsg(file_path + 'が見つかりません', 'error');
-        return false;
+        console.log(file_path + ' it does not exist')
+        Console.appendMsg(file_path + 'が見つかりません', 'error')
+        return false
     }
-};
+}
 
-var iconv = require('iconv-lite');
-var phpKiller = require('php-killer');
-var appConf = require('app-conf');
-var mConsole = require('m-console');
+var iconv = require('iconv-lite')
+var phpKiller = require('php-killer')
+var appConf = require('app-conf')
+var mConsole = require('m-console')
 
-global.userDataDir = app.getPath('userData');
-global.SETTING_JSON = global.userDataDir + '/setting.json';
-console.log(global.SETTING_JSON);
+global.userDataDir = app.getPath('userData')
+global.SETTING_JSON = global.userDataDir + '/setting.json'
+console.log(global.SETTING_JSON)
 
-var BrowserWindow = remote.BrowserWindow;
-var win = BrowserWindow.getFocusedWindow();
+var BrowserWindow = remote.BrowserWindow
+var win = BrowserWindow.getFocusedWindow()
 
-appConf.setConfFilePath(global.SETTING_JSON);
+appConf.setConfFilePath(global.SETTING_JSON)
 appConf.readConf(function(jsonConf) {
-    phpKiller.setDir(jsonConf.asazuke);
-});
+    phpKiller.setDir(jsonConf.asazuke)
+})
 
-var asazukeConf = require('asazuke-conf');
-var dialog = remote;
-var jqueryFileTree = require('jquery-file-tree');
+var asazukeConf = require('asazuke-conf')
+var dialog = remote
+var jqueryFileTree = require('jquery-file-tree')
 var showMsg = function(options) {
     var default_options = {
         title: 'information',
@@ -94,152 +94,152 @@ var showMsg = function(options) {
         buttons: ['OK'],
         message: 'メッセージ',
         detail: ""
-    };
+    }
 
     for (key in options) {
-        default_options[key] = options[key];
+        default_options[key] = options[key]
     }
-    console.log(options);
-    dialog.showMessageBox(win, default_options);
-};
+    console.log(options)
+    dialog.showMessageBox(win, default_options)
+}
 
 // カーソルを最下行に合わせる
 var go_bottom = function($divTextarea) {
-    console.log('go_bottom');
-    var $obj = $divTextarea;
-    console.log($obj);
+    console.log('go_bottom')
+    var $obj = $divTextarea
+    console.log($obj)
     if ($obj.length == 0) {
-        return;
+        return
     }
-    $obj.scrollTop($obj[0].scrollHeight);
-};
+    $obj.scrollTop($obj[0].scrollHeight)
+}
 // メッセージエリアへの出力
-require('m-util');
+require('m-util')
 var appendMsg = function(text) {
-    var ary = (text).toString().split(/\r\n|\r|\n/);
+    var ary = (text).toString().split(/\r\n|\r|\n/)
     for (var i in ary) {
         // 制御コード削除
-        data = ary[i];
+        data = ary[i]
         if (!!(platform.match(/darwin|linux/i))) {
             //
         } else {
-            data = data.replace(/\[\d{2};\d{2}m/g, '').replace(/\[\d{2}m/g, '');
-            //data = data.replace(/\[/g, '');
+            data = data.replace(/\[\d{2}\d{2}m/g, '').replace(/\[\d{2}m/g, '')
+            //data = data.replace(/\[/g, '')
         }
-        mConsole.appendMsg(escapeHtml(data));
+        mConsole.appendMsg(escapeHtml(data))
     }
-};
+}
 
-var job = null;
+var job = null
 var kill = function() {
     if (global.job == null) {
-        return;
+        return
     }
-    appendMsg("KILLシグナル" + global.job.pid);
+    appendMsg("KILLシグナル" + global.job.pid)
 
     if (!!(platform.match(/darwin|linux/i))) {
         // mac/linux 
     } else {
-        phpKiller.killProcess();
+        phpKiller.killProcess()
     }
 
-    // job.kill('SIGHUP');
+    // job.kill('SIGHUP')
     // SIGHUP (= 1, hangup) 端末終了時に発生。元来はモデムの受話器をあげて通信を切ったことから
     // SIGINT (= 2, interrupt) Control-C による中断
     // SIGTERM (= 15, termination) kill コマンドでシグナル無指定時に送られるプロセス終了シグナル
     // 引数なし=SIGTERM
-    global.job.kill();
-    global.job = null;
-    $("#lbl-btn01, #lbl-btn02, #lbl-btn03, #lbl-btn04").prop("checked", false);
-};
+    global.job.kill()
+    global.job = null
+    $("#lbl-btn01, #lbl-btn02, #lbl-btn03, #lbl-btn04").prop("checked", false)
+}
 
-var util = require('util');
-var _exec = require('child_process').spawn;
-var async = require("async");
-var confJson;
-var appJson;
-var gitHashRemote = null;
-var gitHashLocal = null;
+var util = require('util')
+var _exec = require('child_process').spawn
+var async = require("async")
+var confJson
+var appJson
+var gitHashRemote = null
+var gitHashLocal = null
 var exec = function(cmd, args, cwd, cb) {
     if (!(global.job == null || typeof global.job.pid === "undefined")) {
-        console.log('プロセスID「' + global.job.pid + '」が実行中です。');
-        return;
+        console.log('プロセスID「' + global.job.pid + '」が実行中です。')
+        return
     }
     var job = _exec(cmd, args, {
         "cwd": cwd
-    });
-    console.log('cmd', cmd);
-    global.job = job;
+    })
+    console.log('cmd', cmd)
+    global.job = job
 
     // for Windows
-    var path;
+    var path
     if (!!(platform.match(/darwin|linux/i))) {
         //
     } else {
         // php プロセス登録
-        // $('.js-cancel').prop('disabled',true); // <- batchの時だけ必要なので
+        // $('.js-cancel').prop('disabled',true) // <- batchの時だけ必要なので
         setTimeout(function() {
-            Console.appendMsg('php　プロセス取得', 'warning');
-            phpKiller.getProcess();
-            $('.js-cancel').prop('disabled', false);
-        }, 3000);
+            Console.appendMsg('php　プロセス取得', 'warning')
+            phpKiller.getProcess()
+            $('.js-cancel').prop('disabled', false)
+        }, 3000)
     }
 
-    appendMsg("START PID:" + global.job.pid);
+    appendMsg("START PID:" + global.job.pid)
     global.job.stdout.on('data', function(data) {
-        var _data = data;
+        var _data = data
         if (!!(platform.match(/darwin|linux/i))) {
             //
         } else {
-            data = iconv.decode(data, "cp932");
+            data = iconv.decode(data, "cp932")
         }
-        data = data.toString();
-        console.log('stdout: ' + data);
+        data = data.toString()
+        console.log('stdout: ' + data)
 
         // 完了メッセージ
-        var matches = data.match(/Finished\!\!(.*)/gi);
+        var matches = data.match(/Finished\!\!(.*)/gi)
         if (matches != null) {
             if (matches.length >= 2) {
-                Console.appendMsg(matches.join("\n"), "success");
+                Console.appendMsg(matches.join("\n"), "success")
             } else {
-                Console.appendMsg(matches[0], "success");
+                Console.appendMsg(matches[0], "success")
             }
-            return true;
+            return true
         }
 
         if (args[args.length - 1] === 'site-scan0' || args[args.length - 1] === 'site-scan') {
             // コンソールパネル
-            matches = data.match(/Finished\s->\s(.*)/gi);
+            matches = data.match(/Finished\s->\s(.*)/gi)
             if (matches != null) {
-                //appendMsg(matches[0]);
-                var str = "";
+                //appendMsg(matches[0])
+                var str = ""
                 if (matches.length >= 2) {
-                    str = matches.join("\n");
+                    str = matches.join("\n")
                 } else {
-                    str = matches[0];
+                    str = matches[0]
                 }
-                appendMsg(str);
-                var captureStr = matches[0].match(/Finished\s->\s(.*)/i);
+                appendMsg(str)
+                var captureStr = matches[0].match(/Finished\s->\s(.*)/i)
                 $('#tbl-sitescan td:nth-child(2)').map(function(){
                   if(captureStr[1] ===  $(this).text()){
-                    $(this).wrapInner('<span class="marker_lime"></span>');
+                    $(this).wrapInner('<span class="marker_lime"></span>')
                   }
-                });
+                })
             }
-            matches = data.match(/Skip\s->\s(.*)/gi);
+            matches = data.match(/Skip\s->\s(.*)/gi)
             if (matches != null) {
-                //appendMsg(matches[0]);
+                //appendMsg(matches[0])
                 if (matches.length >= 2) {
-                    Console.appendMsg(matches.join("\n"), 'warn');
+                    Console.appendMsg(matches.join("\n"), 'warn')
                 } else {
-                    Console.appendMsg(matches[0], 'warn');
+                    Console.appendMsg(matches[0], 'warn')
                 }
             }
             // メインパネル
-            matches = data.match(/Result\s->\s(.*)/gi);
+            matches = data.match(/Result\s->\s(.*)/gi)
             if (matches != null) {
                 for (var xxi in matches) {
-                    var resultJson = JSON.parse(matches[xxi].match(/Result\s->\s(.*)/)[1]);
+                    var resultJson = JSON.parse(matches[xxi].match(/Result\s->\s(.*)/)[1])
                     $('#tbl-sitescan').append($('<tr>' +
                         '<td>' + resultJson.id + '</td>' +
                         '<td>' + resultJson.fullPath + '</td>' +
@@ -248,15 +248,15 @@ var exec = function(cmd, args, cwd, cb) {
                         '<td>' + resultJson.status + '</td>' +
                         '<td>' + resultJson.statusCode + '</td>' +
                         // '<td>'+ resultJson.time + '</td>' +
-                        '</tr>'));
+                        '</tr>'))
                 }
             }
             //} else if(args[0] === 'site-validation-json'){
         } else if (args[args.length - 1] === 'countSiteScan') {
-            matches = data.match(/(\d*)/i);
-            console.log(matches[0]);
+            matches = data.match(/(\d*)/i)
+            console.log(matches[0])
             // プロセスチェックの回避するため
-            global.job = null;
+            global.job = null
 
             // ページ初期化
             $('#div_C .layer-panel.is-current').html('<div class="asazuke-sitescan">' +
@@ -271,30 +271,30 @@ var exec = function(cmd, args, cwd, cb) {
             '<th>statusCode </th>' +
             // '<th>time </th>' +
             '</tr></table>' +
-            '</div>');
+            '</div>')
             
             async.waterfall([
                 function(callback) {
                     for(var ai=1; ai<=matches[0]; ai++){
-                      App.execSiteScanSelectById(cwd, ai);
-                      global.job = null;
+                      App.execSiteScanSelectById(cwd, ai)
+                      global.job = null
                     }
-                    callback(null, 1);
+                    callback(null, 1)
                 }
             ], function(err, arg1){
                 if (err) {
-                    throw err;
+                    throw err
                 }
-                App.execSiteScanRe();
-            });
+                App.execSiteScanRe()
+            })
         } else if (args[args.length - 1].match(/^selectSiteScanById\(\d*\)/gi)) {
-                    var resultJson = JSON.parse(data)[0];
-                    var path = "";
+                    var resultJson = JSON.parse(data)[0]
+                    var path = ""
                     // 文字列で返るから"1"と比較
                     if(resultJson.checkCount === '1'){
-                      path = '<span class="marker_lime">'+resultJson.fullPath+'</span>';
+                      path = '<span class="marker_lime">'+resultJson.fullPath+'</span>'
                     }else{
-                      path = resultJson.fullPath;
+                      path = resultJson.fullPath
                     }
 
                     $('#tbl-sitescan').append($('<tr>' +
@@ -305,7 +305,7 @@ var exec = function(cmd, args, cwd, cb) {
                         '<td>' + resultJson.status + '</td>' +
                         '<td>' + resultJson.statusCode + '</td>' +
                         // '<td>'+ resultJson.time + '</td>' +
-                        '</tr>'));
+                        '</tr>'))
         } else if (args[args.length - 1] === 'site-validation-json') {
 
             // テーブル表示
@@ -315,208 +315,208 @@ var exec = function(cmd, args, cwd, cb) {
 					<table class="tbl_htmlDL" border="1">
 					<tr><th>ID</th><th>filePath</th><th>Error件数</th><th>Warning件数</th></tr>
 					</table>
-					`));
-            var jsonData = JSON.parse(data);
-            var no, path, err, war;
+					`))
+            var jsonData = JSON.parse(data)
+            var no, path, err, war
             $(jsonData).each(function(ind, ele) {
-                console.log(ele);
-                no = ele[0], path = ele[1], err = ele[2], warn = ele[3];
+                console.log(ele)
+                no = ele[0], path = ele[1], err = ele[2], warn = ele[3]
 
                 $('.tbl_htmlDL').append(`
 					<tr><td>${no}</td><td>${path}</td><td>${err}</td><td>${warn}</td><</tr>
-					`);
-            });
+					`)
+            })
             */
 
             // Include the async package
             // Make sure you add "async" to your package.json
-            $('.fileTree2-2 ul').empty();
+            $('.fileTree2-2 ul').empty()
             // 1st para in async.each() is the array of items
             async.each($('.fileTree2-0 a'), function(item, next) {
                 setTimeout(function() {
-                    var search_id = ($(item).text()).split('.')[0];
-                    console.log(search_id, 'done!!');
+                    var search_id = ($(item).text()).split('.')[0]
+                    console.log(search_id, 'done!!')
                     $(jsonData).each(function(ind, ele) {
                         if (ele[0] == search_id) {
-                            $('.fileTree2-2 ul').append($('<li><span class="path">' + ele[1] + '</span></li>'));
-                            next();
-                            return false;
+                            $('.fileTree2-2 ul').append($('<li><span class="path">' + ele[1] + '</span></li>'))
+                            next()
+                            return false
                         }
-                    });
-                }, 200);
+                    })
+                }, 200)
             }, function(err) {
-                console.log('all done!');
-            });
+                console.log('all done!')
+            })
 
             // データベース | データ確認
         } else if (args[args.length - 1] === 'file-sql-json') {
-            console.log("// データベース | データ確認");
-            // appendMsg(data+"\n";);
-            var matches = data.match(/Result\s->\s(.*)/);
-            $('.js-selectSQL-result').empty();
+            console.log("// データベース | データ確認")
+            // appendMsg(data+"\n")
+            var matches = data.match(/Result\s->\s(.*)/)
+            $('.js-selectSQL-result').empty()
             if (matches != null) {
                 $('.js-selectSQL-result').append($(`
-						<table class="tbl_result" border="1" style="margin:15px 0 0; width:100%;"></table>
-						`));
-                var resultJson = JSON.parse(matches[1]);
-                console.log(resultJson);
+						<table class="tbl_result" border="1" style="margin:15px 0 0 width:100%"></table>
+						`))
+                var resultJson = JSON.parse(matches[1])
+                console.log(resultJson)
 
                 // thead
-                var tr = "<tr>";
+                var tr = "<tr>"
                 for (var k in resultJson[0]) {
-                    tr += '<th>' + k + '</th>';
+                    tr += '<th>' + k + '</th>'
                 }
-                tr += "</tr>";
+                tr += "</tr>"
                 $('.tbl_result').append(`
-					<tr>${tr}<</tr>`);
+					<tr>${tr}<</tr>`)
 
                 // tbody
                 $(resultJson).each(function(ind, rowdata) {
-                    console.log(rowdata);
-                    tr = "<tr>";
+                    console.log(rowdata)
+                    tr = "<tr>"
                     for (var k in rowdata) {
-                        tr += '<td>' + rowdata[k] + '</td>';
+                        tr += '<td>' + rowdata[k] + '</td>'
                     }
-                    tr += "</tr>";
+                    tr += "</tr>"
                     $('.tbl_result').append(`
 						<tr>${tr}<</tr>
-						`);
-                });
+						`)
+                })
 
             }
         } else if (args[0] === '-C') { // git -C 
-            console.log('git checkupdate');
-            appendMsg("git checkupdate");
+            console.log('git checkupdate')
+            appendMsg("git checkupdate")
             try {
                 // git Checkupdate
-                var command_ops = args.splice(2, 3).join(' ');
+                var command_ops = args.splice(2, 3).join(' ')
                 // 'git -C <ディレクトリ> ls-remote origin HEAD'
                 if (command_ops === 'ls-remote origin HEAD') {
-                    global.gitHashRemote = (data.toString()).substr(0, 40);
-                    appendMsg("リモートのコミット:" + global.gitHashRemote);
+                    global.gitHashRemote = (data.toString()).substr(0, 40)
+                    appendMsg("リモートのコミット:" + global.gitHashRemote)
 
                     // 'git -C <ディレクトリ> show -s --format=%H'
                 } else if (command_ops === 'show -s --format=%H') {
                     // stdoutには行末コードが含まれている？ため0-40で切り取る
-                    global.gitHashLocal = data.substr(0, 40);
-                    appendMsg("ローカルトのコミット:" + global.gitHashLocal);
+                    global.gitHashLocal = data.substr(0, 40)
+                    appendMsg("ローカルトのコミット:" + global.gitHashLocal)
                 }
             } catch (e) {
-                console.log(e);
+                console.log(e)
             }
             //} else if(args[0] === 'site-validation-csv'){
         } else if (args[args.length - 1] === 'site-validation-csv') {
-            appendMsg(_data);
-            var matches = data.match(/Finished\s->\s(.*)/i);
-            console.log(matches);
+            appendMsg(_data)
+            var matches = data.match(/Finished\s->\s(.*)/i)
+            console.log(matches)
             if (matches != null) {
-                appendMsg(matches[1] + "を開こうとしています。");
+                appendMsg(matches[1] + "を開こうとしています。")
                 // 規定のアプリで開く
-                console.log('matches[1]', matches[1]);
+                console.log('matches[1]', matches[1])
 
-                var path;
+                var path
                 if (!!(platform.match(/darwin|linux/i))) {
-                    path = matches[1];
+                    path = matches[1]
                 } else {
                     // PATHセパレータ正規化
-                    path = matches[1].replace(/\//g, '\\\\').replace(/\\/g, '\\\\');
+                    path = matches[1].replace(/\//g, '\\\\').replace(/\\/g, '\\\\')
                 }
-                SHELL.openItem(path);
-                Load.sitemapCSV();
+                SHELL.openItem(path)
+                Load.sitemapCSV()
 
-                Console.appendMsg("Finished!! (sitemap-csv)", "success");
+                Console.appendMsg("Finished!! (sitemap-csv)", "success")
             }
         } else if (args[args.length - 1] === 'conf-json') {
-            console.log('conf-json');
-            global.confJson = JSON.parse(data);
+            console.log('conf-json')
+            global.confJson = JSON.parse(data)
             appConf.readConf(function(jsonConf) {
-                global.appJson = jsonConf;
-                PHP.start(global.confJson.buildInServerIp, global.confJson.buildInServerPort);
+                global.appJson = jsonConf
+                PHP.start(global.confJson.buildInServerIp, global.confJson.buildInServerPort)
                 if (typeof cb == 'function') {
-                    cb();
+                    cb()
                 }
-            });
+            })
         } else if (args[args.length - 1] === 'which-php') {
             if (phpBin == _data) {
-                appendMsg("php stand ready.");
+                appendMsg("php stand ready.")
             } else {
-                var tmpPhpBin = phpBin;
-                appendMsg('phpBin:' + tmpPhpBin);
-                appendMsg('usePHP:' + _data);
-                Console.appendMsg("composer.json内のphpパスの修正が必要です。", "info");
+                var tmpPhpBin = phpBin
+                appendMsg('phpBin:' + tmpPhpBin)
+                appendMsg('usePHP:' + _data)
+                Console.appendMsg("composer.json内のphpパスの修正が必要です。", "info")
                 if (!!(platform.match(/darwin/i))) {
                     // そのまま
                 } else if (!!(platform.match(/win32/i))) {
-                    //var path = require('path');
-                    //tmpPhpBin += ' -d extension_dir=.\\ext\\';
-                    //tmpPhpBin += ' -d date.timezone="Asia/Tokyo"';
-                    tmpPhpBin += ' -c .\\php.ini';
-                    Console.appendMsg(tmpPhpBin, "info");
+                    //var path = require('path')
+                    //tmpPhpBin += ' -d extension_dir=.\\ext\\'
+                    //tmpPhpBin += ' -d date.timezone="Asia/Tokyo"'
+                    tmpPhpBin += ' -c .\\php.ini'
+                    Console.appendMsg(tmpPhpBin, "info")
                 }
                 appConf.readConf(function(jsonConf) {
-                    Console.appendMsg(jsonConf.asazuke, "info");
+                    Console.appendMsg(jsonConf.asazuke, "info")
                     // composer.json内のphpのパスを書き換える
-                    var composerPhpUpdate = require('composer-php-update');
-                    composerPhpUpdate.init(jsonConf.asazuke + '/composer.json', tmpPhpBin);
-                });
+                    var composerPhpUpdate = require('composer-php-update')
+                    composerPhpUpdate.init(jsonConf.asazuke + '/composer.json', tmpPhpBin)
+                })
             }
         } else {
-            appendMsg(_data);
+            appendMsg(_data)
         }
-    });
+    })
     global.job.stderr.on('data', function(data) {
-        data = iconv.decode(data, "cp932");
-        data = String(data).replace(/\n?$/g, '');
-        data = data.toString();
-        console.log('stdout: ' + data);
-        appendMsg(data);
-    });
+        data = iconv.decode(data, "cp932")
+        data = String(data).replace(/\n?$/g, '')
+        data = data.toString()
+        console.log('stdout: ' + data)
+        appendMsg(data)
+    })
     global.job.on('exit', function(code, signal) {
-        code = String(code).replace(/\n?$/g, '');
-        console.log('child process exited with code ' + code);
-        signal = String(signal).replace(/\n?$/g, '');
-        console.log('child process terminated due to receipt of signal ' + signal);
-        global.job = null;
+        code = String(code).replace(/\n?$/g, '')
+        console.log('child process exited with code ' + code)
+        signal = String(signal).replace(/\n?$/g, '')
+        console.log('child process terminated due to receipt of signal ' + signal)
+        global.job = null
 
         if (typeof(cb) == 'function') {
-            cb();
+            cb()
         }
-    });
-};
+    })
+}
 
 var projectSettingLoad = function() {
-    var path = require('path');
+    var path = require('path')
     // 表示初期化
-    jqueryFileTree.init('.fileTree0', global.userDataDir + '/');
+    jqueryFileTree.init('.fileTree0', global.userDataDir + '/')
     // 表示フィルタ
-    $('.jqueryFileTree a').addClass('mask');
+    $('.jqueryFileTree a').addClass('mask')
     $('.file > a[rel$="' + "setting.json" + '"]').css({
         'display': 'block'
-    });
+    })
     $('.file > a[rel$="setting.json"]').css({
         'color': '#BFBFBF'
-    });
+    })
 
 
     // リスト更新
     appConf.readConf(function(jsonConf) {
-        console.log(jsonConf);
+        console.log(jsonConf)
         for (var i in jsonConf.projects) {
-            var project = jsonConf.projects[i];
+            var project = jsonConf.projects[i]
             if (project === jsonConf.select_project) {
-                $('.js-projectList').append('<option value="' + project + '" selected>' + project + '</option>');
+                $('.js-projectList').append('<option value="' + project + '" selected>' + project + '</option>')
             } else {
-                $('.js-projectList').append('<option value="' + project + '">' + project + '</option>');
+                $('.js-projectList').append('<option value="' + project + '">' + project + '</option>')
             }
 
         }
-    });
-    console.log("setting loaded.");
-};
+    })
+    console.log("setting loaded.")
+}
 
 
-var phpServer = require('node-php-server');
-var http = require('http');
+var phpServer = require('node-php-server')
+var http = require('http')
 global.PHP = {
     start: function(hostname, port) {
         // Create a PHP Server 
@@ -530,10 +530,10 @@ global.PHP = {
                 //"bin": jsonConf.php,
                 "bin": phpBin,
                 "router": jsonConf.asazuke + '/router.php'
-            });
-            appendMsg('router : ' + jsonConf.asazuke + '/router.php');
-            appendMsg('start-server : http://' + hostname + ':' + port);
-        });
+            })
+            appendMsg('router : ' + jsonConf.asazuke + '/router.php')
+            appendMsg('start-server : http://' + hostname + ':' + port)
+        })
     },
     status: function(hostname, port, cb) {
         http.request({
@@ -542,22 +542,22 @@ global.PHP = {
             port: port
         }, function(res) {
             if (res.statusCode === 200 || res.statusCode === 404) {
-                appendMsg('PHPサーバー起動中');
-                return cb();
+                appendMsg('PHPサーバー起動中')
+                return cb()
             }
         }).on('error', function(err) {
-            return 0;
-        }).end();
+            return 0
+        }).end()
 
     },
     stop: function() {
         // Close server 
-        phpServer.close();
+        phpServer.close()
     }
-};
+}
 
 
-var shell = require('electron').shell;
+var shell = require('electron').shell
 global.SHELL = {
     /**
      * @see http://electron.atom.io/docs/v0.36.5/api/shell/
@@ -565,110 +565,110 @@ global.SHELL = {
     openItem: function(fullPath) {
         appConf.readConf(function(jsonConf) {
             if (!!(platform.match(/darwin/i))) {
-                App.exec('open', [fullPath], jsonConf.asazuke);
+                App.exec('open', [fullPath], jsonConf.asazuke)
             } else if (!!(platform.match(/linux/i))) {
                 // linux
-                App.exec('xdg-open', [fullPath], jsonConf.asazuke);
+                App.exec('xdg-open', [fullPath], jsonConf.asazuke)
             } else {
                 // windows
-                App.exec('cmd', ['/c', 'start', fullPath], jsonConf.asazuke);
+                App.exec('cmd', ['/c', 'start', fullPath], jsonConf.asazuke)
             }
-        });
+        })
     },
     openDir: function(filePath) {
         if (!!(platform.match(/darwin/i))) {
-            App.exec('open', [filePath], '.');
+            App.exec('open', [filePath], '.')
         } else if (!!(platform.match(/linux/i))) {
             // linux
-            App.exec('xdg-open', [filePath], '.');
+            App.exec('xdg-open', [filePath], '.')
         } else {
             // windows
-            App.exec('explorer', [filePath], '.');
+            App.exec('explorer', [filePath], '.')
         }
     },
     openSqlDir: function() {
         appConf.readConf(function(jsonConf) {
-            var sqlDir = ds_repair(jsonConf.asazuke + '/src/data/sql/');
-            console.log('sqlDir', sqlDir);
+            var sqlDir = ds_repair(jsonConf.asazuke + '/src/data/sql/')
+            console.log('sqlDir', sqlDir)
             if (!!(platform.match(/darwin/i))) {
-                App.exec('open', [sqlDir], jsonConf.asazuke);
+                App.exec('open', [sqlDir], jsonConf.asazuke)
             } else if (!!(platform.match(/linux/i))) {
                 // linux
-                App.exec('xdg-open', [sqlDir], jsonConf.asazuke);
+                App.exec('xdg-open', [sqlDir], jsonConf.asazuke)
             } else {
                 // windows
-                App.exec('explorer', [sqlDir], jsonConf.asazuke);
+                App.exec('explorer', [sqlDir], jsonConf.asazuke)
             }
-        });
+        })
     },
     execFile: function(fullPath) {
         // SQL
         if (path.extname(fullPath) == '.sql') {
             // とりあえずWindowsのみ
             var exec = require('child_process').exec,
-                child;
+                child
             appConf.readConf(function(jsonConf) {
                 if (!!(platform.match(/darwin/i))) {
                     // mac
                     child = exec('cat  ' + ds_repair(fullPath) + ' | ' + 'sqlite3                                                        ' + jsonConf.asazuke + '/src/data/' + global.confJson.projectName + '/asazuke.sqlite',
                         function(error, stdout, stderr) {
-                            console.log('stdout: ' + stdout);
-                            appendMsg(stdout);
-                            console.log('stderr: ' + stderr);
+                            console.log('stdout: ' + stdout)
+                            appendMsg(stdout)
+                            console.log('stderr: ' + stderr)
                             if (error !== null) {
-                                console.log('exec error: ' + error);
+                                console.log('exec error: ' + error)
                             }
-                        });
+                        })
                 } else {
                     // win 
                     child = exec('type ' + ds_repair(fullPath) + ' | ' + ds_repair(jsonConf.asazuke + '/bin/sqlite/sqlite3.exe ') + ds_repair(jsonConf.asazuke + '/src/data/' + global.confJson.projectName + '/asazuke.sqlite'),
                         function(error, stdout, stderr) {
-                            console.log('stdout: ' + stdout);
-                            appendMsg(stdout);
-                            console.log('stderr: ' + stderr);
+                            console.log('stdout: ' + stdout)
+                            appendMsg(stdout)
+                            console.log('stderr: ' + stderr)
                             if (error !== null) {
-                                console.log('exec error: ' + error);
+                                console.log('exec error: ' + error)
                             }
-                        });
+                        })
                 }
-                Console.appendMsg(fullPath + ' を実行しました。', 'info');
-            });
+                Console.appendMsg(fullPath + ' を実行しました。', 'info')
+            })
         }
     }
-};
+}
 global.Ace = {
     save: function() {
-        editor = ace.edit("editor");
-        var filePath = $('.ace-filepath').text();
-        var ace_func = require('ace-func');
-        ace_func.saveFile(filePath, editor.getValue());
+        editor = ace.edit("editor")
+        var filePath = $('.ace-filepath').text()
+        var ace_func = require('ace-func')
+        ace_func.saveFile(filePath, editor.getValue())
     },
     exec: function() {
-        editor = ace.edit("editor");
-        var filePath = $('.ace-filepath').text();
-        var ace_func = require('ace-func');
-        ace_func.execFile(filePath, editor.getValue());
+        editor = ace.edit("editor")
+        var filePath = $('.ace-filepath').text()
+        var ace_func = require('ace-func')
+        ace_func.execFile(filePath, editor.getValue())
     },
     remove: function() {
-        $('.header-menu .item.active a').click();
+        $('.header-menu .item.active a').click()
     }
-};
+}
 global.App = {
     toggleDevTools: function() {
-        win.toggleDevTools();
+        win.toggleDevTools()
         setTimeout(function() {
-            window.resize();
-        }, 1500);
+            window.resize()
+        }, 1500)
     },
     // 戻り値が要らない場合
     exec: function(cmd, args, cwd) {
-        exec(cmd, args, cwd);
+        exec(cmd, args, cwd)
     },
     execSiteScan: function() {
         if (!!(platform.match(/darwin|linux/i))) {
             // mac | linux
         } else {
-            $('.js-cancel').prop('disabled', true);
+            $('.js-cancel').prop('disabled', true)
         }
 
         // ページ初期化
@@ -1328,30 +1328,30 @@ global.Load = {
 									<td><a href="${repos_url}" target="_blank">${repos_url}</a></td>
 									</tr>
 									</table>
-									`);
-                    $('.fileTree5').empty();
+									`)
+                    $('.fileTree5').empty()
                     $('.fileTree5').load("other_left.html", function(htmlData, loadStatus) {
                         $('.tmpl_supportMenu').append(`
-										<a href="${repos_url}/issues/new?labels=bug&amp;title=%E3%80%90%E3%83%90%E3%82%B0%E3%80%91%3C%21--+%E3%81%93%E3%81%93%E3%81%AB%E9%A1%8C%E5%90%8D%E3%82%92%E8%A8%98%E5%85%A5%E3%81%97%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84%E3%80%82%E2%97%8B%E2%97%8B%E3%81%AExx%E3%81%8C%E3%81%A7%E3%81%8D%E3%81%BE%E3%81%9B%E3%82%93%E3%80%82etc+--%3E&amp;body=%23%23%23+%E4%B8%8D%E5%85%B7%E5%90%88%E8%A9%B3%E7%B4%B0%0D%0A-+%E7%94%BB%E9%9D%A2%E5%90%8D%2F%E6%A9%9F%E8%83%BD%E5%90%8D%0D%0A-+%E3%81%84%E3%81%A4%2F%E2%97%8B%E2%97%8B%E6%A9%9F%E8%83%BD%E4%BD%BF%E7%94%A8%E6%99%82%0D%0A-+%E7%99%BA%E7%94%9F%E3%81%99%E3%82%8B%E7%8F%BE%E8%B1%A1%0D%0A%0D%0A%23%23%23+%E7%99%BA%E7%94%9F%E3%83%90%E3%83%BC%E3%82%B8%E3%83%A7%E3%83%B3%0D%0A-+${version}(${platform})%0D%0A&amp;assignee=misak1" target="_blank" class="btn btn-default btn-block u-mt5">不具合報告</a></div>
-										<div><a href="${repos_url}/issues/new?labels=idea&amp;title=%E3%80%90%E3%82%A2%E3%82%A4%E3%83%87%E3%82%A2%E3%80%91%3C%21--+%E3%81%93%E3%81%93%E3%81%AB%E9%A1%8C%E5%90%8D%E3%82%92%E8%A8%98%E5%85%A5%E3%81%97%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84%E3%80%82%E2%97%8B%E2%97%8B%E3%81%AE%E6%A9%9F%E8%83%BD%E3%81%8C%E6%AC%B2%E3%81%97%E3%81%84%E3%80%82etc+--%3E&amp;body=%23%23%23+%E3%82%A2%E3%82%A4%E3%83%87%E3%82%A2%E8%A9%B3%E7%B4%B0%0D%0A-+%E7%94%BB%E9%9D%A2%E5%90%8D%2F%E6%A9%9F%E8%83%BD%E5%90%8D%E3%80%81%E8%A9%B2%E5%BD%93%E7%AE%87%E6%89%80%E3%81%8C%E3%81%AA%E3%81%91%E3%82%8C%E3%81%B0%EF%BC%88%22%E6%96%B0%E6%A9%9F%E8%83%BD%22%E3%81%A8%E3%81%97%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84%E3%80%82%EF%BC%89%0D%0A-+%E6%AC%B2%E3%81%97%E3%81%84%E6%A9%9F%E8%83%BD&amp;assignee=misak1" target="_blank" class="btn btn-default btn-block u-mt5">アイデア</a></div>
-										<div><a href="${repos_url}/issues/new?labels=question&amp;title=%E3%80%90%E8%B3%AA%E5%95%8F%E3%80%91%3C%21--+%E3%81%93%E3%81%93%E3%81%AB%E9%A1%8C%E5%90%8D%E3%82%92%E8%A8%98%E5%85%A5%E3%81%97%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84%E3%80%82%E2%97%8B%E2%97%8B%E3%81%AE%E4%BD%BF%E3%81%84%E6%96%B9%E3%81%8C%E3%82%8F%E3%81%8B%E3%82%8A%E3%81%BE%E3%81%9B%E3%82%93%E3%80%82etc+--%3E&amp;body=%23%23%23+%E8%B3%AA%E5%95%8F%E5%86%85%E5%AE%B9&amp;assignee=misak1" target="_blank" class="btn btn-default btn-block u-mt5">質問</a>
-										`);
-                    });
-                });
-                break;
+										<a href="${repos_url}/issues/new?labels=bug&amptitle=%E3%80%90%E3%83%90%E3%82%B0%E3%80%91%3C%21--+%E3%81%93%E3%81%93%E3%81%AB%E9%A1%8C%E5%90%8D%E3%82%92%E8%A8%98%E5%85%A5%E3%81%97%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84%E3%80%82%E2%97%8B%E2%97%8B%E3%81%AExx%E3%81%8C%E3%81%A7%E3%81%8D%E3%81%BE%E3%81%9B%E3%82%93%E3%80%82etc+--%3E&ampbody=%23%23%23+%E4%B8%8D%E5%85%B7%E5%90%88%E8%A9%B3%E7%B4%B0%0D%0A-+%E7%94%BB%E9%9D%A2%E5%90%8D%2F%E6%A9%9F%E8%83%BD%E5%90%8D%0D%0A-+%E3%81%84%E3%81%A4%2F%E2%97%8B%E2%97%8B%E6%A9%9F%E8%83%BD%E4%BD%BF%E7%94%A8%E6%99%82%0D%0A-+%E7%99%BA%E7%94%9F%E3%81%99%E3%82%8B%E7%8F%BE%E8%B1%A1%0D%0A%0D%0A%23%23%23+%E7%99%BA%E7%94%9F%E3%83%90%E3%83%BC%E3%82%B8%E3%83%A7%E3%83%B3%0D%0A-+${version}(${platform})%0D%0A&ampassignee=misak1" target="_blank" class="btn btn-default btn-block u-mt5">不具合報告</a></div>
+										<div><a href="${repos_url}/issues/new?labels=idea&amptitle=%E3%80%90%E3%82%A2%E3%82%A4%E3%83%87%E3%82%A2%E3%80%91%3C%21--+%E3%81%93%E3%81%93%E3%81%AB%E9%A1%8C%E5%90%8D%E3%82%92%E8%A8%98%E5%85%A5%E3%81%97%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84%E3%80%82%E2%97%8B%E2%97%8B%E3%81%AE%E6%A9%9F%E8%83%BD%E3%81%8C%E6%AC%B2%E3%81%97%E3%81%84%E3%80%82etc+--%3E&ampbody=%23%23%23+%E3%82%A2%E3%82%A4%E3%83%87%E3%82%A2%E8%A9%B3%E7%B4%B0%0D%0A-+%E7%94%BB%E9%9D%A2%E5%90%8D%2F%E6%A9%9F%E8%83%BD%E5%90%8D%E3%80%81%E8%A9%B2%E5%BD%93%E7%AE%87%E6%89%80%E3%81%8C%E3%81%AA%E3%81%91%E3%82%8C%E3%81%B0%EF%BC%88%22%E6%96%B0%E6%A9%9F%E8%83%BD%22%E3%81%A8%E3%81%97%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84%E3%80%82%EF%BC%89%0D%0A-+%E6%AC%B2%E3%81%97%E3%81%84%E6%A9%9F%E8%83%BD&ampassignee=misak1" target="_blank" class="btn btn-default btn-block u-mt5">アイデア</a></div>
+										<div><a href="${repos_url}/issues/new?labels=question&amptitle=%E3%80%90%E8%B3%AA%E5%95%8F%E3%80%91%3C%21--+%E3%81%93%E3%81%93%E3%81%AB%E9%A1%8C%E5%90%8D%E3%82%92%E8%A8%98%E5%85%A5%E3%81%97%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84%E3%80%82%E2%97%8B%E2%97%8B%E3%81%AE%E4%BD%BF%E3%81%84%E6%96%B9%E3%81%8C%E3%82%8F%E3%81%8B%E3%82%8A%E3%81%BE%E3%81%9B%E3%82%93%E3%80%82etc+--%3E&ampbody=%23%23%23+%E8%B3%AA%E5%95%8F%E5%86%85%E5%AE%B9&ampassignee=misak1" target="_blank" class="btn btn-default btn-block u-mt5">質問</a>
+										`)
+                    })
+                })
+                break
 
             default:
-                break;
+                break
 
         }
 
         // タイトル設定
-        var appName = config.config.appname;
-        $('title').text($('.header-menu .item.active a').text() + ' | ' + appName);
+        var appName = config.config.appname
+        $('title').text($('.header-menu .item.active a').text() + ' | ' + appName)
         // Asazuke設定読み込み
-        mConsole.init('#consolePanel .layer-panel.is-current .div-textarea');
+        mConsole.init('#consolePanel .layer-panel.is-current .div-textarea')
         App.execConfJson(function() {
-            //App.execWhichPhp();
-        });
+            //App.execWhichPhp()
+        })
     }
-};
+}
