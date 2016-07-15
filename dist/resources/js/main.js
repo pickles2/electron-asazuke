@@ -28,3 +28,6 @@ var SCRIPT = {
     }
 };
 // SCRIPT.load();
+
+// DebToolにDevtronタブの追加
+require('devtron').install()

@@ -135,5 +135,8 @@ app.on('ready', function () {
         // when you should delete the corresponding element.
         mainWindow = null
     })
-    mainWindow.toggleDevTools()
+
+    //mainWindow.toggleDevTools()
+    // Open the DevTools.
+    mainWindow.webContents.openDevTools()
 })
