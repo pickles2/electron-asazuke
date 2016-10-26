@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="./resources/css/index.css">
+  <!--<script src="./resources/js/main.js"></script>-->
+  <link rel="stylesheet" href="./resources/libs/jqueryfiletree/jQueryFileTree.min.css">
+  <style>
+    .collapsed * {display:none;} 
+    .main{display:table; width: 100%;}
+    .fileTree, .contents{display:table-cell; vertical-align: top;}
+    .fileTree{width:20%;}
+
+    body{
+      font-family: "Helvetica Neue", Helvetica, "Segoe UI", Meiryo, Arial, freesans, sans-serif;
+    }
+    .builtin-search-body {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 0;
+      background-color: white;
+      animation-duration: 0.2s;
+      -webkit-animation-duration: 0.2s;
+    }
+    .builtin-search-contents {
+      padding: 0 8px;
+      display: flex;
+    }
+    .builtin-search-panel {
+      display: flex;
+      flex-direction: column;
+    }
+    .builtin-search-matches {
+      margin: 0 auto 8px;
+      font-size: 14px;
+      min-width: 40px;
+      text-align: center;
+    }
+    .input-workaround {
+      width: 300px;
+      height: 80px;
+    }
+    .builtin-search-control {
+      position: absolute;
+      top: 0;
+      right: 0;
+      display: flex;
+      font-size: 14px;
+    }
+  </style>
+  <style>
+    body {
+        height: 100vh;
+        margin: 0;
+      }
+      webview {
+        height: 100%;
+      }
+      .search-box {
+        display: none;
+      }
+      .state-visible {
+        display: block;
+      }
+  </style>
+</head>
+<body>
+  <div class="search-box">
+  <input type="text" class="search-input">
+  <span class="search-count"></span>
+  </div>
+  <script>
+    const {ipcRenderer} = require('electron');
+
+    const ElectronSearchText = require('electron-search-text');
+    const searcher = new ElectronSearchText({
+      target: 'webview',
+      input: '.search-input',
+      count: '.search-count',
+      box: '.search-box',
+      visibleClass: '.state-visible'
+    });
+
+    ipcRenderer.on('toggleSearch', function() {
+      searcher.emit('toggle');
+    });
+  </script>
+  <div class="builtin-search-body">
+    <paper-material class="builtin-search-contents">
+      <div class="builtin-search-panel">
+        <paper-icon-button class="builtin-search-button">icon="search"</paper-icon-button>
+        <div class="builtin-search-matches">0/0</div>
+      </div>
+      <div class="builtin-search-control">
+        <paper-icon-button class="builtin-search-up">icon="expand-less"</paper-icon-button>
+        <paper-icon-button class="builtin-search-down">icon="expand-more"</paper-icon-button>
+        <paper-icon-button class="builtin-search-close">icon="close"</paper-icon-button>
+      </div>
+      <webview class="input-workaround">nodeintegration="on" autosize="on"</webview>
+    </paper-material>
+  </div>
+
+  <div class="main">
+    <div id="content-header">
+      <ul class="header-menu nav nav-tabs">
+        <!-- 一番最初に表示したいページに.is-current-->
+        <li role="presentation" class="item active"><a href="#" onclick="Load.layerPanel(0);">設定</a></li>
+        <li role="presentation" class="item"><a href="#" onclick="Load.layerPanel(1);">処理/実行</a></li>
+        <li role="presentation" class="item"><a href="#" onclick="Load.layerPanel(2);">HTMLダウンロード</a></li>
+        <li role="presentation" class="item"><a href="#" onclick="Load.layerPanel(3);">WEBスクレイピング</a></li>
+        <li role="presentation" class="item"><a href="#" onclick="Load.layerPanel(4);">データベース</a></li>
+        <li role="presentation" class="item"><a href="#" onclick="Load.layerPanel(5);">その他</a></li>
+      </ul>
+    </div>
+    <div id="content">
+      <fieldset id="LeftPanel">
+        <div id="div_A" class="window top">
+          <div class="layer-panel">
+            <div class="fileTree0"></div>
+            <!--設定-->
+          </div>
+          <div class="layer-panel">
+            <div class="fileTree1"></div>
+            <!--バッチ処理-->
+          </div>
+          <div class="layer-panel">
+            <div class="fileTree2"></div>
+            <!--HTMLダウンロード-->
+          </div>
+          <div class="layer-panel">
+            <div class="fileTree3"></div>
+            <!--WEBスクレイピング-->
+          </div>
+          <div class="layer-panel">
+            <div class="fileTree4"></div>
+            <!--データベース-->
+          </div>
+          <div class="layer-panel">
+            <div class="fileTree5"></div>
+            <!-- その他-->
+          </div>
+          <div class="layer-panel">none</div>
+        </div>
+        <div id="div_left" class="handler_horizontal"></div>
+      </fieldset>
+      <div id="div_vertical" class="handler_vertical"></div>
+      <fieldset id="RightPanel">
+        <div id="div_C" class="window top">
+          <div class="layer-panel">
+            <!-- h3 設定-->
+          </div>
+          <div class="layer-panel">
+            <!-- h3 バッチ処理-->
+          </div>
+          <div class="layer-panel"> 
+            <!-- h3 HTMLダウンロード-->
+          </div>
+          <div class="layer-panel"> 
+            <!-- h3 WEBスクレイピング-->
+          </div>
+          <div class="layer-panel"> 
+            <!-- h3 データベース-->
+          </div>
+          <div class="layer-panel"> 
+            <!-- h3 その他-->
+          </div>
+        </div>
+        <div id="div_right" class="handler_horizontal"></div>
+      </fieldset>
+    </div>
+    <div id="content-footer">
+      <div class="consolePanelMenu">
+        <div role="group" aria-label="..." class="btn-group-sm console-btn-group"><a onclick="Console.clear();" class="u-mr10">バッファクリア</a><a onclick="App.toggleDevTools();" class="u-mr10">Developer Tools</a></div>
+      </div>
+      <div id="consolePanel">
+        <div class="layer-wrap">
+          <div class="layer-panel">
+            <!-- 設定-->
+            <div class="m-console div-textarea">
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+            </div>
+          </div>
+          <div class="layer-panel">
+            <!-- バッチ処理-->
+            <div class="m-console div-textarea">
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+            </div>
+          </div>
+          <div class="layer-panel">
+            <!-- HTMLダウンロード-->
+            <div class="m-console div-textarea">
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+            </div>
+          </div>
+          <div class="layer-panel">
+            <!-- WEBスクレイピング-->
+            <div class="m-console div-textarea">
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+            </div>
+          </div>
+          <div class="layer-panel">
+            <!-- データベース-->
+            <div class="m-console div-textarea">
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+            </div>
+          </div>
+          <div class="layer-panel">
+            <!-- その他-->
+            <div class="m-console div-textarea">
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="copyright">$copy</p>
+  </div>
+
+<script src="./resources/js/main.js"></script>
+<script src="./resources/js/window/layout.js"></script>
+<!--script(src='./resources/libs/m-console/m-console.js')-->
+<script>
+  SCRIPT.onload();
+</script>
+<!-- #fileTree.fileTree-->
+<!-- script(src="./resources/js/node/main.js")-->
+</body>
+</html>

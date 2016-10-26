@@ -1349,7 +1349,7 @@ global.Load = {
         var appName = config.config.appname
         $('title').text($('.header-menu .item.active a').text() + ' | ' + appName)
         // Asazuke設定読み込み
-        mConsole.init('#consolePanel .layer-panel.is-current .div-textarea')
+        // mConsole.init('#consolePanel .layer-panel.is-current .div-textarea')
         App.execConfJson(function() {
             //App.execWhichPhp()
         })

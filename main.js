@@ -74,8 +74,8 @@ fs.stat(global.SETTING_JSON, function (stat) {
 })
 
 // メインウィンドウはGCされないようにグローバル宣言
-//let mainWindow;
-let mainWindow
+//let browserWindow;
+let browserWindow
 
 // let electron = require('electron');
 
@@ -83,12 +83,14 @@ let mainWindow
 // initialization and is ready to create browser windows.
 app.on('ready', function () {
     // Create the browser window.
-    mainWindow = new BrowserWindow({
+    browserWindow = new BrowserWindow({
         width: 1024,
-        height: 768
+        height: 768,
+        // nodeIntegration: false,
+        webSecurity: false
     })
     // and load the index.html of the app.
-    mainWindow.loadURL('file://' + __dirname + '/dist/index.html')
+    browserWindow.loadURL('file://' + __dirname + '/dist/index.html')
 
     let application_menu = [{
         label: "Edit",
@@ -97,14 +99,38 @@ app.on('ready', function () {
             accelerator: "CmdOrCtrl+X",
             selector: "cut:"
         }, {
-                label: "Copy",
-                accelerator: "CmdOrCtrl+C",
-                selector: "copy:"
-            }, {
-                label: "Paste",
-                accelerator: "CmdOrCtrl+V",
-                selector: "paste:"
-            }]
+            label: "Copy",
+            accelerator: "CmdOrCtrl+C",
+            selector: "copy:"
+        }, {
+            label: "Paste",
+            accelerator: "CmdOrCtrl+V",
+            selector: "paste:"
+        }, {
+            label: 'Search in File',
+            accelerator: 'CmdOrCtrl+F',
+            click() {
+                // browserWindow.webContents.send('toggleSearch')
+                browserWindow.webContents.send('toggleSearch')
+            }
+        }, {
+            label: 'Debug',
+            submenu: [
+                {
+                    label: 'Toggle Developer Tools',
+                    accelerator: (function () {
+                        if (process.platform == 'darwin')
+                            return 'Alt+Command+I';
+                        else
+                            return 'Ctrl+Shift+I';
+                    })(),
+                    click(item, focusedWindow) {
+                        if (focusedWindow)
+                            focusedWindow.webContents.toggleDevTools();
+                    }
+                }
+            ]
+        }]
     }]
     if (process.platform == 'darwin') {
         //let name = require('electron').app.getName();
@@ -117,26 +143,26 @@ app.on('ready', function () {
                 label: 'About ' + app_name,
                 role: 'about'
             }, {
-                    label: 'Quit',
-                    accelerator: 'CmdOrCtrl+Q',
-                    click: function () {
-                        app.quit();
-                    }
-                },]
+                label: 'Quit',
+                accelerator: 'CmdOrCtrl+Q',
+                click: function () {
+                    app.quit();
+                }
+            },]
         })
     }
     let menu = Menu.buildFromTemplate(application_menu)
     Menu.setApplicationMenu(menu)
 
     // Emitted when the window is closed.
-    mainWindow.on('closed', function () {
+    browserWindow.on('closed', function () {
         // Dereference the window object, usually you would store windows
         // in an array if your app supports multi windows, this is the time
         // when you should delete the corresponding element.
-        mainWindow = null
+        browserWindow = null
     })
 
-    //mainWindow.toggleDevTools()
+    //browserWindow.toggleDevTools()
     // Open the DevTools.
-    mainWindow.webContents.openDevTools()
+    browserWindow.webContents.openDevTools()
 })

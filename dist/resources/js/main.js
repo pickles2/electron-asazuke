@@ -30,4 +30,6 @@ var SCRIPT = {
 // SCRIPT.load();
 
 // DebToolにDevtronタブの追加
-require('devtron').install()
+// require('devtron').install()
+
+

@@ -1,11 +1,6 @@
 /**
  * FileZilla風レイアウト
  */
-$(function() {
-    window.onresize = resize;
-    resize();
-});
-
 var $content = $("#content");
 
 var headerHeight = $('#content-header').height();
@@ -123,3 +118,7 @@ $.resizable('div_left', "h");
 // window.onresize = resize;
 // resize();
 // global.resize = resize;
+$(function() {
+    window.onresize = resize;
+    resize();
+});
