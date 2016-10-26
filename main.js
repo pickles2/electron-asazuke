@@ -86,8 +86,6 @@ app.on('ready', function () {
     browserWindow = new BrowserWindow({
         width: 1024,
         height: 768,
-        // nodeIntegration: false,
-        webSecurity: false
     })
     // and load the index.html of the app.
     browserWindow.loadURL('file://' + __dirname + '/dist/index.html')
