@@ -7,7 +7,7 @@ const BrowserWindow = electron.BrowserWindow
 // const remote = electron;
 const {Menu, MenuItem} = electron
 
-console.log(app.getAppPath())
+// console.log(app.getAppPath())
 
 const menu = new Menu()
 menu.append(new MenuItem({ label: 'MenuItem1', click() { console.log('item 1 clicked'); } }))
