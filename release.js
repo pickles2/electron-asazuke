@@ -24,13 +24,13 @@ if (typeof process.argv[2] === 'undefined') {
 }
 if (!isWin) {
     console.log('Build Target -> Mac');
-    var r = fs.createReadStream('./setting-darwin.json'),
-        w = fs.createWriteStream('./setting.json');
+    var r = fs.createReadStream('./data/setting-darwin.json'),
+        w = fs.createWriteStream('./data/setting.json');
     r.pipe(w);
 } else {
     console.log('Build Target -> Windows');
-    var r = fs.createReadStream('./setting-win32.json'),
-        w = fs.createWriteStream('./setting.json');
+    var r = fs.createReadStream('./data/setting-win32.json'),
+        w = fs.createWriteStream('./data/setting.json');
     r.pipe(w);
 }
 var arch = 'x64';
@@ -49,10 +49,10 @@ var app_version = config.version;
 var app_file_name = config.config.appfilename;
 var platform = 'darwin'
     // アプリアイコン
-var icon = './app.icns';
+var icon = './images/app.icns';
 if (isWin) {
     platform = 'win32';
-    icon = './app.ico';
+    icon = './images/app.ico';
 }
 // platform: 'linux',
 var version = '0.36.1';

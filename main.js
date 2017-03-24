@@ -23,7 +23,7 @@ app.on('window-all-closed', function() {
 });
 
 global.APP_PATH = app.getAppPath();
-global.APP_CONF = APP_PATH + '/setting.json';
+global.APP_CONF = APP_PATH + '/data/setting.json';
 global.homeDir = app.getPath('home');
 global.exe = app.getPath('exe');
 global.userDataDir = app.getPath('userData');

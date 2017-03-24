@@ -16,7 +16,7 @@ module.exports = new(function() {
             console.log('ps process exited with code ' + code);
         }
         // var data = fs.readFileSync(appDirPath + '/php-tasklist.csv');
-        var data = fs.readFileSync(appDirPath + '\\php-tasklist.csv');
+        var data = fs.readFileSync(appDirPath + '\\tmp_data\\php-tasklist.csv');
         data = data.toString();
         csv.parse(data, function(err, data) {
             fn_parse(err, data);

@@ -37,9 +37,9 @@ node_modules
 .npm
 
 # Optional REPL history
-.node_repl_history 
-  
- 
+.node_repl_history
+
+
 ### https://raw.github.com/github/gitignore/058d4918973c034c1c53215f28845c0342a0f6b1/Global/osx.gitignore
 
 .DS_Store
@@ -67,4 +67,4 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
-
+tmp_data/
