@@ -24,7 +24,7 @@ CSVの設定をサイトに合う形で修正して下さい。CSSセレクタ�
 
 4. 処理/実行  
 サイトスキャン、HTMLダウンロード、サイトマップCSV作成、WEBスクレイピングが実行できます。
- 
+
 
 ## 開発者向け実行方法
 - 実行
@@ -33,11 +33,12 @@ CSVの設定をサイトに合う形で修正して下さい。CSSセレクタ�
  $ electron .
 ```
 
- 
+
 - ビルド
 ```
-$ node release.js [(win|mac),(ia32|x64)]
+$ npm run build-all
 ```
+※Mac環境でWindows版をビルドするにあたり、 `wine` がインストールされている必要があります。
 
 ### windows版とosx版の違い
 - AsazukeConf.phpがシムリンク/実態ファイル
@@ -59,6 +60,15 @@ $ node release.js [(win|mac),(ia32|x64)]
 |npm start| electron実行|
 |npm run up| electron実行(サブモジュールの再インストール)|
 |npm run submodule_update | サブモジュール更新 |
+|npm run build | 実行しているプラットフォームに応じたアプリケーションをビルドする |
+|npm run build-all | すべてのプラットフォーム向けアプリケーションをビルドする |
+
+## 実行環境
+
+- node@4.8.1
+- npm@2.15.11
+- electron-prebuilt@0.37.8
+
 
 ## 更新履歴 - Change log
 
